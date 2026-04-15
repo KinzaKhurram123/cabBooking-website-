@@ -15,9 +15,9 @@
       }
 
       body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        height: 100vh;
-        overflow: hidden;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+        overflow-y: auto;
         position: relative;
       }
 
@@ -28,7 +28,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url('images/login_background_image.png');
+        background-image: url("images/login_background_image.png");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -53,7 +53,10 @@
         height: 100vh;
         overflow: hidden;
       }
-
+      .left-side::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
       /* Left side - Information */
       .left-side {
         display: flex;
@@ -61,7 +64,7 @@
         justify-content: center;
         padding: 60px 80px;
         color: white;
-        overflow-y: auto;
+        overflow-y: hidden;
         animation: slideInLeft 0.8s ease-out;
       }
 
@@ -195,7 +198,7 @@
         content: "✓";
         position: absolute;
         left: 0;
-        color: #4CAF50;
+        color: #4caf50;
         font-weight: bold;
         font-size: 1.4rem;
       }
@@ -220,7 +223,7 @@
       }
 
       .footer-links a::after {
-        content: '';
+        content: "";
         position: absolute;
         width: 0;
         height: 2px;
@@ -239,17 +242,15 @@
         width: 100%;
       }
 
-      /* Right side - Login Form */
       .right-side {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 60px 80px;
-        overflow-y: auto;
+        padding: 40px 80px;
+        overflow-y: visible;
         animation: slideInRight 0.8s ease-out;
       }
-
       @keyframes slideInRight {
         from {
           opacity: 0;
@@ -366,7 +367,7 @@
 
       .btn-login {
         width: 100%;
-        background: linear-gradient(135deg, #44BFD2 0%, #2E8B9E 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #2e8b9e 100%);
         color: white;
         border: none;
         padding: 16px 40px;
@@ -383,7 +384,7 @@
       }
 
       .btn-login::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 50%;
         left: 50%;
@@ -392,7 +393,9 @@
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.3);
         transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
+        transition:
+          width 0.6s,
+          height 0.6s;
       }
 
       .btn-login:hover::before {
@@ -480,7 +483,7 @@
 
       .divider::before,
       .divider::after {
-        content: '';
+        content: "";
         flex: 1;
         height: 1px;
         background: rgba(255, 255, 255, 0.3);
@@ -511,7 +514,8 @@
           grid-template-columns: 1fr;
           height: auto;
           min-height: 100vh;
-          overflow-y: auto;
+          /* overflow-y: auto; */
+          overflow: hidden;
         }
 
         .left-side {
@@ -586,6 +590,28 @@
           gap: 15px;
         }
       }
+
+      .error-message {
+        background: rgba(255, 0, 0, 0.2);
+        border: 1px solid rgba(255, 0, 0, 0.5);
+        color: #ff6b6b;
+        padding: 12px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: none;
+        animation: fadeInDown 0.3s ease;
+      }
+
+      .success-message {
+        background: rgba(0, 255, 0, 0.2);
+        border: 1px solid rgba(0, 255, 0, 0.5);
+        color: #51cf66;
+        padding: 12px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: none;
+        animation: fadeInDown 0.3s ease;
+      }
     </style>
   </head>
 
@@ -597,14 +623,17 @@
       <!-- Left Side - Information -->
       <div class="left-side">
         <div class="logo">
-          <img src="images/loogo.png" alt="Ridelynk Logo">
+          <img src="images/loogo.png" alt="Ridelynk Logo" />
         </div>
 
         <h1>Welcome to Ridelynk</h1>
 
         <div class="about">
           <h2>About Ridelynk</h2>
-          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. It has survived not only five centuries.</p>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. It has survived not only five centuries.
+          </p>
         </div>
 
         <div class="features">
@@ -612,7 +641,9 @@
           <ul>
             <li>Lorem Ipsum is simply dummy text of the printing industry.</li>
             <li>Lorem Ipsum has been the industry's standard dummy text.</li>
-            <li>Lorem Ipsum is simply dummy text of the typesetting industry.</li>
+            <li>
+              Lorem Ipsum is simply dummy text of the typesetting industry.
+            </li>
           </ul>
         </div>
 
@@ -631,48 +662,95 @@
           <h2 class="form-title">Login</h2>
           <p class="form-subtitle">Sign in to your account</p>
 
-          <form action="account-dashboard.html" method="post">
+          <form id="loginForm">
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+
             <div class="form-group">
               <label for="email">Email Address</label>
-              <input type="email" id="email" name="email" placeholder="Enter your email" required>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
             </div>
 
             <div class="form-group">
               <label for="password">Password</label>
-              <input type="password" id="password" name="password" placeholder="Enter your password" required>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
             </div>
 
             <div class="form-options">
               <label class="remember-me">
-                <input type="checkbox" name="remember">
+                <input type="checkbox" name="remember" id="remember" />
                 <span>Remember me</span>
               </label>
               <a href="#" class="forgot-password">Forgot Password?</a>
             </div>
 
-            <button type="submit" class="btn-login">Login</button>
+            <button type="submit" class="btn-login" id="submitBtn">
+              Login
+            </button>
 
             <div class="divider">OR</div>
 
             <!-- Social Login -->
             <div class="social-login">
               <div class="social-buttons">
-                <button class="social-btn" type="button" title="Login with Google">
+                <button
+                  class="social-btn"
+                  type="button"
+                  title="Login with Google"
+                >
                   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      fill="#EA4335"
+                    />
                   </svg>
                 </button>
-                <button class="social-btn" type="button" title="Login with Facebook">
+                <button
+                  class="social-btn"
+                  type="button"
+                  title="Login with Facebook"
+                >
                   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
+                    <path
+                      d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                      fill="#1877F2"
+                    />
                   </svg>
                 </button>
-                <button class="social-btn" type="button" title="Login with Apple">
+                <button
+                  class="social-btn"
+                  type="button"
+                  title="Login with Apple"
+                >
                   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="white"/>
+                    <path
+                      d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"
+                      fill="white"
+                    />
                   </svg>
                 </button>
               </div>
@@ -685,5 +763,149 @@
         </div>
       </div>
     </div>
+
+    <script>
+      const API_BASE_URL =
+        "https://krystal-imaginable-hurtlingly.ngrok-free.dev";
+
+      const form = document.getElementById("loginForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const errorMessage = document.getElementById("errorMessage");
+      const successMessage = document.getElementById("successMessage");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Hide previous messages
+        errorMessage.style.display = "none";
+        successMessage.style.display = "none";
+
+        // Disable submit button
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Logging in...";
+
+        // Get form data
+        const formData = {
+          email: document.getElementById("email").value.trim(),
+          password: document.getElementById("password").value,
+        };
+
+        const rememberMe = document.getElementById("remember").checked;
+
+        // TEMPORARY: Use mock authentication directly (bypass API)
+        console.log("Using mock authentication for testing...");
+
+        // Create mock user data
+        const mockUser = {
+          name: formData.email.split('@')[0].charAt(0).toUpperCase() + formData.email.split('@')[0].slice(1),
+          email: formData.email,
+          role: "user",
+          profilePicture: "images/profile/1.jpg"
+        };
+
+        // Store mock data
+        localStorage.setItem("authToken", "mock-token-" + Date.now());
+        localStorage.setItem("userData", JSON.stringify(mockUser));
+
+        if (rememberMe) {
+          localStorage.setItem("rememberMe", "true");
+        }
+
+        successMessage.textContent = "Login successful! Redirecting...";
+        successMessage.style.display = "block";
+
+        // Redirect to dashboard
+        setTimeout(() => {
+          window.location.href = "account-dashboard.html";
+        }, 1000);
+
+        /* ORIGINAL API CODE - Commented out for testing
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            // Success - Store token and user data
+            if (data.token) {
+              localStorage.setItem("authToken", data.token);
+            }
+
+            if (data.user) {
+              localStorage.setItem("userData", JSON.stringify(data.user));
+            }
+
+            // Store remember me preference
+            if (rememberMe) {
+              localStorage.setItem("rememberMe", "true");
+            }
+
+            successMessage.textContent = "Login successful! Redirecting...";
+            successMessage.style.display = "block";
+
+            // Redirect based on user role
+            setTimeout(() => {
+              if (data.user && data.user.role === "driver") {
+                window.location.href = "account-dashboard.html"; // Driver dashboard
+              } else {
+                window.location.href = "account-dashboard.html"; // User dashboard
+              }
+            }, 1500);
+          } else {
+            // Error from server
+            errorMessage.textContent =
+              data.message || "Login failed. Please check your credentials.";
+            errorMessage.style.display = "block";
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Login";
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+
+          // Use mock authentication as fallback
+          console.log("API failed, using mock authentication...");
+
+          // Create mock user data
+          const mockUser = {
+            name: formData.email.split('@')[0].charAt(0).toUpperCase() + formData.email.split('@')[0].slice(1),
+            email: formData.email,
+            role: "user",
+            profilePicture: "images/profile/1.jpg"
+          };
+
+          // Store mock data
+          localStorage.setItem("authToken", "mock-token-" + Date.now());
+          localStorage.setItem("userData", JSON.stringify(mockUser));
+
+          if (rememberMe) {
+            localStorage.setItem("rememberMe", "true");
+          }
+
+          successMessage.textContent = "Login successful! Redirecting...";
+          successMessage.style.display = "block";
+
+          // Redirect to dashboard
+          setTimeout(() => {
+            window.location.href = "account-dashboard.html";
+          }, 1000);
+        }
+        */
+      });
+
+      // Check if user is already logged in
+      window.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("authToken");
+        if (token) {
+          // User is already logged in, redirect to dashboard
+          window.location.href = "account-dashboard.html";
+        }
+      });
+    </script>
   </body>
 </html>

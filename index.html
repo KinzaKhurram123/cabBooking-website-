@@ -117,8 +117,52 @@
             width: 100%;
         }
 
+        .mobile-only {
+            display: none;
+        }
+
+        .mobile-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            border-radius: 50px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .mobile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(108, 212, 232, 0.5);
+        }
+
+        .mobile-btn::after {
+            display: none;
+        }
+
         .nav-cta {
             animation: fadeInDown 0.8s ease 0.4s both;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-cta .btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .btn-driver {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(68, 191, 210, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-driver:hover {
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            border-color: #6CD4E8;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(108, 212, 232, 0.5);
         }
 
         .btn {
@@ -1830,6 +1874,444 @@
         .btn-primary:hover {
             animation: borderGlow 2s infinite;
         }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero {
+                padding: 100px 50px 50px;
+                gap: 40px;
+            }
+
+            .hero-content {
+                max-width: 500px;
+            }
+
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+
+            .hero-car {
+                max-width: 500px;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-cta {
+                gap: 10px;
+            }
+
+            .nav-cta .btn {
+                padding: 8px 15px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                flex-direction: column;
+                background: rgba(0, 0, 0, 0.98);
+                width: 100%;
+                padding: 30px;
+                gap: 20px;
+                transition: left 0.3s ease;
+                z-index: 999;
+                height: calc(100vh - 70px);
+                overflow-y: auto;
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .nav-cta {
+                display: none;
+            }
+
+            .nav-links {
+                padding-bottom: 100px;
+            }
+
+            .nav-links::after {
+                content: '';
+                display: block;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .mobile-only {
+                display: block;
+            }
+
+            .mobile-btn {
+                width: 100%;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 100px 30px 40px;
+                gap: 40px;
+            }
+
+            .hero-content {
+                text-align: center;
+                max-width: 100%;
+                order: 1;
+            }
+
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-car {
+                order: 2;
+                max-width: 100%;
+                width: 90%;
+                justify-self: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .features, .stats, .cta-section, .cab-types, .how-it-works,
+            .testimonials, .download-app, .safety-section, .faq-section,
+            .newsletter-section {
+                padding: 60px 25px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .feature-card {
+                padding: 35px 25px;
+            }
+
+            .feature-icon {
+                width: 70px;
+                height: 70px;
+                line-height: 70px;
+                font-size: 3rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+
+            .stat-number {
+                font-size: 2.8rem;
+            }
+
+            .cab-card {
+                min-width: 300px;
+                padding: 35px 25px;
+            }
+
+            .cab-name {
+                font-size: 1.6rem;
+            }
+
+            .cab-price {
+                font-size: 1.6rem;
+            }
+
+            .slider-btn {
+                width: 50px;
+                height: 50px;
+            }
+
+            .steps-container {
+                flex-direction: column;
+                gap: 25px;
+            }
+
+            .step-arrow {
+                display: none;
+            }
+
+            .step-card {
+                padding: 35px 25px;
+            }
+
+            .step-icon {
+                font-size: 3.5rem;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .testimonial-card {
+                padding: 35px 25px;
+            }
+
+            .download-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 40px;
+            }
+
+            .download-text h2 {
+                font-size: 2.2rem;
+            }
+
+            .app-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .app-btn {
+                width: 100%;
+                max-width: 350px;
+            }
+
+            .phone-mockup {
+                width: 280px;
+                height: 560px;
+            }
+
+            .safety-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .safety-card {
+                padding: 35px 25px;
+            }
+
+            .safety-icon {
+                font-size: 3.5rem;
+            }
+
+            .faq-question {
+                padding: 22px 25px;
+            }
+
+            .faq-question h3 {
+                font-size: 1.05rem;
+                padding-right: 35px;
+            }
+
+            .faq-answer {
+                padding: 0 25px;
+            }
+
+            .faq-item.active .faq-answer {
+                padding: 0 25px 22px 25px;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-form input,
+            .newsletter-form button {
+                width: 100%;
+            }
+
+            .newsletter-content h2 {
+                font-size: 2.2rem;
+            }
+
+            .cta-section h2 {
+                font-size: 2.2rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .scroll-indicator {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 90px 20px 30px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.9rem;
+            }
+
+            .logo img {
+                height: 38px;
+            }
+
+            .features, .stats, .cta-section, .cab-types, .how-it-works,
+            .testimonials, .download-app, .safety-section, .faq-section,
+            .newsletter-section {
+                padding: 50px 20px;
+            }
+
+            .feature-card {
+                padding: 30px 20px;
+            }
+
+            .feature-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .cab-card {
+                min-width: 280px;
+                padding: 30px 20px;
+            }
+
+            .cab-name {
+                font-size: 1.4rem;
+            }
+
+            .cab-price {
+                font-size: 1.5rem;
+            }
+
+            .step-card {
+                padding: 30px 20px;
+            }
+
+            .step-card h3 {
+                font-size: 1.25rem;
+            }
+
+            .step-icon {
+                font-size: 3rem;
+            }
+
+            .testimonial-card {
+                padding: 30px 20px;
+            }
+
+            .testimonial-text {
+                font-size: 1rem;
+            }
+
+            .author-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .phone-mockup {
+                width: 240px;
+                height: 480px;
+            }
+
+            .download-text h2 {
+                font-size: 1.9rem;
+            }
+
+            .app-features li {
+                font-size: 0.95rem;
+            }
+
+            .app-btn {
+                padding: 13px 20px;
+            }
+
+            .app-icon {
+                font-size: 1.8rem;
+            }
+
+            .safety-card {
+                padding: 30px 20px;
+            }
+
+            .safety-icon {
+                font-size: 3rem;
+            }
+
+            .safety-card h3 {
+                font-size: 1.25rem;
+            }
+
+            .faq-question {
+                padding: 18px 20px;
+            }
+
+            .faq-question h3 {
+                font-size: 1rem;
+            }
+
+            .faq-answer {
+                padding: 0 20px;
+            }
+
+            .faq-item.active .faq-answer {
+                padding: 0 20px 18px 20px;
+            }
+
+            .newsletter-content h2 {
+                font-size: 1.9rem;
+            }
+
+            .newsletter-form input {
+                padding: 13px 20px;
+            }
+
+            .cta-section h2 {
+                font-size: 1.9rem;
+            }
+
+            .btn {
+                padding: 13px 25px;
+                font-size: 0.95rem;
+            }
+
+            footer {
+                padding: 40px 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1852,9 +2334,14 @@
             <li><a href="#stats">About</a></li>
             <li><a href="quick-booking.html">Booking</a></li>
             <li><a href="contact.html">Contact</a></li>
+            <li class="mobile-only"><a href="login.html" class="mobile-btn">Login</a></li>
+            <li class="mobile-only"><a href="register.html" class="mobile-btn">Sign Up</a></li>
+            <li class="mobile-only"><a href="driver-registration.html" class="mobile-btn">Join as Driver</a></li>
         </ul>
         <div class="nav-cta">
-            <a href="login.html" class="btn btn-primary">Sign In</a>
+            <a href="login.html" class="btn btn-secondary">Login</a>
+            <a href="register.html" class="btn btn-primary">Sign Up</a>
+            <a href="driver-registration.html" class="btn btn-driver">Join as Driver</a>
         </div>
         <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </nav>

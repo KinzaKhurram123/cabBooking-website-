@@ -1,529 +1,868 @@
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="en">
 
 <head>
-    <title>RideLynk</title>
+    <title>Dashboard - RideLynk</title>
     <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="RideLynk" name="description">
-    <meta content="" name="keywords">
-    <meta content="" name="author">
-    <!-- CSS Files
-    ================================================== -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" id="bootstrap">
-    <link href="css/mdb.min.css" rel="stylesheet" type="text/css" id="mdb">
-    <link href="css/plugins.css" rel="stylesheet" type="text/css">
-    <link href="css/style.css" rel="stylesheet" type="text/css">
-    <link href="css/coloring.css" rel="stylesheet" type="text/css">
-    <!-- color scheme -->
-    <link id="colors" href="css/colors/scheme-01.css" rel="stylesheet" type="text/css">
+    <meta content="RideLynk Dashboard" name="description">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8, #2E8B9E, #44BFD2);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(68, 191, 210, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-section img {
+            height: 45px;
+        }
+
+        .logo-section h2 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info h4 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .user-info p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #44BFD2;
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(68, 191, 210, 0.5);
+        }
+
+        /* Main Container */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            padding: 30px 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            border: 1px solid rgba(68, 191, 210, 0.3);
+            height: fit-content;
+            position: sticky;
+            top: 110px;
+        }
+
+        .profile-card {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #44BFD2;
+            margin-bottom: 15px;
+            box-shadow: 0 0 30px rgba(68, 191, 210, 0.6);
+        }
+
+        .profile-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .profile-card p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(68, 191, 210, 0.2);
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            box-shadow: 0 5px 20px rgba(68, 191, 210, 0.4);
+        }
+
+        .sidebar-menu i {
+            font-size: 1.2rem;
+            width: 25px;
+        }
+
+        /* Main Content */
+        .main-content {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(68, 191, 210, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(68, 191, 210, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #6CD4E8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(68, 191, 210, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(108, 212, 232, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: #6CD4E8;
+            box-shadow: 0 20px 40px rgba(68, 191, 210, 0.4);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(68, 191, 210, 0.2), rgba(108, 212, 232, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border: 2px solid rgba(68, 191, 210, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(108, 212, 232, 0.8);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Recent Orders Section */
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(68, 191, 210, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #fff, #6CD4E8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .view-all-btn {
+            padding: 10px 25px;
+            background: rgba(68, 191, 210, 0.2);
+            border: 2px solid rgba(68, 191, 210, 0.5);
+            border-radius: 50px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .view-all-btn:hover {
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            border-color: #6CD4E8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(108, 212, 232, 0.5);
+        }
+
+        /* Table Styles */
+        .orders-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+
+        .orders-table thead th {
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .orders-table tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .orders-table tbody tr:hover {
+            background: rgba(68, 191, 210, 0.1);
+            transform: scale(1.01);
+        }
+
+        .orders-table tbody td {
+            padding: 20px 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .orders-table tbody td:first-child {
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px 0 0 15px;
+        }
+
+        .orders-table tbody td:last-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0 15px 15px 0;
+        }
+
+        .order-id {
+            background: rgba(68, 191, 210, 0.2);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge {
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-completed {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .status-scheduled {
+            background: rgba(255, 195, 18, 0.2);
+            color: #ffc312;
+            border: 1px solid rgba(255, 195, 18, 0.3);
+        }
+
+        .status-cancelled {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        /* Favorites Section */
+        .favorites-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .favorite-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 200px 1fr auto;
+            gap: 25px;
+            align-items: center;
+            border: 1px solid rgba(68, 191, 210, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .favorite-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #6CD4E8;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(68, 191, 210, 0.3);
+        }
+
+        .favorite-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .favorite-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #6CD4E8;
+        }
+
+        .car-specs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            font-size: 0.9rem;
+        }
+
+        .car-specs span {
+            opacity: 0.8;
+        }
+
+        .favorite-price {
+            text-align: center;
+        }
+
+        .price-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .price-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .rent-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #44BFD2, #6CD4E8);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .rent-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(108, 212, 232, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 15px 20px;
+            }
+
+            .dashboard-container {
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .welcome-section h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .favorite-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .car-specs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .orders-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .user-section {
+                gap: 10px;
+            }
+
+            .user-info {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div id="wrapper">
-        
-        <!-- page preloader begin -->
-        <div id="de-preloader"></div>
-        <!-- page preloader close -->
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="overlay"></div>
 
-        <!-- header begin -->
-        <header class="transparent scroll-light has-topbar">
-            <div id="topbar" class="topbar-dark text-light">
-                <div class="container">
-                    <div class="topbar-left xs-hide">
-                        <div class="topbar-widget">
-                            <div class="topbar-widget"><a href="#"><i class="fa fa-phone"></i>+123 456 7890</a></div>
-                            <div class="topbar-widget"><a href="#"><i class="fa fa-envelope"></i>support@ridelynk.com</a></div>
-                            <div class="topbar-widget"><a href="#"><i class="fa fa-clock-o"></i>Mon - Fri 08.00 - 18.00</a></div>
-                        </div>
-                    </div>
-                
-                    <div class="topbar-right">
-                        <div class="social-icons">
-                            <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
-                            <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
-                            <a href="#"><i class="fa fa-youtube fa-lg"></i></a>
-                            <a href="#"><i class="fa fa-pinterest fa-lg"></i></a>
-                            <a href="#"><i class="fa fa-instagram fa-lg"></i></a>
-                        </div>
-                    </div>  
-                    <div class="clearfix"></div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="de-flex sm-pt10">
-                            <div class="de-flex-col">
-                                <div class="de-flex-col">
-                                    <!-- logo begin -->
-                                    <div id="logo">
-                                        <a href="index.html">
-                                            <img class="logo-1" src="images/loo.png" alt="">
-                                            <img class="logo-2" src="images/loogo.png" alt="">
-                                        </a>
-                                    </div>
-                                    <!-- logo close -->
-                                </div>
-                            </div>
-                            <div class="de-flex-col header-col-mid">
-                                <ul id="mainmenu">
-                                    <li><a class="menu-item" href="index.html">Home</a>
-                                        <ul>
-                                            <li><a class="menu-item new" href="02_dark-index-1.html">Homepage 1 Dark</a></li>
-                                            <li><a class="menu-item new" href="02_dark-index-2.html">Homepage 2 Dark</a></li>
-                                            <li><a class="menu-item" href="index.html">Homepage Main</a></li>
-                                            <li><a class="menu-item" href="index-2.html">Homepage 2</a></li>
-                                            <li><a class="menu-item" href="index-3.html">Homepage 3</a></li>
-                                            <li><a class="menu-item" href="index-4.html">Homepage 4</a></li>
-                                            <li><a class="menu-item" href="index-5.html">Homepage 5</a></li>
-                                            <li><a class="menu-item" href="index-6.html">Homepage 6</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a class="menu-item" href="cars.html">Cars</a>
-                                        <ul>
-                                            <li><a class="menu-item" href="cars.html">Cars List 1</a></li>
-                                            <li><a class="menu-item" href="02_dark-cars.html">Cars List 1 Dark</a></li>
-                                            <li><a class="menu-item" href="cars-list.html">Cars List 2</a></li>
-                                            <li><a class="menu-item" href="02_dark-cars-list.html">Cars List 2 Dark</a></li>
-                                            <li><a class="menu-item" href="car-single.html">Cars Single</a></li>
-                                            <li><a class="menu-item" href="02_dark-car-single.html">Cars Single Dark</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a class="menu-item" href="quick-booking.html">Booking</a>
-                                        <ul>
-                                            <li><a class="menu-item new" href="quick-booking.html">Quick Booking</a></li>
-                                            <li><a class="menu-item" href="booking.html">Booking</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a class="menu-item" href="account-dashboard.html">My Account</a>
-                                        <ul>
-                                            <li><a class="menu-item" href="account-dashboard.html">Dashboard</a></li>
-                                            <li><a class="menu-item" href="account-profile.html">My Profile</a></li>
-                                            <li><a class="menu-item" href="account-booking.html">My Orders</a></li>
-                                            <li><a class="menu-item" href="account-favorite.html">My Favorite Cars</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a class="menu-item" href="#">Pages</a>
-                                        <ul>
-                                            <li><a class="menu-item" href="about.html">About Us</a></li>
-                                            <li><a class="menu-item" href="contact.html">Contact</a></li>
-                                            <li><a class="menu-item" href="login.html">Login</a></li>
-                                            <li><a class="menu-item" href="register.html">Register</a></li>
-                                            <li><a class="menu-item" href="404.html">Page 404</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a class="menu-item" href="#">News</a>
-                                        <ul>
-                                            <li><a class="menu-item" href="news-standart-right-sidebar.html">News Standard</a>
-                                                <ul>
-                                                    <li><a class="menu-item" href="news-standart-right-sidebar.html">Right Sidebar</a></li>
-                                                    <li><a class="menu-item" href="news-standart-left-sidebar.html">Left Sidebar</a></li>
-                                                    <li><a class="menu-item" href="news-standart-no-sidebar.html">No Sidebar</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a class="menu-item" href="news-grid-right-sidebar.html">News Grid</a>
-                                                <ul>
-                                                    <li><a class="menu-item" href="news-grid-right-sidebar.html">Right Sidebar</a></li>
-                                                    <li><a class="menu-item" href="news-grid-left-sidebar.html">Left Sidebar</a></li>
-                                                    <li><a class="menu-item" href="news-grid-no-sidebar.html">No Sidebar</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li><a class="menu-item" href="#">Elements</a>
-                                        <ul>
-                                            <li><a class="menu-item" href="preloader.html">Preloader</a></li>
-                                            <li><a class="menu-item" href="icon-boxes.html">Icon Boxes</a></li>
-                                            <li><a class="menu-item" href="badge.html">Badge</a></li>
-                                            <li><a class="menu-item" href="counters.html">Counters</a></li>
-                                            <li><a class="menu-item" href="gallery-popup.html">Gallery Popup</a></li>
-                                            <li><a class="menu-item" href="icons-elegant.html">Icons Elegant</a></li>
-                                            <li><a class="menu-item" href="icons-etline.html">Icons Etline</a></li>
-                                            <li><a class="menu-item" href="icons-font-awesome.html">Icons Font Awesome</a></li>
-                                            <li><a class="menu-item" href="map.html">Map</a></li>
-                                            <li><a class="menu-item" href="modal.html">Modal</a></li>
-                                            <li><a class="menu-item" href="popover.html">Popover</a></li>
-                                            <li><a class="menu-item" href="tabs.html">Tabs</a></li>
-                                            <li><a class="menu-item" href="tooltips.html">Tooltips</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="de-flex-col">
-                                <div class="menu_side_area">
-                                    <div class="de-login-menu">
-
-                                        <span id="de-click-menu-profile" class="de-menu-profile">                           
-                                            <img src="images/profile/1.jpg" class="img-fluid" alt="">
-                                        </span>
-
-                                        
-
-                                        <div id="de-submenu-profile" class="de-submenu">
-                                            <div class="d-name">
-                                                <h4>Monica Lucas</h4>
-                                                <span class="text-gray">monica@RideLynk.com</span>
-                                            </div>
-
-                                            <div class="d-line"></div>
-
-                                            <ul class="menu-col">
-                                                <li><a href="account-dashboard.html"><i class="fa fa-home"></i>Dashboard</a></li>
-                                                <li><a href="account-profile.html"><i class="fa fa-user"></i>My Profile</a></li>
-                                                <li><a href="account-booking.html"><i class="fa fa-calendar"></i>My Orders</a></li>
-                                                <li><a href="account-favorite.html"><i class="fa fa-car"></i>My Favorite Cars</a></li>
-                                                <li><a href="login.html"><i class="fa fa-sign-out"></i>Sign Out</a></li>
-                                            </ul>
-                                        </div>
-                                        <span id="menu-btn"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-            <!-- header close -->
-        <!-- content begin -->
-        <div class="no-bottom no-top zebra" id="content">
-            <div id="top"></div>
-            
-            <!-- section begin -->
-            <section id="subheader" class="jarallax text-light">
-                <img src="images/background/14.jpg" class="jarallax-img" alt="">
-                    <div class="center-y relative text-center">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12 text-center">
-									<h1>Dashboard</h1>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                        </div>
-                    </div>
-            </section>
-            <!-- section close -->
-
-            <section id="section-cars" class="bg-gray-100">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-3 mb30">
-                            <div class="card p-4 rounded-5">
-                                <div class="profile_avatar">
-                                    <div class="profile_img">
-                                        <img src="images/profile/1.jpg" alt="">
-                                    </div>
-                                    <div class="profile_name">
-                                        <h4>
-                                            Monica Lucas                                                
-                                            <span class="profile_username text-gray">monica@RideLynk.com</span>
-                                        </h4>
-                                    </div>
-                                </div>
-                                <div class="spacer-20"></div>
-                                <ul class="menu-col">
-                                    <li><a href="" class="active"><i class="fa fa-home"></i>Dashboard</a></li>
-                                    <li><a href="account-profile.html"><i class="fa fa-user"></i>My Profile</a></li>
-                                    <li><a href="account-booking.html"><i class="fa fa-calendar"></i>My Orders</a></li>
-                                    <li><a href="account-favorite.html"><i class="fa fa-car"></i>My Favorite Cars</a></li>
-                                    <li><a href="login.html"><i class="fa fa-sign-out"></i>Sign Out</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-9">
-                            <div class="row">
-                                <div class="col-lg-3 col-6 mb25 order-sm-1">
-                                    <div class="card p-4 rounded-5">
-                                        <div class="symbol mb40">
-                                            <i class="fa id-color fa-2x fa-calendar-check-o"></i>
-                                        </div>
-                                        <span class="h1 mb0">03</span>
-                                        <span class="text-gray">Upcoming Orders</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-3 col-6 mb25 order-sm-1">
-                                    <div class="card p-4 rounded-5">
-                                        <div class="symbol mb40">
-                                            <i class="fa id-color fa-2x fa-tags"></i>
-                                        </div>
-                                        <span class="h1 mb0">12</span>
-                                        <span class="text-gray">Coupons</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-3 col-6 mb25 order-sm-1">
-                                    <div class="card p-4 rounded-5">
-                                        <div class="symbol mb40">
-                                            <i class="fa id-color fa-2x fa-calendar"></i>
-                                        </div>
-                                        <span class="h1 mb0">58</span>
-                                        <span class="text-gray">Total Orders</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-3 col-6 mb25 order-sm-1">
-                                    <div class="card p-4 rounded-5">
-                                        <div class="symbol mb40">
-                                            <i class="fa id-color fa-2x fa-calendar-times-o"></i>
-                                        </div>
-                                        <span class="h1 mb0">24</span>
-                                        <span class="text-gray">Cancel Orders</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card p-4 rounded-5 mb25">
-                                <h4>My Recent Orders</h4>
-
-                                <table class="table de-table">
-                                  <thead>
-                                    <tr>
-                                      <th scope="col"><span class="text-uppercase fs-12 text-gray">Order ID</span></th>
-                                      <th scope="col"><span class="text-uppercase fs-12 text-gray">Car Name</span></th>
-                                      <th scope="col"><span class="text-uppercase fs-12 text-gray">Pick Up Location</span></th>
-                                      <th scope="col"><span class="text-uppercase fs-12 text-gray">Drop Off Location</span></th>
-                                      <th scope="col"><span class="text-uppercase fs-12 text-gray">Pick Up Date</span></th>
-                                      <th scope="col"><span class="text-uppercase fs-12 text-gray">Return Date</span></th>
-                                      <th scope="col"><span class="text-uppercase fs-12 text-gray">Status</span></th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td><span class="d-lg-none d-sm-block">Order ID</span><div class="badge bg-gray-100 text-dark">#01236</div></td>
-                                      <td><span class="d-lg-none d-sm-block">Car Name</span><span class="bold">Jeep Renegade</span></td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Location</span>New York</td>
-                                      <td><span class="d-lg-none d-sm-block">Drop Off Location</span>Los Angeles</td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Date</span>March 2, 2023</td>
-                                      <td><span class="d-lg-none d-sm-block">Return Date</span>March 10, 2023</td>
-                                      <td><div class="badge rounded-pill bg-success">completed</div></td>
-                                    </tr>
-                                    <tr>
-                                      <td><span class="d-lg-none d-sm-block">Order ID</span><div class="badge bg-gray-100 text-dark">#01263</div></td>
-                                      <td><span class="d-lg-none d-sm-block">Car Name</span><span class="bold">Mini Cooper</span></td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Location</span>San Fransisco</td>
-                                      <td><span class="d-lg-none d-sm-block">Drop Off Location</span>Chicago</td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Date</span>March 8, 2023</td>
-                                      <td><span class="d-lg-none d-sm-block">Return Date</span>March 10, 2023</td>
-                                      <td><div class="badge rounded-pill bg-danger">cancelled</div></td>
-                                    </tr>
-                                    <tr>
-                                      <td><span class="d-lg-none d-sm-block">Order ID</span><div class="badge bg-gray-100 text-dark">#01245</div></td>
-                                      <td><span class="d-lg-none d-sm-block">Car Name</span><span class="bold">Ferrari Enzo</span></td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Location</span>Philadelphia</td>
-                                      <td><span class="d-lg-none d-sm-block">Drop Off Location</span>Washington</td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Date</span>March 6, 2023</td>
-                                      <td><span class="d-lg-none d-sm-block">Return Date</span>March 10, 2023</td>
-                                      <td><div class="badge rounded-pill bg-warning">scheduled</div></td>
-                                    </tr>
-                                    <tr>
-                                      <td><span class="d-lg-none d-sm-block">Order ID</span><div class="badge bg-gray-100 text-dark">#01287</div></td>
-                                      <td><span class="d-lg-none d-sm-block">Car Name</span><span class="bold">Hyundai Staria</span></td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Location</span>Kansas City</td>
-                                      <td><span class="d-lg-none d-sm-block">Drop Off Location</span>Houston</td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Date</span>March 13, 2023</td>
-                                      <td><span class="d-lg-none d-sm-block">Return Date</span>March 10, 2023</td>
-                                      <td><div class="badge rounded-pill bg-success">completed</div></td>
-                                    </tr>
-                                    <tr>
-                                      <td><span class="d-lg-none d-sm-block">Order ID</span><div class="badge bg-gray-100 text-dark">#01216</div></td>
-                                      <td><span class="d-lg-none d-sm-block">Car Name</span><span class="bold">Toyota Rav 4</span></td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Location</span>Baltimore</td>
-                                      <td><span class="d-lg-none d-sm-block">Drop Off Location</span>Sacramento</td>
-                                      <td><span class="d-lg-none d-sm-block">Pick Up Date</span>March 7, 2023</td>
-                                      <td><span class="d-lg-none d-sm-block">Return Date</span>March 10, 2023</td>
-                                      <td><div class="badge rounded-pill bg-warning">scheduled</div></td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                            </div>
-                            <div class="card p-4 rounded-5">
-                                <h4>My Favorites</h4>
-                                <div class="spacer-10"></div>
-                                <div class="de-item-list no-border mb30">
-                                    <div class="d-img">
-                                        <img src="images/cars/jeep-renegade.jpg" class="img-fluid" alt="">
-                                    </div>
-                                    <div class="d-info">
-                                        <div class="d-text">
-                                            <h4>Jeep Renegade</h4>
-                                            <div class="d-atr-group">
-                                                <ul class="d-atr">
-                                                    <li><span>Seats:</span>4</li>
-                                                    <li><span>Luggage:</span>2</li>
-                                                    <li><span>Doors:</span>4</li>
-                                                    <li><span>Fuel:</span>Petrol</li>
-                                                    <li><span>Horsepower:</span>500</li>
-                                                    <li><span>Engine:</span>3000</li>
-                                                    <li><span>Drive:</span>4x4</li>
-                                                    <li><span>Type:</span>Hatchback</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-price">
-                                        Daily rate from <span>$265</span>
-                                        <a class="btn-main" href="car-single.html">Rent Now</a>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </div>
-
-                                <div class="de-item-list no-border mb30">
-                                    <div class="d-img">
-                                        <img src="images/cars/bmw-m5.jpg" class="img-fluid" alt="">
-                                    </div>
-                                    <div class="d-info">
-                                        <div class="d-text">
-                                            <h4>BMW M2</h4>
-                                            <div class="d-atr-group">
-                                                <ul class="d-atr">
-                                                    <li><span>Seats:</span>4</li>
-                                                    <li><span>Luggage:</span>2</li>
-                                                    <li><span>Doors:</span>4</li>
-                                                    <li><span>Fuel:</span>Petrol</li>
-                                                    <li><span>Horsepower:</span>500</li>
-                                                    <li><span>Engine:</span>3000</li>
-                                                    <li><span>Drive:</span>4x4</li>
-                                                    <li><span>Type:</span>Hatchback</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-price">
-                                        Daily rate from <span>$244</span>
-                                        <a class="btn-main" href="car-single.html">Rent Now</a>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </div>
-
-                                <div class="de-item-list no-border mb30">
-                                    <div class="d-img">
-                                        <img src="images/cars/ferrari-enzo.jpg" class="img-fluid" alt="">
-                                    </div>
-                                    <div class="d-info">
-                                        <div class="d-text">
-                                            <h4>Ferarri Enzo</h4>
-                                            <div class="d-atr-group">
-                                                <ul class="d-atr">
-                                                    <li><span>Seats:</span>4</li>
-                                                    <li><span>Luggage:</span>2</li>
-                                                    <li><span>Doors:</span>4</li>
-                                                    <li><span>Fuel:</span>Petrol</li>
-                                                    <li><span>Horsepower:</span>500</li>
-                                                    <li><span>Engine:</span>3000</li>
-                                                    <li><span>Drive:</span>4x4</li>
-                                                    <li><span>Type:</span>Hatchback</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-price">
-                                        Daily rate from <span>$167</span>
-                                        <a class="btn-main" href="car-single.html">Rent Now</a>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-			
-			
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="logo-section">
+            <img src="images/loogo.png" alt="RideLynk Logo">
+            <h2>RideLynk</h2>
         </div>
-        <!-- content close -->
+        <div class="user-section">
+            <div class="user-info">
+                <h4>Monica Lucas</h4>
+                <p>monica@ridelynk.com</p>
+            </div>
+            <img src="images/profile/1.jpg" alt="User Avatar" class="user-avatar">
+        </div>
+    </nav>
 
-        <a href="#" id="back-to-top"></a>
-        
-        <!-- footer begin -->
-        <footer class="text-light">
-            <div class="container">
-                <div class="row g-custom-x">
-                    <div class="col-lg-3">
-                        <div class="widget">
-                            <h5>About RideLynk</h5>
-                            <p>Where quality meets affordability. We understand the importance of a smooth and enjoyable journey without the burden of excessive costs. That's why we have meticulously crafted our offerings to provide you with top-notch vehicles at minimum expense.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-3">
-                        <div class="widget">
-                            <h5>Contact Info</h5>
-                            <address class="s1">
-                                <span><i class="id-color fa fa-map-marker fa-lg"></i>2018 156th Avenue NE Suite 172
-Bellevue, WA</span>
-                                <span><i class="id-color fa fa-phone fa-lg"></i>+123 456 7890</span>
-                                <span><i class="id-color fa fa-envelope-o fa-lg"></i><a href="mailto:support@ridelynk.com">support@ridelynk.com</a></span>
-                                <span><i class="id-color fa fa-file-pdf-o fa-lg"></i><a href="#">Download Brochure</a></span>
-                            </address>
-                        </div>
-                    </div>
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="profile-card">
+                <img src="images/profile/1.jpg" alt="Profile">
+                <h3>Monica Lucas</h3>
+                <p>monica@ridelynk.com</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="account-dashboard.html" class="active">
+                    <i>🏠</i> Dashboard
+                </a></li>
+                <li><a href="account-profile.html">
+                    <i>👤</i> My Profile
+                </a></li>
+                <li><a href="account-booking.html">
+                    <i>📅</i> My Orders
+                </a></li>
+                <li><a href="account-favorite.html">
+                    <i>🚗</i> Favorite Cars
+                </a></li>
+                <li><a href="login.html">
+                    <i>🚪</i> Sign Out
+                </a></li>
+            </ul>
+        </aside>
 
-                    <div class="col-lg-3">
-                        <h5>Quick Links</h5>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="widget">
-                                    <ul>
-                                        <li><a href="#">About</a></li>
-                                        <li><a href="#">Blog</a></li>
-                                        <li><a href="#">Careers</a></li>
-                                        <li><a href="#">News</a></li>
-                                        <li><a href="#">Partners</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <h1>Welcome Back, Monica! 👋</h1>
+                <p>Here's what's happening with your rides today</p>
+            </section>
 
-                    <div class="col-lg-3">
-                        <div class="widget">
-                            <h5>Social Network</h5>
-                            <div class="social-icons">
-                                <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
-                                <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
-                                <a href="#"><i class="fa fa-linkedin fa-lg"></i></a>
-                                <a href="#"><i class="fa fa-pinterest fa-lg"></i></a>
-                                <a href="#"><i class="fa fa-rss fa-lg"></i></a>
-                            </div>
-                        </div>    
-                    </div>
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-number">03</div>
+                    <div class="stat-label">Upcoming Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎟️</div>
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Coupons</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-number">58</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Cancelled Orders</div>
                 </div>
             </div>
-            <div class="subfooter">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="de-flex">
-                                <div class="de-flex-col">
-                                    <a href="index.html">
-                                        Copyright 2026 - RideLynk 
-                                    </a>
-                                </div>
-                                <ul class="menu-simple">
-                                    <li><a href="#">Terms &amp; Conditions</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                </ul>
+
+            <!-- Recent Orders -->
+            <section class="section-card">
+                <div class="section-header">
+                    <h2>Recent Orders</h2>
+                    <a href="account-booking.html" class="view-all-btn">View All</a>
+                </div>
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Car Name</th>
+                            <th>Pick Up</th>
+                            <th>Drop Off</th>
+                            <th>Pick Up Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="order-id">#01236</span></td>
+                            <td><strong>Jeep Renegade</strong></td>
+                            <td>New York</td>
+                            <td>Los Angeles</td>
+                            <td>March 2, 2023</td>
+                            <td>March 10, 2023</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#01263</span></td>
+                            <td><strong>Mini Cooper</strong></td>
+                            <td>San Francisco</td>
+                            <td>Chicago</td>
+                            <td>March 8, 2023</td>
+                            <td>March 10, 2023</td>
+                            <td><span class="status-badge status-cancelled">Cancelled</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#01245</span></td>
+                            <td><strong>Ferrari Enzo</strong></td>
+                            <td>Philadelphia</td>
+                            <td>Washington</td>
+                            <td>March 6, 2023</td>
+                            <td>March 10, 2023</td>
+                            <td><span class="status-badge status-scheduled">Scheduled</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#01287</span></td>
+                            <td><strong>Hyundai Staria</strong></td>
+                            <td>Kansas City</td>
+                            <td>Houston</td>
+                            <td>March 13, 2023</td>
+                            <td>March 10, 2023</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#01216</span></td>
+                            <td><strong>Toyota Rav 4</strong></td>
+                            <td>Baltimore</td>
+                            <td>Sacramento</td>
+                            <td>March 7, 2023</td>
+                            <td>March 10, 2023</td>
+                            <td><span class="status-badge status-scheduled">Scheduled</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Favorite Cars -->
+            <section class="section-card">
+                <div class="section-header">
+                    <h2>My Favorite Cars</h2>
+                    <a href="account-favorite.html" class="view-all-btn">View All</a>
+                </div>
+                <div class="favorites-grid">
+                    <div class="favorite-card">
+                        <img src="images/cars/jeep-renegade.jpg" alt="Jeep Renegade" class="favorite-img">
+                        <div class="favorite-info">
+                            <h3>Jeep Renegade</h3>
+                            <div class="car-specs">
+                                <span>🪑 4 Seats</span>
+                                <span>🧳 2 Luggage</span>
+                                <span>🚪 4 Doors</span>
+                                <span>⛽ Petrol</span>
                             </div>
+                        </div>
+                        <div class="favorite-price">
+                            <div class="price-label">Daily rate from</div>
+                            <div class="price-value">$265</div>
+                            <a href="car-single.html" class="rent-btn">Rent Now</a>
+                        </div>
+                    </div>
+
+                    <div class="favorite-card">
+                        <img src="images/cars/bmw-m5.jpg" alt="BMW M2" class="favorite-img">
+                        <div class="favorite-info">
+                            <h3>BMW M2</h3>
+                            <div class="car-specs">
+                                <span>🪑 4 Seats</span>
+                                <span>🧳 2 Luggage</span>
+                                <span>🚪 4 Doors</span>
+                                <span>⛽ Petrol</span>
+                            </div>
+                        </div>
+                        <div class="favorite-price">
+                            <div class="price-label">Daily rate from</div>
+                            <div class="price-value">$244</div>
+                            <a href="car-single.html" class="rent-btn">Rent Now</a>
+                        </div>
+                    </div>
+
+                    <div class="favorite-card">
+                        <img src="images/cars/ferrari-enzo.jpg" alt="Ferrari Enzo" class="favorite-img">
+                        <div class="favorite-info">
+                            <h3>Ferrari Enzo</h3>
+                            <div class="car-specs">
+                                <span>🪑 4 Seats</span>
+                                <span>🧳 2 Luggage</span>
+                                <span>🚪 4 Doors</span>
+                                <span>⛽ Petrol</span>
+                            </div>
+                        </div>
+                        <div class="favorite-price">
+                            <div class="price-label">Daily rate from</div>
+                            <div class="price-value">$167</div>
+                            <a href="car-single.html" class="rent-btn">Rent Now</a>
                         </div>
                     </div>
                 </div>
-            </div>
-        </footer>
-        <!-- footer close -->
-        
+            </section>
+        </main>
     </div>
 
+    <script>
+        // Check authentication and load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const authToken = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('userData');
 
-    <!-- Javascript Files
-    ================================================== -->
-    <script src="js/plugins.js"></script>
-    <script src="js/designesia.js"></script>
+            if (!authToken || !userData) {
+                // Redirect to login if not authenticated
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Parse user data
+            const user = JSON.parse(userData);
+
+            // Update all user name and email elements
+            const userNameElements = document.querySelectorAll('.user-info h4, .profile-card h3');
+            const userEmailElements = document.querySelectorAll('.user-info p, .profile-card p');
+
+            userNameElements.forEach(element => {
+                element.textContent = user.name || user.fullName || 'User';
+            });
+
+            userEmailElements.forEach(element => {
+                element.textContent = user.email || '';
+            });
+
+            // Update welcome message
+            const welcomeHeading = document.querySelector('.welcome-section h1');
+            if (welcomeHeading) {
+                const firstName = (user.name || user.fullName || 'User').split(' ')[0];
+                welcomeHeading.textContent = `Welcome Back, ${firstName}! 👋`;
+            }
+
+            // Update profile images if user has profile picture
+            if (user.profilePicture || user.avatar) {
+                const profileImages = document.querySelectorAll('.user-avatar, .profile-card img');
+                profileImages.forEach(img => {
+                    img.src = user.profilePicture || user.avatar;
+                });
+            }
+
+            // Add smooth animations on load for stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('a[href="login.html"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Clear all stored data
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('rememberMe');
+                    // Redirect to login
+                    window.location.href = 'login.html';
+                });
+            });
+        });
+    </script>
+
 
 </body>
 
