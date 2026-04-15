@@ -1,0 +1,27 @@
+:root {
+  --primary-color: #44BFD2;
+  --primary-color-rgb: 68, 191, 210;
+
+  --secondary-color: #6CD4E8;
+  --secondary-color-rgb: 108, 212, 232;
+
+  --accent-color: #2E8B9A;
+  --accent-color-rgb: 46, 139, 154;
+
+  --accent-gold: #EBB645;
+  --accent-gold-rgb: 235, 182, 69;
+
+  --bg-color: #FFFFFF;
+  --text-color: #1A1A1A;
+  --card-color: #F5F8FA;
+  --card-alt-color: #EFF2F5;
+  --card-dark-color: #2C3E50;
+  --border-color: #A8A8A8;
+
+  --success-color: #14B25C;
+  --error-color: #DA3029;
+  --info-color: #00ADEF;
+
+  --btn-gradient-start: #44BFD2;
+  --btn-gradient-end: #26727E;
+}
