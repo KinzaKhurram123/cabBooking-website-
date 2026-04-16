@@ -321,14 +321,14 @@
             width: 320px;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(20px);
-            border-left: 2px solid rgba(68, 191, 210, 0.3);
+            border-right: 2px solid rgba(68, 191, 210, 0.3);
             padding: 30px 20px;
             overflow-y: auto;
-            animation: slideInRight 0.8s ease;
+            animation: slideInLeft 0.8s ease;
         }
 
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100%); }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-100%); }
             to { opacity: 1; transform: translateX(0); }
         }
 
@@ -434,7 +434,7 @@
             display: none;
             position: fixed;
             top: 20px;
-            right: 20px;
+            left: 20px;
             z-index: 1000;
             background: linear-gradient(135deg, #44bfd2, #6cd4e8);
             border: none;
@@ -466,16 +466,16 @@
             .sidebar {
                 position: fixed;
                 top: 0;
-                right: -100%;
+                left: -100%;
                 width: 80%;
                 max-width: 320px;
                 height: 100vh;
                 z-index: 999;
-                transition: right 0.3s ease;
+                transition: left 0.3s ease;
             }
 
             .sidebar.active {
-                right: 0;
+                left: 0;
             }
 
             .mobile-menu-toggle {
@@ -884,6 +884,71 @@
     <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
 
     <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="images/loogo.png" alt="RideLynk Logo">
+                <h3>Dashboard</h3>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="dashboard.html" class="active">
+                        <span class="menu-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="menu-icon">🚗</span>
+                        <span>My Rides</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="menu-icon">📦</span>
+                        <span>Deliveries</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="menu-icon">💳</span>
+                        <span>Payment</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="menu-icon">⭐</span>
+                        <span>Favorites</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="menu-icon">🎁</span>
+                        <span>Offers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="menu-icon">👤</span>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="menu-icon">⚙️</span>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="index.html">
+                        <span class="menu-icon">🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
         <!-- Main Content -->
         <div class="main-content">
             <!-- Welcome Banner -->
@@ -1080,71 +1145,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <img src="images/loogo.png" alt="RideLynk Logo">
-                <h3>Dashboard</h3>
-            </div>
-
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="dashboard.html" class="active">
-                        <span class="menu-icon">🏠</span>
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="menu-icon">🚗</span>
-                        <span>My Rides</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="menu-icon">📦</span>
-                        <span>Deliveries</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="menu-icon">💳</span>
-                        <span>Payment</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="menu-icon">⭐</span>
-                        <span>Favorites</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="menu-icon">🎁</span>
-                        <span>Offers</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="menu-icon">👤</span>
-                        <span>Profile</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="menu-icon">⚙️</span>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="index.html">
-                        <span class="menu-icon">🚪</span>
-                        <span>Logout</span>
-                    </a>
-                </li>
-            </ul>
         </div>
     </div>
 
