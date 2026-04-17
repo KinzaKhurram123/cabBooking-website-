@@ -682,9 +682,20 @@
       <!-- Right Side - Signup Form -->
       <div class="right-side">
         <div class="signup-form">
-          <div style="text-align: left; margin-bottom: 20px;">
-            <a href="index.html" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.3s ease;">
-              <span style="font-size: 1.2rem;">←</span> Back to Home
+          <div style="text-align: left; margin-bottom: 20px">
+            <a
+              href="index.html"
+              style="
+                color: rgba(255, 255, 255, 0.8);
+                text-decoration: none;
+                font-size: 0.95rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                transition: all 0.3s ease;
+              "
+            >
+              <span style="font-size: 1.2rem">←</span> Back to Home
             </a>
           </div>
           <h2 class="form-title">Sign Up</h2>
@@ -847,7 +858,8 @@
 
         // Get form data
         const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
+        const confirmPassword =
+          document.getElementById("confirm-password").value;
 
         // Validate passwords match
         if (password !== confirmPassword) {
@@ -872,22 +884,23 @@
           name: document.getElementById("name").value.trim(),
           email: document.getElementById("email").value.trim(),
           password: password,
-          phoneNumber: document.getElementById("phone").value.trim()
+          phoneNumber: document.getElementById("phone").value.trim(),
         };
 
         try {
           // Call register API using AuthService
-          console.log('Registration - Sending data:', userData);
+          console.log("Registration - Sending data:", userData);
           const response = await AuthService.register(userData);
-          console.log('Registration - API Response:', response);
-          console.log('Registration - Response token:', response.token);
-          console.log('Registration - Response success:', response.success);
+          console.log("Registration - API Response:", response);
+          console.log("Registration - Response token:", response.token);
+          console.log("Registration - Response success:", response.success);
 
           // Check if registration was successful
           if (response.success !== false && response.token) {
-            console.log('Registration - Success! Token found');
+            console.log("Registration - Success! Token found");
             // Show success message
-            successMessage.textContent = "Account created successfully! Redirecting to dashboard...";
+            successMessage.textContent =
+              "Account created successfully! Redirecting to dashboard...";
             successMessage.style.display = "block";
 
             // Redirect to dashboard
@@ -895,47 +908,60 @@
               window.location.href = "dashboard-new.html";
             }, 1500);
           } else {
-            console.log('Registration - Failed, no token in response');
+            console.log("Registration - Failed, no token in response");
             // Registration failed
-            errorMessage.textContent = response.message || "Registration failed. Please try again.";
+            errorMessage.textContent =
+              response.message || "Registration failed. Please try again.";
             errorMessage.style.display = "block";
             submitBtn.disabled = false;
             submitBtn.textContent = "Create Account";
           }
         } catch (error) {
           console.error("Registration error:", error);
-          console.log('Error details:', error);
-          console.log('Error response:', error.response);
+          console.log("Error details:", error);
+          console.log("Error response:", error.response);
 
           // Display error message
-          let errorMsg = "An error occurred during registration. Please try again.";
+          let errorMsg =
+            "An error occurred during registration. Please try again.";
 
           // Check for specific error messages from API
           if (error.response?.data?.message) {
             errorMsg = error.response.data.message;
           } else if (error.message) {
             errorMsg = error.message;
-          } else if (error.error === 'NETWORK_ERROR') {
-            errorMsg = "Network error. Please check your connection and try again.";
+          } else if (error.error === "NETWORK_ERROR") {
+            errorMsg =
+              "Network error. Please check your connection and try again.";
           } else if (error.status === 422 && error.errors) {
             // Validation errors
-            errorMsg = error.errors.map(e => e.message).join(', ');
+            errorMsg = error.errors.map((e) => e.message).join(", ");
           }
 
           // Handle common error scenarios
-          if (errorMsg.toLowerCase().includes('already exists') ||
-              errorMsg.toLowerCase().includes('already registered') ||
-              errorMsg.toLowerCase().includes('email already')) {
-            errorMsg = "This email is already registered. Please login or use a different email.";
-          } else if (errorMsg.toLowerCase().includes('phone') &&
-                     errorMsg.toLowerCase().includes('exists')) {
-            errorMsg = "This phone number is already registered. Please use a different number.";
-          } else if (errorMsg.toLowerCase().includes('invalid email')) {
-            errorMsg = "Invalid email format. Please enter a valid email address.";
-          } else if (errorMsg.toLowerCase().includes('password') &&
-                     (errorMsg.toLowerCase().includes('weak') ||
-                      errorMsg.toLowerCase().includes('short'))) {
-            errorMsg = "Password is too weak. Use at least 8 characters with letters and numbers.";
+          if (
+            errorMsg.toLowerCase().includes("already exists") ||
+            errorMsg.toLowerCase().includes("already registered") ||
+            errorMsg.toLowerCase().includes("email already")
+          ) {
+            errorMsg =
+              "This email is already registered. Please login or use a different email.";
+          } else if (
+            errorMsg.toLowerCase().includes("phone") &&
+            errorMsg.toLowerCase().includes("exists")
+          ) {
+            errorMsg =
+              "This phone number is already registered. Please use a different number.";
+          } else if (errorMsg.toLowerCase().includes("invalid email")) {
+            errorMsg =
+              "Invalid email format. Please enter a valid email address.";
+          } else if (
+            errorMsg.toLowerCase().includes("password") &&
+            (errorMsg.toLowerCase().includes("weak") ||
+              errorMsg.toLowerCase().includes("short"))
+          ) {
+            errorMsg =
+              "Password is too weak. Use at least 8 characters with letters and numbers.";
           }
 
           errorMessage.textContent = errorMsg;

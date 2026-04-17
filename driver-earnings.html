@@ -12,16 +12,46 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         font-family: "Inter", sans-serif;
-        background: #000000;
+        background: #0a0a0a;
         color: #e5e7eb;
         min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animated Gradient Background */
+      .animated-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8, #2e8b9e, #44bfd2, #6cd4e8);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        z-index: -2;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
       }
 
       .header {
-        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
         padding: 20px;
-        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
-        box-shadow: 0 2px 10px rgba(0, 173, 239, 0.1);
+        border-bottom: 1px solid rgba(68, 191, 210, 0.2);
+        box-shadow: 0 2px 10px rgba(68, 191, 210, 0.1);
         position: sticky;
         top: 0;
         z-index: 100;
@@ -36,7 +66,7 @@
       }
 
       .header h1 {
-        color: #00ADEF;
+        color: #6cd4e8;
         font-size: 1.8rem;
         display: flex;
         align-items: center;
@@ -44,11 +74,11 @@
       }
 
       .back-btn {
-        background: rgba(0, 173, 239, 0.2);
-        border: 1px solid rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.3);
         padding: 10px 20px;
         border-radius: 8px;
-        color: #00ADEF;
+        color: #6cd4e8;
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s ease;
@@ -59,8 +89,8 @@
       }
 
       .back-btn:hover {
-        background: rgba(0, 173, 239, 0.3);
-        box-shadow: 0 0 15px rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.3);
+        box-shadow: 0 0 15px rgba(68, 191, 210, 0.3);
       }
 
       .container {
@@ -71,11 +101,11 @@
 
       /* Earnings Summary Card */
       .earnings-card {
-        background: linear-gradient(135deg, #00ADEF 0%, #00d4aa 100%);
+        background: linear-gradient(135deg, #6cd4e8 0%, #00d4aa 100%);
         border-radius: 20px;
         padding: 40px;
         margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0, 173, 239, 0.3);
+        box-shadow: 0 10px 30px rgba(68, 191, 210, 0.3);
         position: relative;
         overflow: hidden;
       }
@@ -124,8 +154,8 @@
       }
 
       .period-btn.active {
-        background: #000000;
-        color: #00ADEF;
+        background: #0a0a0a;
+        color: #6cd4e8;
       }
 
       .total-earnings {
@@ -160,8 +190,8 @@
       }
 
       .withdraw-btn {
-        background: #000000;
-        color: #00ADEF;
+        background: #0a0a0a;
+        color: #6cd4e8;
         padding: 15px 30px;
         border: none;
         border-radius: 12px;
@@ -193,13 +223,13 @@
         background: #0a0a0a;
         padding: 25px;
         border-radius: 15px;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
         transition: all 0.3s ease;
       }
 
       .stat-card:hover {
-        border-color: rgba(0, 173, 239, 0.5);
-        box-shadow: 0 0 20px rgba(0, 173, 239, 0.2);
+        border-color: rgba(68, 191, 210, 0.5);
+        box-shadow: 0 0 20px rgba(68, 191, 210, 0.2);
       }
 
       .stat-header {
@@ -220,8 +250,8 @@
       }
 
       .icon-rides {
-        background: rgba(0, 173, 239, 0.2);
-        color: #00ADEF;
+        background: rgba(68, 191, 210, 0.2);
+        color: #6cd4e8;
       }
 
       .icon-hours {
@@ -242,7 +272,7 @@
       .stat-value {
         font-size: 2rem;
         font-weight: 700;
-        color: #00ADEF;
+        color: #6cd4e8;
         margin-bottom: 5px;
       }
 
@@ -279,7 +309,7 @@
         background: #0a0a0a;
         padding: 25px;
         border-radius: 15px;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
       }
 
       .chart-header {
@@ -288,11 +318,11 @@
         align-items: center;
         margin-bottom: 20px;
         padding-bottom: 15px;
-        border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+        border-bottom: 1px solid rgba(68, 191, 210, 0.1);
       }
 
       .chart-title {
-        color: #00ADEF;
+        color: #6cd4e8;
         font-size: 1.2rem;
         font-weight: 700;
       }
@@ -302,7 +332,7 @@
         background: #0a0a0a;
         padding: 25px;
         border-radius: 15px;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
         margin-bottom: 30px;
       }
 
@@ -311,7 +341,7 @@
         justify-content: space-between;
         align-items: center;
         padding: 15px;
-        background: rgba(0, 173, 239, 0.05);
+        background: rgba(68, 191, 210, 0.05);
         border-radius: 10px;
         margin-bottom: 10px;
       }
@@ -327,7 +357,7 @@
       .breakdown-amount {
         font-size: 1.3rem;
         font-weight: 700;
-        color: #00ADEF;
+        color: #6cd4e8;
       }
 
       /* Payment History */
@@ -335,7 +365,7 @@
         background: #0a0a0a;
         padding: 25px;
         border-radius: 15px;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
       }
 
       .history-item {
@@ -343,14 +373,14 @@
         justify-content: space-between;
         align-items: center;
         padding: 15px;
-        background: rgba(0, 173, 239, 0.05);
+        background: rgba(68, 191, 210, 0.05);
         border-radius: 10px;
         margin-bottom: 10px;
         transition: all 0.3s ease;
       }
 
       .history-item:hover {
-        background: rgba(0, 173, 239, 0.1);
+        background: rgba(68, 191, 210, 0.1);
       }
 
       .history-info {
@@ -420,8 +450,8 @@
       .spinner {
         width: 50px;
         height: 50px;
-        border: 4px solid rgba(0, 173, 239, 0.2);
-        border-top: 4px solid #00ADEF;
+        border: 4px solid rgba(68, 191, 210, 0.2);
+        border-top: 4px solid #6cd4e8;
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin: 0 auto 20px;
@@ -448,6 +478,12 @@
         }
       }
     </style>
+    </style>
+  </head>
+  <body>
+    <!-- Animated Background -->
+    <div class="animated-gradient"></div>
+    <div class="overlay"></div>
   </head>
   <body>
     <div class="header">
@@ -604,7 +640,7 @@
 
           <div class="breakdown-item">
             <div class="breakdown-label">
-              <i class="fas fa-car" style="color: #00ADEF;"></i>
+              <i class="fas fa-car" style="color: #6cd4e8;"></i>
               Ride Fares
             </div>
             <div class="breakdown-amount" id="rideFares">$0.00</div>
@@ -786,8 +822,8 @@
             datasets: [{
               label: 'Earnings',
               data: [150, 200, 180, 220, 250, 280, 170],
-              borderColor: '#00ADEF',
-              backgroundColor: 'rgba(0, 173, 239, 0.1)',
+              borderColor: '#6cd4e8',
+              backgroundColor: 'rgba(68, 191, 210, 0.1)',
               tension: 0.4,
               fill: true
             }]
@@ -801,7 +837,7 @@
             scales: {
               y: {
                 beginAtZero: true,
-                grid: { color: 'rgba(0, 173, 239, 0.1)' },
+                grid: { color: 'rgba(68, 191, 210, 0.1)' },
                 ticks: { color: '#9ca3af' }
               },
               x: {
@@ -820,7 +856,7 @@
             labels: ['Ride Fares', 'Tips', 'Bonuses'],
             datasets: [{
               data: [1000, 125, 50],
-              backgroundColor: ['#00ADEF', '#ec4899', '#10b981']
+              backgroundColor: ['#6cd4e8', '#ec4899', '#10b981']
             }]
           },
           options: {

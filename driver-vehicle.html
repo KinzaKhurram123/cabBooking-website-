@@ -11,16 +11,46 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         font-family: "Inter", sans-serif;
-        background: #000000;
+        background: #0a0a0a;
         color: #e5e7eb;
         min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animated Gradient Background */
+      .animated-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8, #2e8b9e, #44bfd2, #6cd4e8);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        z-index: -2;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
       }
 
       .header {
-        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
         padding: 20px;
-        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
-        box-shadow: 0 2px 10px rgba(0, 173, 239, 0.1);
+        border-bottom: 1px solid rgba(68, 191, 210, 0.2);
+        box-shadow: 0 2px 10px rgba(68, 191, 210, 0.1);
         position: sticky;
         top: 0;
         z-index: 100;
@@ -35,7 +65,7 @@
       }
 
       .header h1 {
-        color: #00ADEF;
+        color: #6cd4e8;
         font-size: 1.8rem;
         display: flex;
         align-items: center;
@@ -43,11 +73,11 @@
       }
 
       .back-btn {
-        background: rgba(0, 173, 239, 0.2);
-        border: 1px solid rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.3);
         padding: 10px 20px;
         border-radius: 8px;
-        color: #00ADEF;
+        color: #6cd4e8;
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s ease;
@@ -58,8 +88,8 @@
       }
 
       .back-btn:hover {
-        background: rgba(0, 173, 239, 0.3);
-        box-shadow: 0 0 15px rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.3);
+        box-shadow: 0 0 15px rgba(68, 191, 210, 0.3);
       }
 
       .container {
@@ -71,11 +101,11 @@
       /* Vehicle Card */
       .vehicle-card {
         background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-        border: 1px solid rgba(0, 173, 239, 0.3);
+        border: 1px solid rgba(68, 191, 210, 0.3);
         border-radius: 20px;
         padding: 40px;
         margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0, 173, 239, 0.2);
+        box-shadow: 0 10px 30px rgba(68, 191, 210, 0.2);
       }
 
       .vehicle-header {
@@ -92,7 +122,7 @@
       .vehicle-name {
         font-size: 2.5rem;
         font-weight: 800;
-        color: #00ADEF;
+        color: #6cd4e8;
         margin-bottom: 10px;
       }
 
@@ -103,8 +133,8 @@
       }
 
       .meta-badge {
-        background: rgba(0, 173, 239, 0.2);
-        color: #00ADEF;
+        background: rgba(68, 191, 210, 0.2);
+        color: #6cd4e8;
         padding: 8px 16px;
         border-radius: 20px;
         font-weight: 600;
@@ -115,7 +145,7 @@
       }
 
       .edit-vehicle-btn {
-        background: #00ADEF;
+        background: #6cd4e8;
         color: #000000;
         padding: 12px 25px;
         border: none;
@@ -130,13 +160,13 @@
 
       .edit-vehicle-btn:hover {
         background: #00e5ff;
-        box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
+        box-shadow: 0 0 15px rgba(68, 191, 210, 0.5);
       }
 
       /* Vehicle Photos */
       .photos-section {
         background: #0a0a0a;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
         border-radius: 15px;
         padding: 25px;
         margin-bottom: 30px;
@@ -148,11 +178,11 @@
         align-items: center;
         margin-bottom: 20px;
         padding-bottom: 15px;
-        border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+        border-bottom: 1px solid rgba(68, 191, 210, 0.1);
       }
 
       .section-title {
-        color: #00ADEF;
+        color: #6cd4e8;
         font-size: 1.3rem;
         font-weight: 700;
         display: flex;
@@ -161,11 +191,11 @@
       }
 
       .add-btn {
-        background: rgba(0, 173, 239, 0.2);
-        border: 1px solid rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.3);
         padding: 10px 20px;
         border-radius: 8px;
-        color: #00ADEF;
+        color: #6cd4e8;
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s ease;
@@ -175,7 +205,7 @@
       }
 
       .add-btn:hover {
-        background: rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.3);
       }
 
       .photos-grid {
@@ -189,14 +219,14 @@
         aspect-ratio: 4/3;
         border-radius: 12px;
         overflow: hidden;
-        border: 2px solid rgba(0, 173, 239, 0.2);
+        border: 2px solid rgba(68, 191, 210, 0.2);
         transition: all 0.3s ease;
         cursor: pointer;
       }
 
       .photo-item:hover {
-        border-color: rgba(0, 173, 239, 0.5);
-        box-shadow: 0 0 20px rgba(0, 173, 239, 0.3);
+        border-color: rgba(68, 191, 210, 0.5);
+        box-shadow: 0 0 20px rgba(68, 191, 210, 0.3);
       }
 
       .photo-item img {
@@ -206,8 +236,8 @@
       }
 
       .photo-upload {
-        background: rgba(0, 173, 239, 0.05);
-        border: 2px dashed rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.05);
+        border: 2px dashed rgba(68, 191, 210, 0.3);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -216,13 +246,13 @@
       }
 
       .photo-upload:hover {
-        background: rgba(0, 173, 239, 0.1);
-        border-color: rgba(0, 173, 239, 0.5);
+        background: rgba(68, 191, 210, 0.1);
+        border-color: rgba(68, 191, 210, 0.5);
       }
 
       .upload-icon {
         font-size: 2rem;
-        color: #00ADEF;
+        color: #6cd4e8;
         margin-bottom: 10px;
       }
 
@@ -263,7 +293,7 @@
 
       .detail-card {
         background: #0a0a0a;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
         border-radius: 15px;
         padding: 25px;
       }
@@ -272,7 +302,7 @@
         display: flex;
         justify-content: space-between;
         padding: 12px 0;
-        border-bottom: 1px solid rgba(0, 173, 239, 0.05);
+        border-bottom: 1px solid rgba(68, 191, 210, 0.05);
       }
 
       .detail-row:last-child {
@@ -292,7 +322,7 @@
       /* Maintenance Records */
       .maintenance-section {
         background: #0a0a0a;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
         border-radius: 15px;
         padding: 25px;
         margin-bottom: 30px;
@@ -309,15 +339,15 @@
         align-items: center;
         gap: 15px;
         padding: 15px;
-        background: rgba(0, 173, 239, 0.05);
+        background: rgba(68, 191, 210, 0.05);
         border-radius: 10px;
-        border: 1px solid rgba(0, 173, 239, 0.1);
+        border: 1px solid rgba(68, 191, 210, 0.1);
         transition: all 0.3s ease;
       }
 
       .maintenance-item:hover {
-        background: rgba(0, 173, 239, 0.1);
-        border-color: rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.1);
+        border-color: rgba(68, 191, 210, 0.3);
       }
 
       .maintenance-icon {
@@ -332,8 +362,8 @@
       }
 
       .icon-service {
-        background: rgba(0, 173, 239, 0.2);
-        color: #00ADEF;
+        background: rgba(68, 191, 210, 0.2);
+        color: #6cd4e8;
       }
 
       .icon-repair {
@@ -364,7 +394,7 @@
       .maintenance-cost {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #00ADEF;
+        color: #6cd4e8;
       }
 
       /* Empty State */
@@ -377,7 +407,7 @@
       .empty-icon {
         font-size: 4rem;
         margin-bottom: 15px;
-        color: #00ADEF;
+        color: #6cd4e8;
       }
 
       /* Loading */
@@ -389,8 +419,8 @@
       .spinner {
         width: 50px;
         height: 50px;
-        border: 4px solid rgba(0, 173, 239, 0.2);
-        border-top: 4px solid #00ADEF;
+        border: 4px solid rgba(68, 191, 210, 0.2);
+        border-top: 4px solid #6cd4e8;
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin: 0 auto 20px;
@@ -426,6 +456,12 @@
         }
       }
     </style>
+    </style>
+  </head>
+  <body>
+    <!-- Animated Background -->
+    <div class="animated-gradient"></div>
+    <div class="overlay"></div>
   </head>
   <body>
     <div class="header">

@@ -13,27 +13,37 @@ const AuthService = {
       // Add role field for customer registration
       const registrationData = {
         ...userData,
-        role: 'customer' // Default role for customer registration
+        role: "customer", // Default role for customer registration
       };
 
-      console.log('AuthService - Register data with role:', registrationData);
+      console.log("AuthService - Register data with role:", registrationData);
 
-      const response = await ApiService.post('/auth/register', registrationData, {
-        requiresAuth: false
-      });
+      const response = await ApiService.post(
+        "/auth/register",
+        registrationData,
+        {
+          requiresAuth: false,
+        },
+      );
 
-      console.log('AuthService - Register response:', response);
+      console.log("AuthService - Register response:", response);
 
       if (response.success !== false && response.token) {
         // Store token and user data
         localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.token);
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(response.user || response.data));
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, response.user?.role || 'customer');
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.USER_DATA,
+          JSON.stringify(response.user || response.data),
+        );
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.USER_ROLE,
+          response.user?.role || "customer",
+        );
       }
 
       return response;
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       throw error;
     }
   },
@@ -44,20 +54,27 @@ const AuthService = {
    */
   async registerDriver(driverData) {
     try {
-      const response = await ApiService.post('/auth/register/driver', driverData, {
-        requiresAuth: false
-      });
+      const response = await ApiService.post(
+        "/auth/register/driver",
+        driverData,
+        {
+          requiresAuth: false,
+        },
+      );
 
       if (response.success !== false && response.token) {
         // Store token and user data
         localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.token);
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(response.user || response.data));
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, 'driver');
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.USER_DATA,
+          JSON.stringify(response.user || response.data),
+        );
+        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, "driver");
       }
 
       return response;
     } catch (error) {
-      console.error('Driver registration error:', error);
+      console.error("Driver registration error:", error);
       throw error;
     }
   },
@@ -68,25 +85,30 @@ const AuthService = {
    */
   async login(credentials) {
     try {
-      const response = await ApiService.post('/auth/login', credentials, {
-        requiresAuth: false
+      const response = await ApiService.post("/auth/login", credentials, {
+        requiresAuth: false,
       });
 
-      console.log('AuthService - Raw API response:', response);
+      console.log("AuthService - Raw API response:", response);
 
-      // Handle different response formats
       let token = response.token || response.data?.token;
       let user = response.user || response.data?.user || response.data;
-      let userRole = user?.role || response.role || 'customer';
+      let userRole = user?.role || response.role || "customer";
 
-      // Normalize admin roles (superadmin, super_admin, admin -> admin)
-      if (userRole && (userRole.toLowerCase() === 'superadmin' || userRole.toLowerCase() === 'super_admin' || userRole.toLowerCase() === 'admin')) {
-        userRole = 'admin';
+      if (
+        userRole &&
+        (userRole.toLowerCase() === "superadmin" ||
+          userRole.toLowerCase() === "super_admin" ||
+          userRole.toLowerCase() === "admin")
+      ) {
+        userRole = "admin";
+      } else {
+        userRole = "customer";
       }
 
-      console.log('AuthService - Extracted token:', token);
-      console.log('AuthService - Extracted user:', user);
-      console.log('AuthService - Extracted role (normalized):', userRole);
+      console.log("AuthService - Extracted token:", token);
+      console.log("AuthService - Extracted user:", user);
+      console.log("AuthService - Extracted role (normalized):", userRole);
 
       if (token) {
         // Merge all data from API response
@@ -95,28 +117,38 @@ const AuthService = {
           ...(response.data?.riderDetails || {}),
           vehicleDetails: response.data?.vehicleDetails || user?.vehicleDetails,
           documents: response.data?.documents || user?.documents,
-          onboardingSteps: response.data?.onboardingSteps || user?.onboardingSteps,
-          onboardingRequired: response.data?.onboardingRequired !== undefined
-            ? response.data.onboardingRequired
-            : user?.onboardingRequired,
-          verificationStatus: response.data?.riderDetails?.verificationStatus || user?.verificationStatus
+          onboardingSteps:
+            response.data?.onboardingSteps || user?.onboardingSteps,
+          onboardingRequired:
+            response.data?.onboardingRequired !== undefined
+              ? response.data.onboardingRequired
+              : user?.onboardingRequired,
+          verificationStatus:
+            response.data?.riderDetails?.verificationStatus ||
+            user?.verificationStatus,
         };
 
-        console.log('AuthService - Merged userData:', userData);
-        console.log('AuthService - onboardingSteps:', userData.onboardingSteps);
-        console.log('AuthService - onboardingRequired:', userData.onboardingRequired);
+        console.log("AuthService - Merged userData:", userData);
+        console.log("AuthService - onboardingSteps:", userData.onboardingSteps);
+        console.log(
+          "AuthService - onboardingRequired:",
+          userData.onboardingRequired,
+        );
 
         // Store token and user data
         localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.USER_DATA,
+          JSON.stringify(userData),
+        );
         localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, userRole);
 
-        console.log('AuthService - Data stored in localStorage');
+        console.log("AuthService - Data stored in localStorage");
       }
 
       return response;
     } catch (error) {
-      console.error('AuthService - Login error:', error);
+      console.error("AuthService - Login error:", error);
       throw error;
     }
   },
@@ -127,12 +159,16 @@ const AuthService = {
    */
   async forgotPassword(email) {
     try {
-      const response = await ApiService.post('/auth/forget_password', { email }, {
-        requiresAuth: false
-      });
+      const response = await ApiService.post(
+        "/auth/forget_password",
+        { email },
+        {
+          requiresAuth: false,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('Forgot password error:', error);
+      console.error("Forgot password error:", error);
       throw error;
     }
   },
@@ -143,12 +179,16 @@ const AuthService = {
    */
   async verifyOTP(email, code) {
     try {
-      const response = await ApiService.post('/auth/checkOTP', { email, code }, {
-        requiresAuth: false
-      });
+      const response = await ApiService.post(
+        "/auth/checkOTP",
+        { email, code },
+        {
+          requiresAuth: false,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('OTP verification error:', error);
+      console.error("OTP verification error:", error);
       throw error;
     }
   },
@@ -159,16 +199,20 @@ const AuthService = {
    */
   async resetPassword(email, password, confirmpassword) {
     try {
-      const response = await ApiService.post('/auth/reset_password', {
-        email,
-        password,
-        confirmpassword
-      }, {
-        requiresAuth: false
-      });
+      const response = await ApiService.post(
+        "/auth/reset_password",
+        {
+          email,
+          password,
+          confirmpassword,
+        },
+        {
+          requiresAuth: false,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('Reset password error:', error);
+      console.error("Reset password error:", error);
       throw error;
     }
   },
@@ -179,16 +223,19 @@ const AuthService = {
    */
   async getProfile() {
     try {
-      const response = await ApiService.post('/auth/get_profile');
+      const response = await ApiService.post("/auth/get_profile");
 
       if (response.success !== false && response.user) {
         // Update stored user data
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(response.user));
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.USER_DATA,
+          JSON.stringify(response.user),
+        );
       }
 
       return response;
     } catch (error) {
-      console.error('Get profile error:', error);
+      console.error("Get profile error:", error);
       throw error;
     }
   },
@@ -199,16 +246,19 @@ const AuthService = {
    */
   async updateProfile(profileData) {
     try {
-      const response = await ApiService.post('/auth/edit_profile', profileData);
+      const response = await ApiService.post("/auth/edit_profile", profileData);
 
       if (response.success !== false && response.user) {
         // Update stored user data
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(response.user));
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.USER_DATA,
+          JSON.stringify(response.user),
+        );
       }
 
       return response;
     } catch (error) {
-      console.error('Update profile error:', error);
+      console.error("Update profile error:", error);
       throw error;
     }
   },
@@ -224,7 +274,7 @@ const AuthService = {
     localStorage.removeItem(CONFIG.STORAGE_KEYS.REMEMBER_ME);
 
     // Redirect to login
-    window.location.href = 'login.html';
+    window.location.href = "login.html";
   },
 
   /**
@@ -246,6 +296,6 @@ const AuthService = {
    * Get user role
    */
   getUserRole() {
-    return localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE) || 'customer';
-  }
+    return localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE) || "customer";
+  },
 };

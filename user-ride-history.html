@@ -11,16 +11,48 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         font-family: "Inter", sans-serif;
-        background: #000000;
-        color: #e5e7eb;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        color: white;
         min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animated Gradient Background */
+      .animated-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8, #2e8b9e, #44bfd2, #6cd4e8);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        z-index: -2;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
       }
 
       .header {
-        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
         padding: 20px;
-        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
-        box-shadow: 0 2px 10px rgba(0, 173, 239, 0.1);
+        border-bottom: 1px solid rgba(68, 191, 210, 0.2);
+        box-shadow: 0 2px 10px rgba(68, 191, 210, 0.1);
         position: sticky;
         top: 0;
         z-index: 100;
@@ -35,7 +67,7 @@
       }
 
       .header h1 {
-        color: #00ADEF;
+        color: #6cd4e8;
         font-size: 1.8rem;
         display: flex;
         align-items: center;
@@ -43,11 +75,11 @@
       }
 
       .back-btn {
-        background: rgba(0, 173, 239, 0.2);
-        border: 1px solid rgba(0, 173, 239, 0.3);
+        background: rgba(68, 191, 210, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.3);
         padding: 10px 20px;
         border-radius: 8px;
-        color: #00ADEF;
+        color: #6cd4e8;
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s ease;
@@ -77,23 +109,24 @@
       }
 
       .stat-card {
-        background: #0a0a0a;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
         padding: 25px;
         border-radius: 12px;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
         text-align: center;
         transition: all 0.3s ease;
       }
 
       .stat-card:hover {
-        border-color: rgba(0, 173, 239, 0.5);
-        box-shadow: 0 0 20px rgba(0, 173, 239, 0.2);
+        border-color: rgba(68, 191, 210, 0.5);
+        box-shadow: 0 0 20px rgba(68, 191, 210, 0.2);
       }
 
       .stat-value {
         font-size: 2rem;
         font-weight: 700;
-        color: #00ADEF;
+        color: #6cd4e8;
         margin-bottom: 8px;
       }
 
@@ -104,10 +137,11 @@
 
       /* Filters */
       .filters {
-        background: #0a0a0a;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
         padding: 20px;
         border-radius: 12px;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
         margin-bottom: 20px;
       }
 
@@ -131,7 +165,7 @@
 
       .filter-btn:hover {
         border-color: #00ADEF;
-        color: #00ADEF;
+        color: #6cd4e8;
         background: rgba(0, 173, 239, 0.1);
       }
 
@@ -190,8 +224,9 @@
       }
 
       .history-card {
-        background: #0a0a0a;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(68, 191, 210, 0.2);
         border-radius: 12px;
         padding: 20px;
         transition: all 0.3s ease;
@@ -199,8 +234,8 @@
       }
 
       .history-card:hover {
-        border-color: rgba(0, 173, 239, 0.5);
-        box-shadow: 0 0 20px rgba(0, 173, 239, 0.2);
+        border-color: rgba(68, 191, 210, 0.5);
+        box-shadow: 0 0 20px rgba(68, 191, 210, 0.2);
         transform: translateY(-2px);
       }
 
@@ -215,7 +250,7 @@
 
       .ride-id {
         font-weight: 700;
-        color: #00ADEF;
+        color: #6cd4e8;
         font-size: 1.1rem;
       }
 
@@ -263,7 +298,7 @@
       }
 
       .location-icon {
-        color: #00ADEF;
+        color: #6cd4e8;
         font-size: 1.2rem;
         width: 20px;
       }
@@ -283,7 +318,7 @@
       .fare-amount {
         font-size: 1.8rem;
         font-weight: 700;
-        color: #00ADEF;
+        color: #6cd4e8;
       }
 
       .meta-info {
@@ -326,7 +361,7 @@
       }
 
       .action-link {
-        color: #00ADEF;
+        color: #6cd4e8;
         text-decoration: none;
         font-size: 0.85rem;
         font-weight: 600;
@@ -341,15 +376,16 @@
       .empty-state {
         text-align: center;
         padding: 80px 20px;
-        background: #0a0a0a;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
         border-radius: 15px;
-        border: 1px solid rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.2);
       }
 
       .empty-icon {
         font-size: 5rem;
         margin-bottom: 20px;
-        color: #00ADEF;
+        color: #6cd4e8;
       }
 
       .empty-state h2 {
@@ -414,6 +450,10 @@
     </style>
   </head>
   <body>
+    <!-- Animated Background -->
+    <div class="animated-gradient"></div>
+    <div class="overlay"></div>
+
     <div class="header">
       <div class="header-content">
         <h1><i class="fas fa-history"></i> Ride History</h1>
