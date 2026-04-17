@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Active Rides - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #000000;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        padding: 20px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 173, 239, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        color: #00ADEF;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .back-btn {
+        background: rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(0, 173, 239, 0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: #00ADEF;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .back-btn:hover {
+        background: rgba(0, 173, 239, 0.3);
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.3);
+      }
+
+      /* Container */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      /* Active Ride Card */
+      .ride-card {
+        background: #0a0a0a;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .ride-card:hover {
+        border-color: rgba(0, 173, 239, 0.5);
+        box-shadow: 0 0 20px rgba(0, 173, 239, 0.2);
+      }
+
+      .ride-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+      }
+
+      .ride-id {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #00ADEF;
+      }
+
+      .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+
+      .status-pending {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+        border: 1px solid #f59e0b;
+      }
+
+      .status-accepted {
+        background: rgba(0, 173, 239, 0.2);
+        color: #00ADEF;
+        border: 1px solid #00ADEF;
+      }
+
+      .status-onTheWay {
+        background: rgba(0, 212, 170, 0.2);
+        color: #00d4aa;
+        border: 1px solid #00d4aa;
+      }
+
+      .status-arrived {
+        background: rgba(0, 212, 170, 0.2);
+        color: #00d4aa;
+        border: 1px solid #00d4aa;
+      }
+
+      .status-inProgress {
+        background: rgba(0, 173, 239, 0.2);
+        color: #00ADEF;
+        border: 1px solid #00ADEF;
+      }
+
+      /* Driver Info */
+      .driver-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+        padding: 20px;
+        background: rgba(0, 173, 239, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(0, 173, 239, 0.1);
+      }
+
+      .driver-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid #00ADEF;
+        object-fit: cover;
+      }
+
+      .driver-info {
+        flex: 1;
+      }
+
+      .driver-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #e5e7eb;
+        margin-bottom: 5px;
+      }
+
+      .driver-meta {
+        display: flex;
+        gap: 15px;
+        margin-top: 8px;
+      }
+
+      .meta-badge {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #9ca3af;
+        font-size: 0.85rem;
+      }
+
+      .meta-badge i {
+        color: #00ADEF;
+      }
+
+      .rating {
+        color: #f59e0b;
+        font-weight: 600;
+      }
+
+      .contact-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .contact-btn {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-call {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid #10b981;
+      }
+
+      .btn-call:hover {
+        background: rgba(16, 185, 129, 0.3);
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-message {
+        background: rgba(0, 173, 239, 0.2);
+        color: #00ADEF;
+        border: 1px solid #00ADEF;
+      }
+
+      .btn-message:hover {
+        background: rgba(0, 173, 239, 0.3);
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.3);
+      }
+
+      /* Vehicle Info */
+      .vehicle-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: rgba(0, 173, 239, 0.05);
+        border-radius: 10px;
+        margin-bottom: 25px;
+      }
+
+      .vehicle-icon {
+        font-size: 2rem;
+        color: #00ADEF;
+      }
+
+      .vehicle-details {
+        flex: 1;
+      }
+
+      .vehicle-model {
+        font-weight: 600;
+        color: #e5e7eb;
+        margin-bottom: 3px;
+      }
+
+      .vehicle-plate {
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
+
+      /* Route Section */
+      .route-section {
+        margin-bottom: 25px;
+      }
+
+      .location-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px;
+        margin-bottom: 10px;
+        background: rgba(0, 173, 239, 0.05);
+        border-radius: 10px;
+        border-left: 3px solid #00ADEF;
+      }
+
+      .location-icon {
+        font-size: 1.5rem;
+        color: #00ADEF;
+        margin-top: 5px;
+      }
+
+      .location-details {
+        flex: 1;
+      }
+
+      .location-label {
+        font-size: 0.85rem;
+        color: #9ca3af;
+        margin-bottom: 5px;
+      }
+
+      .location-address {
+        color: #e5e7eb;
+        font-weight: 500;
+        line-height: 1.4;
+      }
+
+      /* Ride Details */
+      .ride-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .detail-item {
+        padding: 15px;
+        background: rgba(0, 173, 239, 0.05);
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .detail-label {
+        color: #9ca3af;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+
+      .detail-value {
+        color: #00ADEF;
+        font-size: 1.3rem;
+        font-weight: 700;
+      }
+
+      /* Action Buttons */
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 1rem;
+      }
+
+      .btn-track {
+        background: #00ADEF;
+        color: #000000;
+      }
+
+      .btn-track:hover {
+        background: #00e5ff;
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
+      }
+
+      .btn-cancel {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+      }
+
+      .btn-cancel:hover {
+        background: rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-support {
+        background: rgba(0, 173, 239, 0.2);
+        color: #00ADEF;
+        border: 1px solid rgba(0, 173, 239, 0.3);
+      }
+
+      .btn-support:hover {
+        background: rgba(0, 173, 239, 0.3);
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: #0a0a0a;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+      }
+
+      .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 20px;
+        color: #00ADEF;
+      }
+
+      .empty-state h2 {
+        color: #e5e7eb;
+        margin-bottom: 10px;
+      }
+
+      .empty-state p {
+        color: #9ca3af;
+        margin-bottom: 25px;
+      }
+
+      .btn-book {
+        background: #00ADEF;
+        color: #000000;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-book:hover {
+        background: #00e5ff;
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
+      }
+
+      /* Loading */
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(0, 173, 239, 0.2);
+        border-top: 4px solid #00ADEF;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .driver-section {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .contact-buttons {
+          justify-content: center;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        .ride-details {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1><i class="fas fa-car"></i> Active Rides</h1>
+        <a href="dashboard.html" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p style="color: #9ca3af;">Loading active rides...</p>
+      </div>
+
+      <div id="contentArea" style="display: none;">
+        <div id="ridesContainer">
+          <!-- Active rides will be inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-icon">
+            <i class="fas fa-car-side"></i>
+          </div>
+          <h2>No Active Rides</h2>
+          <p>You don't have any active rides at the moment</p>
+          <button class="btn-book" onclick="window.location.href='booking.html'">
+            <i class="fas fa-plus"></i> Book a Ride
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/ride-service.js"></script>
+
+    <script>
+      let activeRides = [];
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+
+        if (!token) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await loadActiveRides();
+
+        // Auto-refresh every 10 seconds
+        setInterval(loadActiveRides, 10000);
+      });
+
+      async function loadActiveRides() {
+        try {
+          const response = await RideService.getMyRides();
+
+          if (response.success !== false && response.rides) {
+            activeRides = response.rides.filter(r =>
+              r.status === 'pending' ||
+              r.status === 'accepted' ||
+              r.status === 'onTheWay' ||
+              r.status === 'arrived' ||
+              r.status === 'inProgress'
+            );
+
+            displayActiveRides();
+          }
+
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('contentArea').style.display = 'block';
+        } catch (error) {
+          console.error('Error loading active rides:', error);
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('contentArea').style.display = 'block';
+          document.getElementById('emptyState').style.display = 'block';
+        }
+      }
+
+      function displayActiveRides() {
+        const container = document.getElementById('ridesContainer');
+        const emptyState = document.getElementById('emptyState');
+
+        if (activeRides.length === 0) {
+          container.innerHTML = '';
+          emptyState.style.display = 'block';
+          return;
+        }
+
+        emptyState.style.display = 'none';
+
+        container.innerHTML = activeRides.map(ride => {
+          const statusText = formatStatus(ride.status);
+          const statusClass = `status-${ride.status}`;
+
+          return `
+            <div class="ride-card">
+              <div class="ride-header">
+                <div class="ride-id">Booking #${ride._id.slice(-8).toUpperCase()}</div>
+                <div class="status-badge ${statusClass}">
+                  <i class="fas fa-circle"></i>
+                  ${statusText}
+                </div>
+              </div>
+
+              ${ride.driver ? `
+                <div class="driver-section">
+                  <img class="driver-avatar"
+                       src="${ride.driver.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(ride.driver.name || 'Driver')}&background=00ADEF&color=000&size=80`}"
+                       alt="Driver">
+                  <div class="driver-info">
+                    <div class="driver-name">${ride.driver.name || 'Driver'}</div>
+                    <div class="driver-meta">
+                      <div class="meta-badge">
+                        <i class="fas fa-star"></i>
+                        <span class="rating">${ride.driver.rating || '5.0'}</span>
+                      </div>
+                      <div class="meta-badge">
+                        <i class="fas fa-route"></i>
+                        <span>${ride.driver.totalRides || 0} rides</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="contact-buttons">
+                    <button class="contact-btn btn-call" onclick="callDriver('${ride.driver.phone}')">
+                      <i class="fas fa-phone"></i>
+                    </button>
+                    <button class="contact-btn btn-message" onclick="messageDriver('${ride.driver._id}')">
+                      <i class="fas fa-comment"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="vehicle-info">
+                  <div class="vehicle-icon">
+                    <i class="fas fa-car"></i>
+                  </div>
+                  <div class="vehicle-details">
+                    <div class="vehicle-model">${ride.vehicle?.model || 'Vehicle'} - ${ride.vehicle?.color || 'Color'}</div>
+                    <div class="vehicle-plate">${ride.vehicle?.plateNumber || 'N/A'}</div>
+                  </div>
+                </div>
+              ` : `
+                <div class="driver-section">
+                  <div class="driver-info" style="text-align: center; width: 100%;">
+                    <div class="driver-name" style="color: #f59e0b;">
+                      <i class="fas fa-clock"></i> Searching for driver...
+                    </div>
+                    <div style="color: #9ca3af; margin-top: 8px;">Please wait while we find a driver for you</div>
+                  </div>
+                </div>
+              `}
+
+              <div class="route-section">
+                <div class="location-item">
+                  <div class="location-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                  </div>
+                  <div class="location-details">
+                    <div class="location-label">Pickup Location</div>
+                    <div class="location-address">${ride.pickupLocationName || 'N/A'}</div>
+                  </div>
+                </div>
+
+                <div class="location-item">
+                  <div class="location-icon">
+                    <i class="fas fa-flag-checkered"></i>
+                  </div>
+                  <div class="location-details">
+                    <div class="location-label">Drop-off Location</div>
+                    <div class="location-address">${ride.dropoffLocationName || 'N/A'}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ride-details">
+                <div class="detail-item">
+                  <div class="detail-label">Fare</div>
+                  <div class="detail-value">$${(ride.fare || 0).toFixed(2)}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Distance</div>
+                  <div class="detail-value">${(ride.distance || 0).toFixed(1)} km</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Duration</div>
+                  <div class="detail-value">${ride.estimatedDuration || 'N/A'}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Payment</div>
+                  <div class="detail-value">${ride.paymentMethod || 'Cash'}</div>
+                </div>
+              </div>
+
+              <div class="action-buttons">
+                <button class="btn btn-track" onclick="trackRide('${ride._id}')">
+                  <i class="fas fa-map-marked-alt"></i> Track Ride
+                </button>
+                <button class="btn btn-support" onclick="contactSupport('${ride._id}')">
+                  <i class="fas fa-headset"></i> Support
+                </button>
+                ${ride.status === 'pending' || ride.status === 'accepted' ? `
+                  <button class="btn btn-cancel" onclick="cancelRide('${ride._id}')">
+                    <i class="fas fa-times"></i> Cancel
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function formatStatus(status) {
+        const map = {
+          pending: 'Finding Driver',
+          accepted: 'Driver Accepted',
+          onTheWay: 'Driver On The Way',
+          arrived: 'Driver Arrived',
+          inProgress: 'Ride In Progress'
+        };
+        return map[status] || status;
+      }
+
+      function trackRide(rideId) {
+        window.location.href = `track-ride.html?bookingId=${rideId}`;
+      }
+
+      function callDriver(phone) {
+        if (phone) {
+          window.location.href = `tel:${phone}`;
+        } else {
+          alert('Driver phone number not available');
+        }
+      }
+
+      function messageDriver(driverId) {
+        alert('Messaging feature coming soon!');
+      }
+
+      function contactSupport(rideId) {
+        alert('Support feature coming soon!\nBooking ID: ' + rideId);
+      }
+
+      async function cancelRide(rideId) {
+        if (!confirm('Are you sure you want to cancel this ride?')) {
+          return;
+        }
+
+        const reason = prompt('Please provide a cancellation reason:');
+        if (!reason) return;
+
+        try {
+          const response = await RideService.cancelRide(rideId, reason);
+
+          if (response.success !== false) {
+            alert('Ride cancelled successfully');
+            await loadActiveRides();
+          } else {
+            throw new Error(response.message || 'Failed to cancel ride');
+          }
+        } catch (error) {
+          console.error('Error cancelling ride:', error);
+          alert('Failed to cancel ride: ' + error.message);
+        }
+      }
+    </script>
+  </body>
+</html>

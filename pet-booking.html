@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pet Delivery - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Inter", sans-serif; background: #f5f7fa; }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      .booking-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-family: "Inter", sans-serif;
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      }
+
+      .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .pet-types {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+
+      .pet-type {
+        padding: 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .pet-type:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+      }
+
+      .pet-type.selected {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .pet-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .pet-name {
+        font-weight: 600;
+      }
+
+      .info-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .info-box p {
+        color: #856404;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .summary-card {
+        position: sticky;
+        top: 20px;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .summary-row:last-child {
+        border-bottom: none;
+        padding-top: 15px;
+        margin-top: 10px;
+        border-top: 2px solid #667eea;
+      }
+
+      .summary-label {
+        color: #666;
+      }
+
+      .summary-value {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .summary-row:last-child .summary-label,
+      .summary-row:last-child .summary-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #667eea;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      @media (max-width: 1024px) {
+        .booking-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-card {
+          position: static;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .form-row,
+        .pet-types {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1>🐾 Pet Delivery</h1>
+        <button class="back-btn" onclick="window.location.href='dashboard-new.html'">← Back</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="booking-grid">
+        <!-- Booking Form -->
+        <div>
+          <div class="card">
+            <h2 class="card-title">Pet Transport Details</h2>
+
+            <div class="info-box">
+              <p>🐾 We ensure safe and comfortable transport for your beloved pets with trained handlers.</p>
+            </div>
+
+            <form id="petForm">
+              <!-- Pet Type -->
+              <div class="form-group">
+                <label class="form-label">Pet Type *</label>
+                <div class="pet-types">
+                  <div class="pet-type" data-type="dog">
+                    <div class="pet-icon">🐕</div>
+                    <div class="pet-name">Dog</div>
+                  </div>
+                  <div class="pet-type" data-type="cat">
+                    <div class="pet-icon">🐈</div>
+                    <div class="pet-name">Cat</div>
+                  </div>
+                  <div class="pet-type" data-type="bird">
+                    <div class="pet-icon">🦜</div>
+                    <div class="pet-name">Bird</div>
+                  </div>
+                  <div class="pet-type" data-type="rabbit">
+                    <div class="pet-icon">🐰</div>
+                    <div class="pet-name">Rabbit</div>
+                  </div>
+                  <div class="pet-type" data-type="hamster">
+                    <div class="pet-icon">🐹</div>
+                    <div class="pet-name">Hamster</div>
+                  </div>
+                  <div class="pet-type" data-type="other">
+                    <div class="pet-icon">🐾</div>
+                    <div class="pet-name">Other</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pet Details -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Pet Name *</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="petName"
+                    placeholder="Buddy"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Pet Age</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="petAge"
+                    placeholder="2 years"
+                  />
+                </div>
+              </div>
+
+              <!-- Owner Details -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Owner Name *</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="ownerName"
+                    placeholder="John Doe"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Owner Phone *</label>
+                  <input
+                    type="tel"
+                    class="form-input"
+                    id="ownerPhone"
+                    placeholder="+1234567890"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Pickup Location -->
+              <div class="form-group">
+                <label class="form-label">Pickup Location *</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="pickupLocation"
+                  placeholder="Enter pickup address"
+                  required
+                />
+              </div>
+
+              <!-- Dropoff Location -->
+              <div class="form-group">
+                <label class="form-label">Delivery Location *</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="dropoffLocation"
+                  placeholder="Enter delivery address"
+                  required
+                />
+              </div>
+
+              <!-- Special Instructions -->
+              <div class="form-group">
+                <label class="form-label">Special Care Instructions</label>
+                <textarea
+                  class="form-textarea"
+                  id="instructions"
+                  placeholder="Any special care requirements for your pet..."
+                ></textarea>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-card">
+          <div class="card">
+            <h2 class="card-title">Booking Summary</h2>
+
+            <div class="summary-row">
+              <span class="summary-label">Pet Type</span>
+              <span class="summary-value" id="summaryPetType">Not selected</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Base Fare</span>
+              <span class="summary-value" id="summaryBase">$15.00</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Distance Charge</span>
+              <span class="summary-value" id="summaryDistance">$0.00</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Pet Care Fee</span>
+              <span class="summary-value">$10.00</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Total</span>
+              <span class="summary-value" id="summaryTotal">$25.00</span>
+            </div>
+
+            <button class="submit-btn" id="submitBtn" disabled>Book Pet Transport</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqNK7IfM16zi79N0u7qX4Ncm5QgGvBqmg&libraries=places"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+
+    <script>
+      let selectedPetType = null;
+      const baseFare = 15.00;
+      const petCareFee = 10.00;
+      let distance = 0;
+      let pickupCoords = null;
+      let dropoffCoords = null;
+
+      window.addEventListener('DOMContentLoaded', () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        setupAutocomplete();
+        setupPetTypeSelection();
+        setupFormHandlers();
+      });
+
+      function setupAutocomplete() {
+        const pickupInput = document.getElementById('pickupLocation');
+        const dropoffInput = document.getElementById('dropoffLocation');
+
+        const pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput);
+        const dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput);
+
+        pickupAutocomplete.addListener('place_changed', () => {
+          const place = pickupAutocomplete.getPlace();
+          if (place.geometry) {
+            pickupCoords = {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng()
+            };
+            calculateFare();
+          }
+        });
+
+        dropoffAutocomplete.addListener('place_changed', () => {
+          const place = dropoffAutocomplete.getPlace();
+          if (place.geometry) {
+            dropoffCoords = {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng()
+            };
+            calculateFare();
+          }
+        });
+      }
+
+      function setupPetTypeSelection() {
+        const petTypes = document.querySelectorAll('.pet-type');
+
+        petTypes.forEach(type => {
+          type.addEventListener('click', () => {
+            petTypes.forEach(t => t.classList.remove('selected'));
+            type.classList.add('selected');
+
+            selectedPetType = type.dataset.type;
+            updateSummary();
+          });
+        });
+      }
+
+      function setupFormHandlers() {
+        document.getElementById('submitBtn').addEventListener('click', submitPetBooking);
+      }
+
+      function calculateFare() {
+        if (pickupCoords && dropoffCoords) {
+          distance = Utils.calculateDistance(
+            pickupCoords.lat,
+            pickupCoords.lng,
+            dropoffCoords.lat,
+            dropoffCoords.lng
+          );
+          updateSummary();
+        }
+      }
+
+      function updateSummary() {
+        const distanceCharge = distance * 1.5;
+        const total = baseFare + distanceCharge + petCareFee;
+
+        document.getElementById('summaryPetType').textContent =
+          selectedPetType ? selectedPetType.charAt(0).toUpperCase() + selectedPetType.slice(1) : 'Not selected';
+        document.getElementById('summaryDistance').textContent = Utils.formatCurrency(distanceCharge);
+        document.getElementById('summaryTotal').textContent = Utils.formatCurrency(total);
+
+        // Enable submit button if all required fields are filled
+        const form = document.getElementById('petForm');
+        const isValid = form.checkValidity() && selectedPetType && pickupCoords && dropoffCoords;
+        document.getElementById('submitBtn').disabled = !isValid;
+      }
+
+      async function submitPetBooking() {
+        const form = document.getElementById('petForm');
+        if (!form.checkValidity() || !selectedPetType || !pickupCoords || !dropoffCoords) {
+          Utils.showToast('Please fill in all required fields', 'warning');
+          return;
+        }
+
+        Utils.showLoader('Booking pet transport...');
+
+        try {
+          const petData = {
+            petType: selectedPetType,
+            petName: document.getElementById('petName').value,
+            petAge: document.getElementById('petAge').value,
+            ownerName: document.getElementById('ownerName').value,
+            ownerPhone: document.getElementById('ownerPhone').value,
+            pickupLocation: {
+              type: 'Point',
+              coordinates: [pickupCoords.lng, pickupCoords.lat]
+            },
+            pickupLocationName: document.getElementById('pickupLocation').value,
+            dropoffLocation: {
+              type: 'Point',
+              coordinates: [dropoffCoords.lng, dropoffCoords.lat]
+            },
+            dropoffLocationName: document.getElementById('dropoffLocation').value,
+            specialInstructions: document.getElementById('instructions').value
+          };
+
+          const response = await APIService.post('/pet/pet_delivery_booking', petData);
+          Utils.hideLoader();
+
+          if (response.success !== false) {
+            Utils.showToast('Pet transport booked successfully!', 'success');
+            setTimeout(() => {
+              window.location.href = `pet-tracking.html?petId=${response.petDelivery._id}`;
+            }, 1500);
+          } else {
+            throw new Error(response.message || 'Failed to book pet transport');
+          }
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error booking pet transport:', error);
+          Utils.showToast(error.message || 'Failed to book pet transport', 'error');
+        }
+      }
+
+      // Update summary when form fields change
+      document.getElementById('petForm').addEventListener('input', () => {
+        setTimeout(updateSummary, 100);
+      });
+    </script>
+  </body>
+</html>

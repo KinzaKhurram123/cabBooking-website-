@@ -18,6 +18,41 @@
     <link href="css/coloring.css" rel="stylesheet" type="text/css">
     <!-- color scheme -->
     <link id="colors" href="css/colors/scheme-01.css" rel="stylesheet" type="text/css">
+    <style>
+        @media (max-width: 991px) {
+            .de-flex { flex-wrap: wrap; }
+            .header-col-mid { width: 100%; order: 3; margin-top: 20px; }
+            #mainmenu { display: none; }
+            #menu-btn { display: block !important; }
+            .menu_side_area { width: 100%; justify-content: space-between; }
+        }
+
+        @media (max-width: 768px) {
+            .topbar-left { display: none !important; }
+            .container { padding: 0 15px; }
+            .row { margin: 0 -15px; }
+            .col-lg-6, .col-lg-12 { padding: 0 15px; }
+            .p-4 { padding: 20px !important; }
+            .radio-img { margin-bottom: 15px; }
+            .date-time-field { flex-direction: column; }
+            .date-time-field input, .date-time-field select { width: 100%; margin-bottom: 10px; }
+            .feature-box { margin-bottom: 30px; }
+            .col-md-3 { width: 100%; margin-bottom: 20px; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            h5 { font-size: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .logo img { max-width: 120px; }
+            .btn-main { padding: 8px 16px; font-size: 0.9rem; }
+            .radio-img label { font-size: 0.85rem; padding: 10px; }
+            .form-control { font-size: 0.9rem; padding: 10px; }
+            h1 { font-size: 1.5rem; }
+            .feature-box h4 { font-size: 1rem; }
+            .footer .widget { margin-bottom: 30px; }
+        }
+    </style>
 </head>
 
 <body onload="initialize()">
@@ -690,7 +725,213 @@ Bellevue, WA</span>
     ================================================== -->
     <script src="js/plugins.js"></script>
     <script src="js/designesia.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=insert_your_api_key_here&amp;libraries=places&amp;callback=initPlaces" async="" defer=""></script>
+
+    <!-- Service Layer Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/ride-service.js"></script>
+
+    <script>
+      let pickupLocation = null;
+      let dropoffLocation = null;
+      let selectedVehicleType = null;
+      let rideTypes = [];
+
+      // Check authentication on page load
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!AuthService.isAuthenticated()) {
+          Utils.showToast('Please login to book a ride', 'warning');
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+          return;
+        }
+
+        // Load ride types from API
+        await loadRideTypes();
+      });
+
+      // Load available ride types
+      async function loadRideTypes() {
+        try {
+          const response = await RideService.getRideTypes();
+          if (response.success !== false && response.rideTypes) {
+            rideTypes = response.rideTypes;
+            console.log('Ride types loaded:', rideTypes);
+          }
+        } catch (error) {
+          console.error('Error loading ride types:', error);
+        }
+      }
+
+      // Initialize Google Places Autocomplete
+      function initPlaces() {
+        const pickupInput = document.getElementById('autocomplete');
+        const dropoffInput = document.getElementById('autocomplete2');
+
+        if (!pickupInput || !dropoffInput) return;
+
+        const pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput, {
+          types: ['geocode']
+        });
+
+        const dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
+          types: ['geocode']
+        });
+
+        pickupAutocomplete.addListener('place_changed', () => {
+          const place = pickupAutocomplete.getPlace();
+          if (place.geometry) {
+            pickupLocation = {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng(),
+              address: place.formatted_address
+            };
+          }
+        });
+
+        dropoffAutocomplete.addListener('place_changed', () => {
+          const place = dropoffAutocomplete.getPlace();
+          if (place.geometry) {
+            dropoffLocation = {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng(),
+              address: place.formatted_address
+            };
+          }
+        });
+      }
+
+      // Handle form submission
+      document.getElementById('contact_form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Validate locations
+        if (!pickupLocation || !dropoffLocation) {
+          Utils.showToast('Please select valid pickup and dropoff locations', 'error');
+          return;
+        }
+
+        // Get selected vehicle type
+        const vehicleTypeRadio = document.querySelector('input[name="Car_Type"]:checked');
+        if (!vehicleTypeRadio) {
+          Utils.showToast('Please select a vehicle type', 'error');
+          return;
+        }
+
+        const vehicleTypeName = vehicleTypeRadio.nextElementSibling.textContent.trim();
+
+        // Find matching ride type from API
+        let selectedRideType = rideTypes.find(rt =>
+          rt.name.toLowerCase().includes(vehicleTypeName.toLowerCase()) ||
+          rt.vehicleType.toLowerCase().includes(vehicleTypeName.toLowerCase())
+        );
+
+        // Fallback to first ride type if no match
+        if (!selectedRideType && rideTypes.length > 0) {
+          selectedRideType = rideTypes[0];
+        }
+
+        // Calculate distance
+        const distance = Utils.calculateDistance(
+          pickupLocation.lat,
+          pickupLocation.lng,
+          dropoffLocation.lat,
+          dropoffLocation.lng
+        );
+
+        // Calculate fare (basic calculation)
+        let fare = 5.00; // Base fare
+        if (selectedRideType) {
+          fare = selectedRideType.baseFare + (distance * selectedRideType.perKmRate);
+        } else {
+          fare += distance * 1.5; // Default rate
+        }
+
+        // Get form data
+        const pickupDate = document.getElementById('date-picker').value;
+        const pickupTime = document.getElementById('pickup-time').value;
+
+        // Prepare booking data
+        const bookingData = {
+          category: 'ride',
+          pickupLocation: {
+            type: 'Point',
+            coordinates: [pickupLocation.lng, pickupLocation.lat]
+          },
+          pickupLocationName: pickupLocation.address,
+          dropoffLocation: {
+            type: 'Point',
+            coordinates: [dropoffLocation.lng, dropoffLocation.lat]
+          },
+          dropoffLocationName: dropoffLocation.address,
+          selectedVehicle: {
+            id: selectedRideType?._id || 'default',
+            name: vehicleTypeName,
+            features: selectedRideType?.features || [],
+            capacity: selectedRideType?.capacity || 4,
+            price: fare.toFixed(2)
+          },
+          fare: fare,
+          distance: distance,
+          duration: Math.ceil(distance * 3).toString(), // Rough estimate: 3 min per km
+          paymentMethod: 'Cash',
+          date: pickupDate ? `${pickupDate} ${pickupTime}` : new Date().toISOString(),
+          notes: ''
+        };
+
+        // Show loader
+        Utils.showLoader('Creating your booking...');
+
+        try {
+          // Create ride booking
+          const response = await RideService.createRide(bookingData);
+
+          Utils.hideLoader();
+
+          if (response.success !== false && response.booking) {
+            Utils.showToast('Ride booked successfully!', 'success');
+
+            // Redirect to ride tracking or dashboard after 2 seconds
+            setTimeout(() => {
+              if (response.booking._id) {
+                window.location.href = `ride-tracking.html?bookingId=${response.booking._id}`;
+              } else {
+                window.location.href = 'my-rides.html';
+              }
+            }, 2000);
+          } else {
+            Utils.showToast(response.message || 'Booking failed. Please try again.', 'error');
+          }
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Booking error:', error);
+
+          let errorMsg = 'An error occurred while booking. Please try again.';
+          if (error.message) {
+            errorMsg = error.message;
+          }
+
+          Utils.showToast(errorMsg, 'error');
+        }
+      });
+
+      // Geolocate function for autocomplete
+      function geolocate() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            const geolocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+          });
+        }
+      }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqNK7IfM16zi79N0u7qX4Ncm5QgGvBqmg&libraries=places&callback=initPlaces" async defer></script>
 
 </body>
 

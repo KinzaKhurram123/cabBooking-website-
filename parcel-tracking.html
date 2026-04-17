@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Track Parcel - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Inter", sans-serif; background: #f5f7fa; }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .tracking-grid {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 20px;
+      }
+
+      .map-container {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        height: 600px;
+      }
+
+      #map { width: 100%; height: 100%; }
+
+      .card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .status-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 30px;
+      }
+
+      .status-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+
+      .status-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .status-description {
+        opacity: 0.9;
+      }
+
+      .timeline {
+        position: relative;
+        padding-left: 30px;
+      }
+
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e0e0e0;
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-bottom: 25px;
+      }
+
+      .timeline-item:last-child {
+        padding-bottom: 0;
+      }
+
+      .timeline-dot {
+        position: absolute;
+        left: -26px;
+        top: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px #e0e0e0;
+      }
+
+      .timeline-item.completed .timeline-dot {
+        background: #4caf50;
+        box-shadow: 0 0 0 2px #4caf50;
+      }
+
+      .timeline-item.active .timeline-dot {
+        background: #667eea;
+        box-shadow: 0 0 0 2px #667eea;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+      }
+
+      .timeline-content h4 {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 3px;
+      }
+
+      .timeline-content p {
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .info-row:last-child {
+        border-bottom: none;
+      }
+
+      .info-label {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .info-value {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .driver-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-bottom: 15px;
+      }
+
+      .driver-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .driver-details h3 {
+        font-size: 1.1rem;
+        margin-bottom: 3px;
+        color: #333;
+      }
+
+      .driver-rating {
+        color: #ffa500;
+        font-size: 0.9rem;
+      }
+
+      .action-buttons {
+        display: grid;
+        gap: 10px;
+      }
+
+      .btn {
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .btn-secondary:hover {
+        background: #e0e0e0;
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 1024px) {
+        .tracking-grid {
+          grid-template-columns: 1fr;
+        }
+        .map-container {
+          height: 400px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1>📦 Track Parcel</h1>
+        <button class="back-btn" onclick="window.location.href='dashboard-new.html'">← Back</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p style="color: #666;">Loading parcel details...</p>
+      </div>
+
+      <div id="trackingContent" style="display: none;">
+        <div class="tracking-grid">
+          <!-- Map -->
+          <div class="map-container">
+            <div id="map"></div>
+          </div>
+
+          <!-- Info Panel -->
+          <div>
+            <!-- Status Card -->
+            <div class="card status-card">
+              <div class="status-icon" id="statusIcon">📦</div>
+              <div class="status-title" id="statusTitle">In Transit</div>
+              <p class="status-description" id="statusDescription">Your parcel is on the way</p>
+            </div>
+
+            <!-- Driver Info -->
+            <div class="card" id="driverCard" style="display: none;">
+              <h3 style="margin-bottom: 15px;">Driver</h3>
+              <div class="driver-info">
+                <div class="driver-avatar" id="driverAvatar">D</div>
+                <div class="driver-details">
+                  <h3 id="driverName">Driver Name</h3>
+                  <div class="driver-rating" id="driverRating">⭐ 4.8</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" style="flex: 1;" id="chatBtn">💬 Chat</button>
+                <button class="btn btn-secondary" style="flex: 1;" id="callBtn">📞 Call</button>
+              </div>
+            </div>
+
+            <!-- Delivery Timeline -->
+            <div class="card">
+              <h3 style="margin-bottom: 20px;">Delivery Status</h3>
+              <div class="timeline" id="timeline">
+                <div class="timeline-item completed">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                    <h4>Parcel Booked</h4>
+                    <p id="bookedTime">--</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                    <h4>Driver Assigned</h4>
+                    <p id="assignedTime">Waiting...</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                    <h4>Picked Up</h4>
+                    <p id="pickedUpTime">Pending</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                    <h4>In Transit</h4>
+                    <p id="transitTime">Pending</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                    <h4>Delivered</h4>
+                    <p id="deliveredTime">Pending</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Parcel Details -->
+            <div class="card">
+              <h3 style="margin-bottom: 15px;">Parcel Details</h3>
+              <div class="info-row">
+                <span class="info-label">Tracking ID</span>
+                <span class="info-value" id="trackingId">#000000</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Cargo Type</span>
+                <span class="info-value" id="cargoType">--</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Weight</span>
+                <span class="info-value" id="weight">-- kg</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Receiver</span>
+                <span class="info-value" id="receiverName">--</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Receiver Phone</span>
+                <span class="info-value" id="receiverPhone">--</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card">
+              <div class="action-buttons">
+                <button class="btn btn-danger" id="cancelBtn">✕ Cancel Delivery</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqNK7IfM16zi79N0u7qX4Ncm5QgGvBqmg&libraries=places"></script>
+
+    <script>
+      let parcelId = null;
+      let currentParcel = null;
+      let map = null;
+      let driverMarker = null;
+      let pickupMarker = null;
+      let dropoffMarker = null;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      parcelId = urlParams.get('parcelId');
+
+      if (!parcelId) {
+        Utils.showToast('No parcel ID provided', 'error');
+        setTimeout(() => window.location.href = 'dashboard-new.html', 2000);
+      }
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await loadParcelDetails();
+      });
+
+      async function loadParcelDetails() {
+        try {
+          const response = await APIService.get(`/parcel/${parcelId}`);
+
+          if (response.success !== false && response.parcel) {
+            currentParcel = response.parcel;
+            displayParcelDetails(currentParcel);
+            initMap();
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('trackingContent').style.display = 'block';
+          } else {
+            throw new Error('Failed to load parcel details');
+          }
+        } catch (error) {
+          console.error('Error loading parcel:', error);
+          Utils.showToast('Failed to load parcel details', 'error');
+          setTimeout(() => window.location.href = 'dashboard-new.html', 2000);
+        }
+      }
+
+      function displayParcelDetails(parcel) {
+        // Status
+        const statusInfo = getStatusInfo(parcel.status);
+        document.getElementById('statusIcon').textContent = statusInfo.icon;
+        document.getElementById('statusTitle').textContent = statusInfo.title;
+        document.getElementById('statusDescription').textContent = statusInfo.description;
+
+        // Tracking ID
+        document.getElementById('trackingId').textContent = `#${parcel._id.slice(-8).toUpperCase()}`;
+
+        // Parcel details
+        document.getElementById('cargoType').textContent = parcel.cargoType || '--';
+        document.getElementById('weight').textContent = parcel.weight ? `${parcel.weight} kg` : '--';
+        document.getElementById('receiverName').textContent = parcel.receiverName || '--';
+        document.getElementById('receiverPhone').textContent = parcel.receiverPhone || '--';
+
+        // Timeline
+        updateTimeline(parcel);
+
+        // Driver info
+        if (parcel.driver) {
+          document.getElementById('driverCard').style.display = 'block';
+          document.getElementById('driverAvatar').textContent = (parcel.driver.name || 'D').charAt(0).toUpperCase();
+          document.getElementById('driverName').textContent = parcel.driver.name || 'Driver';
+          document.getElementById('driverRating').textContent = `⭐ ${parcel.driver.rating || '4.8'}`;
+        }
+
+        // Hide cancel button if delivered or cancelled
+        if (parcel.status === 'delivered' || parcel.status === 'cancelled') {
+          document.getElementById('cancelBtn').style.display = 'none';
+        }
+      }
+
+      function updateTimeline(parcel) {
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        const statuses = ['pending', 'accepted', 'pickedUp', 'inTransit', 'delivered'];
+        const currentStatusIndex = statuses.indexOf(parcel.status);
+
+        timelineItems.forEach((item, index) => {
+          if (index < currentStatusIndex) {
+            item.classList.add('completed');
+            item.classList.remove('active');
+          } else if (index === currentStatusIndex) {
+            item.classList.add('active');
+            item.classList.remove('completed');
+          } else {
+            item.classList.remove('completed', 'active');
+          }
+        });
+
+        // Update times
+        if (parcel.createdAt) {
+          document.getElementById('bookedTime').textContent = Utils.formatDate(parcel.createdAt, 'time');
+        }
+      }
+
+      function initMap() {
+        if (!currentParcel) return;
+
+        const pickup = currentParcel.pickupLocation;
+        const dropoff = currentParcel.dropoffLocation;
+
+        if (!pickup || !dropoff) return;
+
+        const center = {
+          lat: pickup.coordinates[1],
+          lng: pickup.coordinates[0]
+        };
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 14,
+          center: center
+        });
+
+        pickupMarker = new google.maps.Marker({
+          position: { lat: pickup.coordinates[1], lng: pickup.coordinates[0] },
+          map: map,
+          title: 'Pickup',
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#4CAF50',
+            fillOpacity: 1,
+            strokeColor: '#fff',
+            strokeWeight: 2
+          }
+        });
+
+        dropoffMarker = new google.maps.Marker({
+          position: { lat: dropoff.coordinates[1], lng: dropoff.coordinates[0] },
+          map: map,
+          title: 'Dropoff',
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#F44336',
+            fillOpacity: 1,
+            strokeColor: '#fff',
+            strokeWeight: 2
+          }
+        });
+
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer({
+          map: map,
+          suppressMarkers: true,
+          polylineOptions: {
+            strokeColor: '#667eea',
+            strokeWeight: 4
+          }
+        });
+
+        directionsService.route({
+          origin: { lat: pickup.coordinates[1], lng: pickup.coordinates[0] },
+          destination: { lat: dropoff.coordinates[1], lng: dropoff.coordinates[0] },
+          travelMode: google.maps.TravelMode.DRIVING
+        }, (result, status) => {
+          if (status === 'OK') {
+            directionsRenderer.setDirections(result);
+          }
+        });
+      }
+
+      function getStatusInfo(status) {
+        const map = {
+          pending: { icon: '📦', title: 'Parcel Booked', description: 'Waiting for driver assignment' },
+          accepted: { icon: '✓', title: 'Driver Assigned', description: 'Driver is on the way to pickup' },
+          pickedUp: { icon: '📦', title: 'Picked Up', description: 'Parcel has been picked up' },
+          inTransit: { icon: '🚚', title: 'In Transit', description: 'Your parcel is on the way' },
+          delivered: { icon: '✓', title: 'Delivered', description: 'Parcel has been delivered' },
+          cancelled: { icon: '✕', title: 'Cancelled', description: 'Delivery was cancelled' }
+        };
+        return map[status] || { icon: '📦', title: status, description: '' };
+      }
+
+      document.getElementById('chatBtn').addEventListener('click', () => {
+        window.location.href = `chat.html?rideId=${parcelId}`;
+      });
+
+      document.getElementById('callBtn').addEventListener('click', () => {
+        if (currentParcel && currentParcel.driver && currentParcel.driver.phoneNumber) {
+          window.location.href = `tel:${currentParcel.driver.phoneNumber}`;
+        } else {
+          Utils.showToast('Phone number not available', 'warning');
+        }
+      });
+
+      document.getElementById('cancelBtn').addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to cancel this delivery?')) {
+          return;
+        }
+
+        Utils.showLoader('Cancelling delivery...');
+        try {
+          const response = await APIService.post(`/parcel/cancel/${parcelId}`);
+          Utils.hideLoader();
+
+          if (response.success !== false) {
+            Utils.showToast('Delivery cancelled', 'success');
+            setTimeout(() => window.location.href = 'dashboard-new.html', 2000);
+          } else {
+            throw new Error(response.message || 'Failed to cancel delivery');
+          }
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error cancelling delivery:', error);
+          Utils.showToast(error.message || 'Failed to cancel delivery', 'error');
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideLynk API Testing Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-online {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-offline {
+            background: #ef4444;
+            color: white;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .test-header {
+            background: #f9fafb;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-header h2 {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .test-body {
+            padding: 20px;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #f9fafb;
+            border-radius: 6px;
+            border-left: 4px solid #e5e7eb;
+        }
+
+        .test-item.success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .test-item.error {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .test-item.pending {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .test-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .test-name {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .test-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .result-box {
+            background: #1f2937;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .error-text {
+            color: #ef4444;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            color: #1e40af;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f4f6;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 RideLynk API Testing Tool</h1>
+        <p class="subtitle">Test all API endpoints and verify service connectivity</p>
+
+        <div class="info-box">
+            <h3>📋 Instructions:</h3>
+            <p>
+                1. Click "Run All Tests" to test all API endpoints<br>
+                2. Check the results below - ✅ means working, ❌ means error<br>
+                3. If you see errors, check the browser console (F12) for details<br>
+                4. Make sure the backend server is running at: <strong>http://142.93.59.204:5000/api</strong>
+            </p>
+        </div>
+
+        <!-- Server Status -->
+        <div class="test-section">
+            <div class="test-header">
+                <h2>🌐 Server Status</h2>
+                <button class="btn btn-primary" onclick="testServerConnection()">Test Connection</button>
+            </div>
+            <div class="test-body">
+                <div id="serverStatus" class="test-item pending">
+                    <span class="test-icon">⏳</span>
+                    <span class="test-name">API Server Connection</span>
+                    <span class="test-status">Not Tested</span>
+                </div>
+                <div id="serverResult" class="result-box" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Script Loading Status -->
+        <div class="test-section">
+            <div class="test-header">
+                <h2>📦 Service Files Status</h2>
+                <button class="btn btn-primary" onclick="checkScripts()">Check Scripts</button>
+            </div>
+            <div class="test-body" id="scriptStatus">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- API Tests -->
+        <div class="test-section">
+            <div class="test-header">
+                <h2>🧪 API Endpoint Tests</h2>
+                <button class="btn btn-success" onclick="runAllTests()">Run All Tests</button>
+            </div>
+            <div class="test-body" id="apiTests">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Include all service files -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/ride-service.js"></script>
+    <script src="js/driver-service.js"></script>
+    <script src="js/payment-service.js"></script>
+    <script src="js/review-service.js"></script>
+    <script src="js/chat-service.js"></script>
+    <script src="js/parcel-service.js"></script>
+    <script src="js/pet-service.js"></script>
+    <script src="js/admin-service.js"></script>
+
+    <script>
+        // Test server connection
+        async function testServerConnection() {
+            const statusEl = document.getElementById('serverStatus');
+            const resultEl = document.getElementById('serverResult');
+
+            statusEl.className = 'test-item pending';
+            statusEl.innerHTML = '<span class="test-icon"><div class="loading"></div></span><span class="test-name">Testing API Server...</span><span class="test-status">Testing...</span>';
+            resultEl.style.display = 'none';
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/ride-types`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusEl.className = 'test-item success';
+                    statusEl.innerHTML = '<span class="test-icon">✅</span><span class="test-name">API Server Connection</span><span class="test-status">Online</span>';
+                    resultEl.textContent = JSON.stringify(data, null, 2);
+                    resultEl.style.display = 'block';
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                statusEl.className = 'test-item error';
+                statusEl.innerHTML = '<span class="test-icon">❌</span><span class="test-name">API Server Connection</span><span class="test-status">Offline</span>';
+                resultEl.innerHTML = `<span class="error-text">Error: ${error.message}</span>`;
+                resultEl.style.display = 'block';
+            }
+        }
+
+        // Check if all scripts are loaded
+        function checkScripts() {
+            const scripts = [
+                { name: 'CONFIG', obj: typeof CONFIG !== 'undefined' ? CONFIG : null },
+                { name: 'Utils', obj: typeof Utils !== 'undefined' ? Utils : null },
+                { name: 'ApiService', obj: typeof ApiService !== 'undefined' ? ApiService : null },
+                { name: 'AuthService', obj: typeof AuthService !== 'undefined' ? AuthService : null },
+                { name: 'RideService', obj: typeof RideService !== 'undefined' ? RideService : null },
+                { name: 'DriverService', obj: typeof DriverService !== 'undefined' ? DriverService : null },
+                { name: 'PaymentService', obj: typeof PaymentService !== 'undefined' ? PaymentService : null },
+                { name: 'ReviewService', obj: typeof ReviewService !== 'undefined' ? ReviewService : null },
+                { name: 'ChatService', obj: typeof ChatService !== 'undefined' ? ChatService : null },
+                { name: 'ParcelService', obj: typeof ParcelService !== 'undefined' ? ParcelService : null },
+                { name: 'PetService', obj: typeof PetService !== 'undefined' ? PetService : null },
+                { name: 'AdminService', obj: typeof AdminService !== 'undefined' ? AdminService : null }
+            ];
+
+            const container = document.getElementById('scriptStatus');
+            container.innerHTML = '';
+
+            scripts.forEach(script => {
+                const isLoaded = script.obj !== null;
+                const item = document.createElement('div');
+                item.className = `test-item ${isLoaded ? 'success' : 'error'}`;
+                item.innerHTML = `
+                    <span class="test-icon">${isLoaded ? '✅' : '❌'}</span>
+                    <span class="test-name">${script.name}</span>
+                    <span class="test-status">${isLoaded ? 'Loaded' : 'Not Loaded'}</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Run all API tests
+        async function runAllTests() {
+            const container = document.getElementById('apiTests');
+            container.innerHTML = '<p style="text-align: center; color: #666;">Running tests...</p>';
+
+            const tests = [
+                {
+                    name: 'Get Ride Types',
+                    test: async () => await RideService.getRideTypes()
+                },
+                {
+                    name: 'Test Login (Invalid Credentials)',
+                    test: async () => {
+                        try {
+                            await AuthService.login({ email: 'test@test.com', password: 'wrong' });
+                        } catch (error) {
+                            // Expected to fail
+                            return { success: false, message: 'Invalid credentials (Expected)' };
+                        }
+                    }
+                }
+            ];
+
+            container.innerHTML = '';
+
+            for (const test of tests) {
+                const item = document.createElement('div');
+                item.className = 'test-item pending';
+                item.innerHTML = `
+                    <span class="test-icon"><div class="loading"></div></span>
+                    <span class="test-name">${test.name}</span>
+                    <span class="test-status">Testing...</span>
+                `;
+                container.appendChild(item);
+
+                try {
+                    const result = await test.test();
+                    const success = result && result.success !== false;
+
+                    item.className = `test-item ${success ? 'success' : 'error'}`;
+                    item.innerHTML = `
+                        <span class="test-icon">${success ? '✅' : '⚠️'}</span>
+                        <span class="test-name">${test.name}</span>
+                        <span class="test-status">${success ? 'Passed' : 'Failed (Check Console)'}</span>
+                    `;
+
+                    // Add result box
+                    const resultBox = document.createElement('div');
+                    resultBox.className = 'result-box';
+                    resultBox.textContent = JSON.stringify(result, null, 2);
+                    container.appendChild(resultBox);
+                } catch (error) {
+                    item.className = 'test-item error';
+                    item.innerHTML = `
+                        <span class="test-icon">❌</span>
+                        <span class="test-name">${test.name}</span>
+                        <span class="test-status">Error</span>
+                    `;
+
+                    const resultBox = document.createElement('div');
+                    resultBox.className = 'result-box';
+                    resultBox.innerHTML = `<span class="error-text">Error: ${error.message || error}</span>`;
+                    container.appendChild(resultBox);
+                }
+            }
+        }
+
+        // Auto-run on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🔧 API Testing Tool Loaded');
+            console.log('API Base URL:', CONFIG?.API_BASE_URL);
+            checkScripts();
+            testServerConnection();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Management - Admin - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Inter", sans-serif; background: #f5f7fa; }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .filters {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .filter-btn {
+        padding: 10px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 25px;
+        background: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .filter-btn:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+      }
+
+      .filter-btn.active {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .users-table {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: #f8f9fa;
+      }
+
+      th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9rem;
+      }
+
+      td {
+        padding: 15px;
+        border-top: 1px solid #f0f0f0;
+        color: #666;
+      }
+
+      tbody tr {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      tbody tr:hover {
+        background: #f8f9ff;
+      }
+
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+      }
+
+      .status-active { background: #d4edda; color: #155724; }
+      .status-suspended { background: #f8d7da; color: #721c24; }
+      .status-pending { background: #fff3cd; color: #856404; }
+
+      .action-btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        margin-right: 5px;
+      }
+
+      .btn-view {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-view:hover {
+        background: #5568d3;
+      }
+
+      .btn-suspend {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn-suspend:hover {
+        background: #c82333;
+      }
+
+      .btn-activate {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-activate:hover {
+        background: #218838;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .page-btn {
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .page-btn:hover:not(:disabled) {
+        border-color: #667eea;
+        background: #f8f9ff;
+      }
+
+      .page-btn.active {
+        border-color: #667eea;
+        background: #667eea;
+        color: white;
+      }
+
+      .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 1200px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .users-table {
+          overflow-x: auto;
+        }
+
+        table {
+          min-width: 800px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1>User Management</h1>
+        <button class="back-btn" onclick="window.location.href='admin-dashboard.html'">← Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p style="color: #666;">Loading users...</p>
+      </div>
+
+      <div id="contentArea" style="display: none;">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalUsers">0</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="activeUsers">0</div>
+            <div class="stat-label">Active Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="suspendedUsers">0</div>
+            <div class="stat-label">Suspended</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="newUsersToday">0</div>
+            <div class="stat-label">New Today</div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-row">
+            <button class="filter-btn active" data-status="all">All Users</button>
+            <button class="filter-btn" data-status="active">Active</button>
+            <button class="filter-btn" data-status="suspended">Suspended</button>
+
+            <div class="search-box">
+              <input
+                type="text"
+                class="search-input"
+                id="searchInput"
+                placeholder="Search by name, email, or phone..."
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-table">
+          <table>
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Total Rides</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <!-- Users will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-icon">👥</div>
+          <h2>No Users Found</h2>
+          <p style="color: #666; margin-top: 10px;">There are no users matching your filters</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/admin-service.js"></script>
+
+    <script>
+      let allUsers = [];
+      let filteredUsers = [];
+      let currentFilter = 'all';
+      let searchQuery = '';
+      let currentPage = 1;
+      const usersPerPage = 20;
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'admin-login.html';
+          return;
+        }
+
+        const userRole = AuthService.getUserRole();
+        if (userRole !== 'admin') {
+          Utils.showToast('Access denied', 'error');
+          setTimeout(() => window.location.href = 'login.html', 2000);
+          return;
+        }
+
+        await loadAllUsers();
+        setupFilters();
+        setupSearch();
+      });
+
+      async function loadAllUsers() {
+        try {
+          // TODO: Replace with actual API call when endpoint is available
+          // const response = await AdminService.getAllUsers();
+
+          // Mock data for now
+          const response = {
+            success: true,
+            users: generateMockUsers(50)
+          };
+
+          if (response.success !== false && response.users) {
+            allUsers = response.users;
+            filteredUsers = allUsers;
+            updateStats(allUsers);
+            displayUsers();
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('contentArea').style.display = 'block';
+          } else {
+            throw new Error('Failed to load users');
+          }
+        } catch (error) {
+          console.error('Error loading users:', error);
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('contentArea').style.display = 'block';
+          document.getElementById('emptyState').style.display = 'block';
+        }
+      }
+
+      function generateMockUsers(count) {
+        const users = [];
+        const statuses = ['active', 'active', 'active', 'suspended'];
+        const names = ['John Doe', 'Jane Smith', 'Ali Khan', 'Sara Ahmed', 'Mike Johnson', 'Emily Brown'];
+
+        for (let i = 0; i < count; i++) {
+          users.push({
+            _id: `user${i + 1}`,
+            name: names[i % names.length] + ' ' + (i + 1),
+            email: `user${i + 1}@example.com`,
+            phone: `+92300${String(i).padStart(7, '0')}`,
+            totalRides: Math.floor(Math.random() * 50),
+            status: statuses[i % statuses.length],
+            createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString()
+          });
+        }
+        return users;
+      }
+
+      function updateStats(users) {
+        const active = users.filter(u => u.status === 'active').length;
+        const suspended = users.filter(u => u.status === 'suspended').length;
+        const today = new Date().toDateString();
+        const newToday = users.filter(u => new Date(u.createdAt).toDateString() === today).length;
+
+        document.getElementById('totalUsers').textContent = users.length;
+        document.getElementById('activeUsers').textContent = active;
+        document.getElementById('suspendedUsers').textContent = suspended;
+        document.getElementById('newUsersToday').textContent = newToday;
+      }
+
+      function setupFilters() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            currentFilter = btn.dataset.status;
+            currentPage = 1;
+            applyFilters();
+          });
+        });
+      }
+
+      function setupSearch() {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value.toLowerCase();
+          currentPage = 1;
+          applyFilters();
+        });
+      }
+
+      function applyFilters() {
+        let filtered = allUsers;
+
+        // Apply status filter
+        if (currentFilter !== 'all') {
+          filtered = filtered.filter(u => u.status === currentFilter);
+        }
+
+        // Apply search filter
+        if (searchQuery) {
+          filtered = filtered.filter(u => {
+            const name = (u.name || '').toLowerCase();
+            const email = (u.email || '').toLowerCase();
+            const phone = (u.phone || '').toLowerCase();
+
+            return name.includes(searchQuery) ||
+                   email.includes(searchQuery) ||
+                   phone.includes(searchQuery);
+          });
+        }
+
+        filteredUsers = filtered;
+        displayUsers();
+      }
+
+      function displayUsers() {
+        const tbody = document.getElementById('usersTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const table = document.querySelector('.users-table');
+
+        if (filteredUsers.length === 0) {
+          table.style.display = 'none';
+          emptyState.style.display = 'block';
+          document.getElementById('pagination').innerHTML = '';
+          return;
+        }
+
+        table.style.display = 'block';
+        emptyState.style.display = 'none';
+
+        // Pagination
+        const startIndex = (currentPage - 1) * usersPerPage;
+        const endIndex = startIndex + usersPerPage;
+        const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+        tbody.innerHTML = paginatedUsers.map(user => `
+          <tr onclick="viewUserDetails('${user._id}')">
+            <td><strong>#${user._id.slice(-8).toUpperCase()}</strong></td>
+            <td>${user.name || 'N/A'}</td>
+            <td>${user.email || 'N/A'}</td>
+            <td>${user.phone || 'N/A'}</td>
+            <td>${user.totalRides || 0}</td>
+            <td><span class="status-badge status-${user.status}">${formatStatus(user.status)}</span></td>
+            <td>${Utils.formatDate(user.createdAt, 'date')}</td>
+            <td onclick="event.stopPropagation()">
+              <button class="action-btn btn-view" onclick="viewUserDetails('${user._id}')">View</button>
+              ${user.status === 'active' ? `
+                <button class="action-btn btn-suspend" onclick="suspendUser('${user._id}')">Suspend</button>
+              ` : `
+                <button class="action-btn btn-activate" onclick="activateUser('${user._id}')">Activate</button>
+              `}
+            </td>
+          </tr>
+        `).join('');
+
+        renderPagination();
+      }
+
+      function renderPagination() {
+        const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+        const pagination = document.getElementById('pagination');
+
+        if (totalPages <= 1) {
+          pagination.innerHTML = '';
+          return;
+        }
+
+        let html = `
+          <button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+            ← Previous
+          </button>
+        `;
+
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+            html += `
+              <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                ${i}
+              </button>
+            `;
+          } else if (i === currentPage - 3 || i === currentPage + 3) {
+            html += '<span style="padding: 0 5px;">...</span>';
+          }
+        }
+
+        html += `
+          <button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+            Next →
+          </button>
+        `;
+
+        pagination.innerHTML = html;
+      }
+
+      function changePage(page) {
+        currentPage = page;
+        displayUsers();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function viewUserDetails(userId) {
+        Utils.showToast('User details feature coming soon', 'info');
+        // TODO: Navigate to user details page
+      }
+
+      async function suspendUser(userId) {
+        if (!confirm('Are you sure you want to suspend this user?')) {
+          return;
+        }
+
+        const reason = prompt('Suspension reason:');
+        if (!reason) return;
+
+        Utils.showLoader('Suspending user...');
+        try {
+          // TODO: Replace with actual API call
+          // const response = await AdminService.suspendUser(userId, reason);
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          Utils.hideLoader();
+          Utils.showToast('User suspended successfully', 'success');
+
+          // Update local data
+          const user = allUsers.find(u => u._id === userId);
+          if (user) user.status = 'suspended';
+          applyFilters();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error suspending user:', error);
+          Utils.showToast(error.message || 'Failed to suspend user', 'error');
+        }
+      }
+
+      async function activateUser(userId) {
+        if (!confirm('Are you sure you want to activate this user?')) {
+          return;
+        }
+
+        Utils.showLoader('Activating user...');
+        try {
+          // TODO: Replace with actual API call
+          // const response = await AdminService.activateUser(userId);
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          Utils.hideLoader();
+          Utils.showToast('User activated successfully', 'success');
+
+          // Update local data
+          const user = allUsers.find(u => u._id === userId);
+          if (user) user.status = 'active';
+          applyFilters();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error activating user:', error);
+          Utils.showToast(error.message || 'Failed to activate user', 'error');
+        }
+      }
+
+      function formatStatus(status) {
+        const map = {
+          active: 'Active',
+          suspended: 'Suspended',
+          pending: 'Pending'
+        };
+        return map[status] || status;
+      }
+    </script>
+  </body>
+</html>

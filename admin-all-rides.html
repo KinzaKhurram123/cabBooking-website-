@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Rides - Admin - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #000000;
+        color: #e5e7eb;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        padding: 20px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 173, 239, 0.1);
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        color: #00ADEF;
+        font-size: 1.8rem;
+      }
+
+      .back-btn {
+        background: rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(0, 173, 239, 0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: #00ADEF;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: rgba(0, 173, 239, 0.3);
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.3);
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: #0a0a0a;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        border-color: rgba(0, 173, 239, 0.5);
+        box-shadow: 0 0 20px rgba(0, 173, 239, 0.2);
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #00ADEF;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
+
+      .filters {
+        background: #0a0a0a;
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        margin-bottom: 20px;
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .filter-btn {
+        padding: 10px 20px;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 25px;
+        background: transparent;
+        color: #9ca3af;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .filter-btn:hover {
+        border-color: #00ADEF;
+        color: #00ADEF;
+        background: rgba(0, 173, 239, 0.1);
+      }
+
+      .filter-btn.active {
+        border-color: #00ADEF;
+        background: #00ADEF;
+        color: #000000;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 10px;
+        font-size: 1rem;
+        background: #0a0a0a;
+        color: #e5e7eb;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #00ADEF;
+        box-shadow: 0 0 10px rgba(0, 173, 239, 0.2);
+      }
+
+      .rides-table {
+        background: #0a0a0a;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: rgba(0, 173, 239, 0.1);
+      }
+
+      th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #00ADEF;
+        font-size: 0.9rem;
+      }
+
+      td {
+        padding: 15px;
+        border-top: 1px solid rgba(0, 173, 239, 0.1);
+        color: #9ca3af;
+      }
+
+      tbody tr {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      tbody tr:hover {
+        background: rgba(0, 173, 239, 0.05);
+      }
+
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+      }
+
+      .status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+      .status-accepted { background: rgba(0, 173, 239, 0.2); color: #00ADEF; border: 1px solid #00ADEF; }
+      .status-onTheWay { background: rgba(0, 212, 170, 0.2); color: #00d4aa; border: 1px solid #00d4aa; }
+      .status-arrived { background: rgba(0, 212, 170, 0.2); color: #00d4aa; border: 1px solid #00d4aa; }
+      .status-inProgress { background: rgba(0, 173, 239, 0.2); color: #00ADEF; border: 1px solid #00ADEF; }
+      .status-completed { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+      .status-cancelled { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+
+      .action-btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-view {
+        background: #00ADEF;
+        color: #000000;
+      }
+
+      .btn-view:hover {
+        background: #00e5ff;
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
+      }
+
+      .btn-cancel {
+        background: #ef4444;
+        color: white;
+        margin-left: 5px;
+      }
+
+      .btn-cancel:hover {
+        background: #dc2626;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .page-btn {
+        padding: 10px 15px;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 8px;
+        background: transparent;
+        color: #9ca3af;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .page-btn:hover:not(:disabled) {
+        border-color: #00ADEF;
+        color: #00ADEF;
+        background: rgba(0, 173, 239, 0.1);
+      }
+
+      .page-btn.active {
+        border-color: #00ADEF;
+        background: #00ADEF;
+        color: #000000;
+      }
+
+      .page-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #0a0a0a;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+      }
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(0, 173, 239, 0.2);
+        border-top: 4px solid #00ADEF;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 1200px) {
+        .stats-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .rides-table {
+          overflow-x: auto;
+        }
+
+        table {
+          min-width: 800px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1>🚗 All Rides</h1>
+        <button class="back-btn" onclick="window.location.href='admin-dashboard.html'">← Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p style="color: #9ca3af;">Loading all rides...</p>
+      </div>
+
+      <div id="contentArea" style="display: none;">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalRides">0</div>
+            <div class="stat-label">Total Rides</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="activeRides">0</div>
+            <div class="stat-label">Active Rides</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completedRides">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="cancelledRides">0</div>
+            <div class="stat-label">Cancelled</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalRevenue">$0</div>
+            <div class="stat-label">Total Revenue</div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-row">
+            <button class="filter-btn active" data-status="all">All Rides</button>
+            <button class="filter-btn" data-status="pending">Pending</button>
+            <button class="filter-btn" data-status="accepted">Accepted</button>
+            <button class="filter-btn" data-status="inProgress">In Progress</button>
+            <button class="filter-btn" data-status="completed">Completed</button>
+            <button class="filter-btn" data-status="cancelled">Cancelled</button>
+
+            <div class="search-box">
+              <input
+                type="text"
+                class="search-input"
+                id="searchInput"
+                placeholder="Search by booking ID, user, or driver..."
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Rides Table -->
+        <div class="rides-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>User</th>
+                <th>Driver</th>
+                <th>Pickup</th>
+                <th>Dropoff</th>
+                <th>Fare</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ridesTableBody">
+              <!-- Rides will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-icon">🚗</div>
+          <h2 style="color: #00ADEF;">No Rides Found</h2>
+          <p style="color: #9ca3af; margin-top: 10px;">There are no rides matching your filters</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/ride-service.js"></script>
+
+    <script>
+      let allRides = [];
+      let filteredRides = [];
+      let currentFilter = 'all';
+      let searchQuery = '';
+      let currentPage = 1;
+      const ridesPerPage = 20;
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+        const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+
+        if (!token || role !== 'admin') {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await loadAllRides();
+        setupFilters();
+        setupSearch();
+      });
+
+      async function loadAllRides() {
+        try {
+          const response = await RideService.getAllRides();
+
+          if (response.success !== false && response.rides) {
+            allRides = response.rides;
+            filteredRides = allRides;
+            updateStats(allRides);
+            displayRides();
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('contentArea').style.display = 'block';
+          } else {
+            throw new Error('Failed to load rides');
+          }
+        } catch (error) {
+          console.error('Error loading rides:', error);
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('contentArea').style.display = 'block';
+          document.getElementById('emptyState').style.display = 'block';
+        }
+      }
+
+      function updateStats(rides) {
+        const active = rides.filter(r =>
+          r.status === 'pending' || r.status === 'accepted' ||
+          r.status === 'onTheWay' || r.status === 'arrived' || r.status === 'inProgress'
+        ).length;
+        const completed = rides.filter(r => r.status === 'completed').length;
+        const cancelled = rides.filter(r => r.status === 'cancelled').length;
+        const revenue = rides
+          .filter(r => r.status === 'completed')
+          .reduce((sum, r) => sum + (r.fare || 0), 0);
+
+        document.getElementById('totalRides').textContent = rides.length;
+        document.getElementById('activeRides').textContent = active;
+        document.getElementById('completedRides').textContent = completed;
+        document.getElementById('cancelledRides').textContent = cancelled;
+        document.getElementById('totalRevenue').textContent = '$' + revenue.toFixed(2);
+      }
+
+      function setupFilters() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            currentFilter = btn.dataset.status;
+            currentPage = 1;
+            applyFilters();
+          });
+        });
+      }
+
+      function setupSearch() {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value.toLowerCase();
+          currentPage = 1;
+          applyFilters();
+        });
+      }
+
+      function applyFilters() {
+        let filtered = allRides;
+
+        if (currentFilter !== 'all') {
+          filtered = filtered.filter(r => r.status === currentFilter);
+        }
+
+        if (searchQuery) {
+          filtered = filtered.filter(r => {
+            const bookingId = r._id.toLowerCase();
+            const userName = (r.user?.name || '').toLowerCase();
+            const driverName = (r.driver?.name || '').toLowerCase();
+            const pickup = (r.pickupLocationName || '').toLowerCase();
+            const dropoff = (r.dropoffLocationName || '').toLowerCase();
+
+            return bookingId.includes(searchQuery) ||
+                   userName.includes(searchQuery) ||
+                   driverName.includes(searchQuery) ||
+                   pickup.includes(searchQuery) ||
+                   dropoff.includes(searchQuery);
+          });
+        }
+
+        filteredRides = filtered;
+        displayRides();
+      }
+
+      function displayRides() {
+        const tbody = document.getElementById('ridesTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const table = document.querySelector('.rides-table');
+
+        if (filteredRides.length === 0) {
+          table.style.display = 'none';
+          emptyState.style.display = 'block';
+          document.getElementById('pagination').innerHTML = '';
+          return;
+        }
+
+        table.style.display = 'block';
+        emptyState.style.display = 'none';
+
+        const startIndex = (currentPage - 1) * ridesPerPage;
+        const endIndex = startIndex + ridesPerPage;
+        const paginatedRides = filteredRides.slice(startIndex, endIndex);
+
+        tbody.innerHTML = paginatedRides.map(ride => `
+          <tr onclick="viewRideDetails('${ride._id}')">
+            <td><strong style="color: #00ADEF;">#${ride._id.slice(-8).toUpperCase()}</strong></td>
+            <td>${ride.user?.name || 'N/A'}</td>
+            <td>${ride.driver?.name || 'Unassigned'}</td>
+            <td>${truncate(ride.pickupLocationName || 'N/A', 30)}</td>
+            <td>${truncate(ride.dropoffLocationName || 'N/A', 30)}</td>
+            <td><strong style="color: #00ADEF;">$${(ride.fare || 0).toFixed(2)}</strong></td>
+            <td><span class="status-badge status-${ride.status}">${formatStatus(ride.status)}</span></td>
+            <td>${new Date(ride.createdAt).toLocaleDateString()}</td>
+            <td onclick="event.stopPropagation()">
+              <button class="action-btn btn-view" onclick="viewRideDetails('${ride._id}')">View</button>
+              ${ride.status !== 'completed' && ride.status !== 'cancelled' ? `
+                <button class="action-btn btn-cancel" onclick="cancelRide('${ride._id}')">Cancel</button>
+              ` : ''}
+            </td>
+          </tr>
+        `).join('');
+
+        renderPagination();
+      }
+
+      function renderPagination() {
+        const totalPages = Math.ceil(filteredRides.length / ridesPerPage);
+        const pagination = document.getElementById('pagination');
+
+        if (totalPages <= 1) {
+          pagination.innerHTML = '';
+          return;
+        }
+
+        let html = `
+          <button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+            ← Previous
+          </button>
+        `;
+
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+            html += `
+              <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                ${i}
+              </button>
+            `;
+          } else if (i === currentPage - 3 || i === currentPage + 3) {
+            html += '<span style="padding: 0 5px; color: #9ca3af;">...</span>';
+          }
+        }
+
+        html += `
+          <button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+            Next →
+          </button>
+        `;
+
+        pagination.innerHTML = html;
+      }
+
+      function changePage(page) {
+        currentPage = page;
+        displayRides();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function viewRideDetails(rideId) {
+        alert('Ride details page coming soon!\nBooking ID: ' + rideId);
+      }
+
+      async function cancelRide(rideId) {
+        if (!confirm('Are you sure you want to cancel this ride?')) {
+          return;
+        }
+
+        const reason = prompt('Cancellation reason:');
+        if (!reason) return;
+
+        try {
+          const response = await RideService.adminCancelRide(rideId, reason);
+
+          if (response.success !== false) {
+            alert('Ride cancelled successfully');
+            await loadAllRides();
+          } else {
+            throw new Error(response.message || 'Failed to cancel ride');
+          }
+        } catch (error) {
+          console.error('Error cancelling ride:', error);
+          alert('Failed to cancel ride: ' + error.message);
+        }
+      }
+
+      function formatStatus(status) {
+        const map = {
+          pending: 'Pending',
+          accepted: 'Accepted',
+          onTheWay: 'On The Way',
+          arrived: 'Arrived',
+          inProgress: 'In Progress',
+          completed: 'Completed',
+          cancelled: 'Cancelled'
+        };
+        return map[status] || status;
+      }
+
+      function truncate(str, length) {
+        return str.length > length ? str.substring(0, length) + '...' : str;
+      }
+    </script>
+  </body>
+</html>

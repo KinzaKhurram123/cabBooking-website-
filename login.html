@@ -603,14 +603,15 @@
       }
 
       .success-message {
-        background: rgba(0, 255, 0, 0.2);
-        border: 1px solid rgba(0, 255, 0, 0.5);
-        color: #51cf66;
+        background: rgba(76, 175, 80, 0.2);
+        border: 2px solid #4caf50;
+        color: #4caf50;
         padding: 12px 20px;
         border-radius: 10px;
         margin-bottom: 20px;
         display: none;
         animation: fadeInDown 0.3s ease;
+        font-weight: 600;
       }
     </style>
   </head>
@@ -659,6 +660,22 @@
       <!-- Right Side - Login Form -->
       <div class="right-side">
         <div class="login-form">
+          <div style="text-align: left; margin-bottom: 20px">
+            <a
+              href="index.html"
+              style="
+                color: rgba(255, 255, 255, 0.8);
+                text-decoration: none;
+                font-size: 0.95rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                transition: all 0.3s ease;
+              "
+            >
+              <span style="font-size: 1.2rem">←</span> Back to Home
+            </a>
+          </div>
           <h2 class="form-title">Login</h2>
           <p class="form-subtitle">Sign in to your account</p>
 
@@ -688,12 +705,59 @@
               />
             </div>
 
+            <!-- Admin Test Credentials Helper -->
+            <div
+              id="adminHelper"
+              style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: 2px solid #667eea;
+                padding: 12px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                display: none;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <div style="font-size: 0.85rem; color: white">
+                  <strong>🔐 Admin Login</strong><br />
+                  <span style="font-size: 0.75rem; opacity: 0.9"
+                    >superadmin@gmail.com / 12345678</span
+                  >
+                </div>
+                <button
+                  type="button"
+                  onclick="fillAdminCredentials()"
+                  style="
+                    background: white;
+                    color: #667eea;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                  "
+                >
+                  Use Admin Login
+                </button>
+              </div>
+            </div>
+
             <div class="form-options">
               <label class="remember-me">
                 <input type="checkbox" name="remember" id="remember" />
                 <span>Remember me</span>
               </label>
-              <a href="#" class="forgot-password">Forgot Password?</a>
+              <a href="forgot-password.html" class="forgot-password"
+                >Forgot Password?</a
+              >
             </div>
 
             <button type="submit" class="btn-login" id="submitBtn">
@@ -764,9 +828,46 @@
       </div>
     </div>
 
+    <!-- Service Layer Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/admin-service.js"></script>
+    <script src="js/driver-service.js"></script>
+
     <script>
-      const API_BASE_URL =
-        "https://krystal-imaginable-hurtlingly.ngrok-free.dev";
+      // Fill admin credentials function
+      function fillAdminCredentials() {
+        document.getElementById("email").value = "superadmin@gmail.com";
+        document.getElementById("password").value = "12345678";
+
+        // Visual feedback
+        const btn = event.target;
+        const originalText = btn.textContent;
+        const originalBg = btn.style.background;
+
+        btn.textContent = "✓ Filled!";
+        btn.style.background = "#10b981";
+
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = originalBg;
+        }, 1500);
+      }
+
+      // Show admin helper when typing admin email
+      document.getElementById("email").addEventListener("input", function (e) {
+        const email = e.target.value.toLowerCase();
+        const adminHelper = document.getElementById("adminHelper");
+
+        // Show helper if typing admin-related email
+        if (email.includes("admin") || email.includes("superadmin")) {
+          adminHelper.style.display = "block";
+        } else {
+          adminHelper.style.display = "none";
+        }
+      });
 
       const form = document.getElementById("loginForm");
       const submitBtn = document.getElementById("submitBtn");
@@ -783,127 +884,469 @@
         // Disable submit button
         submitBtn.disabled = true;
         submitBtn.textContent = "Logging in...";
+        // Hide previous messages
+        errorMessage.style.display = "none";
+        successMessage.style.display = "none";
 
         // Get form data
-        const formData = {
+        const credentials = {
           email: document.getElementById("email").value.trim(),
           password: document.getElementById("password").value,
         };
 
         const rememberMe = document.getElementById("remember").checked;
 
-        // TEMPORARY: Use mock authentication directly (bypass API)
-        console.log("Using mock authentication for testing...");
-
-        // Create mock user data
-        const mockUser = {
-          name: formData.email.split('@')[0].charAt(0).toUpperCase() + formData.email.split('@')[0].slice(1),
-          email: formData.email,
-          role: "user",
-          profilePicture: "images/profile/1.jpg"
-        };
-
-        // Store mock data
-        localStorage.setItem("authToken", "mock-token-" + Date.now());
-        localStorage.setItem("userData", JSON.stringify(mockUser));
-
-        if (rememberMe) {
-          localStorage.setItem("rememberMe", "true");
-        }
-
-        successMessage.textContent = "Login successful! Redirecting...";
-        successMessage.style.display = "block";
-
-        // Redirect to dashboard
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1000);
-
-        /* ORIGINAL API CODE - Commented out for testing
         try {
-          const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          });
+          // Check if this is an admin login
+          const isAdminLogin = credentials.email
+            .toLowerCase()
+            .includes("admin");
+          let response;
 
-          const data = await response.json();
+          if (isAdminLogin) {
+            console.log("Admin login detected, using AdminService...");
+            // Use AdminService for admin login
+            response = await AdminService.login(credentials);
+          } else {
+            console.log("Regular user login, using AuthService...");
+            // Use AuthService for regular user login
+            response = await AuthService.login(credentials);
+          }
 
-          if (response.ok) {
-            // Success - Store token and user data
-            if (data.token) {
-              localStorage.setItem("authToken", data.token);
-            }
+          console.log("Full API Response:", response); // Debug log
+          console.log("Response token:", response.token); // Debug log
+          console.log("Response user:", response.user); // Debug log
 
-            if (data.user) {
-              localStorage.setItem("userData", JSON.stringify(data.user));
-            }
+          // Check if login was successful - handle multiple response formats
+          const hasToken = response.token || response.data?.token;
+          const userData =
+            response.user || response.data?.user || response.data;
+
+          if (hasToken) {
+            console.log("Login successful, token found"); // Debug log
 
             // Store remember me preference
             if (rememberMe) {
-              localStorage.setItem("rememberMe", "true");
+              localStorage.setItem(CONFIG.STORAGE_KEYS.REMEMBER_ME, "true");
             }
 
+            // Show success message
             successMessage.textContent = "Login successful! Redirecting...";
             successMessage.style.display = "block";
 
+            // Wait a bit to ensure localStorage is written
+            await new Promise((resolve) => setTimeout(resolve, 100));
+
+            // Get user role for redirect - check localStorage directly
+            const userRole = localStorage.getItem(
+              CONFIG.STORAGE_KEYS.USER_ROLE,
+            );
+            const userData = AuthService.getCurrentUser();
+
+            console.log("=== LOGIN DEBUG ===");
+            console.log(
+              "Stored Token:",
+              localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN),
+            );
+            console.log("Stored Role:", userRole);
+            console.log(
+              "Stored User Data:",
+              localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA),
+            );
+            console.log(
+              "User role from AuthService:",
+              AuthService.getUserRole(),
+            );
+            console.log("Is Admin?", userRole === "admin");
+            console.log("==================");
+
             // Redirect based on user role
-            setTimeout(() => {
-              if (data.user && data.user.role === "driver") {
-                window.location.href = "account-dashboard.html"; // Driver dashboard
-              } else {
-                window.location.href = "account-dashboard.html"; // User dashboard
+            if (userRole === "admin") {
+              console.log("Redirecting to admin dashboard...");
+              setTimeout(() => {
+                window.location.href = "admin-dashboard.html";
+              }, 1000);
+            } else if (userRole === "driver" || userRole === "rider") {
+              // First, fetch latest onboarding status from API
+              try {
+                console.log(
+                  "Login - Fetching latest onboarding status from API...",
+                );
+                const statusResponse =
+                  await DriverService.getOnboardingStatus();
+                console.log(
+                  "Login - Full API status response:",
+                  statusResponse,
+                );
+
+                // Handle both response formats: response.data or direct response
+                const apiData = statusResponse.data || statusResponse;
+                console.log("Login - Extracted API data:", apiData);
+
+                if (statusResponse.success && apiData) {
+                  // Update localStorage with latest data from API
+                  const currentUserData = AuthService.getCurrentUser() || {};
+
+                  const updatedUserData = {
+                    ...currentUserData,
+                    ...(apiData.user || {}),
+                    ...(apiData.riderDetails || {}),
+                    vehicleDetails:
+                      apiData.vehicleDetails || currentUserData.vehicleDetails,
+                    documents: apiData.documents || currentUserData.documents,
+                    onboardingSteps:
+                      apiData.onboardingSteps ||
+                      currentUserData.onboardingSteps,
+                    onboardingRequired:
+                      apiData.onboardingRequired !== undefined
+                        ? apiData.onboardingRequired
+                        : currentUserData.onboardingRequired,
+                    verificationStatus:
+                      apiData.riderDetails?.verificationStatus ||
+                      apiData.verificationStatus ||
+                      currentUserData.verificationStatus,
+                    status:
+                      apiData.riderDetails?.status ||
+                      apiData.status ||
+                      currentUserData.status,
+                  };
+
+                  console.log(
+                    "Login - Updated user data with API response:",
+                    updatedUserData,
+                  );
+                  console.log(
+                    "Login - onboardingRequired:",
+                    updatedUserData.onboardingRequired,
+                  );
+                  console.log(
+                    "Login - onboardingSteps:",
+                    updatedUserData.onboardingSteps,
+                  );
+                  localStorage.setItem(
+                    "userData",
+                    JSON.stringify(updatedUserData),
+                  );
+
+                  // Now check redirect based on fresh data
+                  let redirectUrl = "driver-onboarding.html";
+
+                  if (
+                    updatedUserData.onboardingRequired === false ||
+                    (updatedUserData.onboardingSteps?.vehicleDetails &&
+                      updatedUserData.onboardingSteps?.license &&
+                      updatedUserData.onboardingSteps?.insurance &&
+                      updatedUserData.onboardingSteps?.profilePhoto &&
+                      updatedUserData.onboardingSteps?.termsAccepted)
+                  ) {
+                    const verificationStatus =
+                      updatedUserData.verificationStatus ||
+                      updatedUserData.status;
+                    console.log(
+                      "Login - All steps complete, verification status:",
+                      verificationStatus,
+                    );
+
+                    if (
+                      verificationStatus === "pending" ||
+                      verificationStatus === "in_review" ||
+                      verificationStatus === "pending_verification" ||
+                      verificationStatus === "under_review"
+                    ) {
+                      redirectUrl = "verification-pending.html";
+                    } else if (
+                      verificationStatus === "verified" ||
+                      verificationStatus === "approved"
+                    ) {
+                      redirectUrl = "driver-dashboard.html";
+                    } else if (verificationStatus === "rejected") {
+                      redirectUrl = "verification-pending.html";
+                    } else {
+                      redirectUrl = "verification-pending.html"; // Default to pending if status unclear
+                    }
+                  } else {
+                    console.log(
+                      "Login - Onboarding incomplete, staying on onboarding page",
+                    );
+                  }
+
+                  console.log("Login - Final redirect URL:", redirectUrl);
+                  setTimeout(() => {
+                    window.location.href = redirectUrl;
+                  }, 1000);
+                } else {
+                  console.log(
+                    "Login - API did not return success, using localStorage",
+                  );
+                  const userData = AuthService.getCurrentUser();
+                  let redirectUrl = "driver-onboarding.html";
+
+                  if (
+                    userData?.onboardingRequired === false ||
+                    (userData?.onboardingSteps?.vehicleDetails &&
+                      userData?.onboardingSteps?.license &&
+                      userData?.onboardingSteps?.insurance &&
+                      userData?.onboardingSteps?.profilePhoto &&
+                      userData?.onboardingSteps?.termsAccepted)
+                  ) {
+                    redirectUrl = "verification-pending.html";
+                  }
+
+                  setTimeout(() => {
+                    window.location.href = redirectUrl;
+                  }, 1000);
+                }
+              } catch (error) {
+                console.error(
+                  "Login - Error fetching onboarding status:",
+                  error,
+                );
+                const userData = AuthService.getCurrentUser();
+                let redirectUrl = "driver-onboarding.html";
+
+                if (
+                  userData?.onboardingRequired === false ||
+                  (userData?.onboardingSteps?.vehicleDetails &&
+                    userData?.onboardingSteps?.license &&
+                    userData?.onboardingSteps?.insurance &&
+                    userData?.onboardingSteps?.profilePhoto &&
+                    userData?.onboardingSteps?.termsAccepted)
+                ) {
+                  redirectUrl = "verification-pending.html";
+                }
+
+                setTimeout(() => {
+                  window.location.href = redirectUrl;
+                }, 1000);
               }
-            }, 1500);
+            } else {
+              setTimeout(() => {
+                window.location.href = "dashboard-new.html";
+              }, 1000);
+            }
           } else {
-            // Error from server
+            console.log("Login failed - no token in response"); // Debug log
+            // Login failed
             errorMessage.textContent =
-              data.message || "Login failed. Please check your credentials.";
+              response.message ||
+              "Login failed. Please check your credentials.";
             errorMessage.style.display = "block";
             submitBtn.disabled = false;
             submitBtn.textContent = "Login";
           }
         } catch (error) {
           console.error("Login error:", error);
+          console.log("Error details:", error);
+          console.log("Error response:", error.response);
 
-          // Use mock authentication as fallback
-          console.log("API failed, using mock authentication...");
+          // Display error message
+          let errorMsg = "An error occurred during login. Please try again.";
 
-          // Create mock user data
-          const mockUser = {
-            name: formData.email.split('@')[0].charAt(0).toUpperCase() + formData.email.split('@')[0].slice(1),
-            email: formData.email,
-            role: "user",
-            profilePicture: "images/profile/1.jpg"
-          };
-
-          // Store mock data
-          localStorage.setItem("authToken", "mock-token-" + Date.now());
-          localStorage.setItem("userData", JSON.stringify(mockUser));
-
-          if (rememberMe) {
-            localStorage.setItem("rememberMe", "true");
+          // Check for specific error messages from API
+          if (error.response?.data?.message) {
+            errorMsg = error.response.data.message;
+          } else if (error.message) {
+            errorMsg = error.message;
+          } else if (error.error === "NETWORK_ERROR") {
+            errorMsg =
+              "Network error. Please check your connection and try again.";
           }
 
-          successMessage.textContent = "Login successful! Redirecting...";
-          successMessage.style.display = "block";
+          // Handle common error scenarios
+          if (
+            errorMsg.toLowerCase().includes("user not found") ||
+            errorMsg.toLowerCase().includes("does not exist") ||
+            errorMsg.toLowerCase().includes("no user found")
+          ) {
+            errorMsg = "Account not found. Please check your email or sign up.";
+          } else if (
+            errorMsg.toLowerCase().includes("password") ||
+            errorMsg.toLowerCase().includes("incorrect") ||
+            errorMsg.toLowerCase().includes("invalid credentials")
+          ) {
+            errorMsg = "Incorrect password. Please try again.";
+          } else if (errorMsg.toLowerCase().includes("email")) {
+            errorMsg = "Invalid email address. Please check and try again.";
+          }
 
-          // Redirect to dashboard
-          setTimeout(() => {
-            window.location.href = "account-dashboard.html";
-          }, 1000);
+          errorMessage.textContent = errorMsg;
+          errorMessage.style.display = "block";
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Login";
         }
-        */
       });
 
       // Check if user is already logged in
-      window.addEventListener("DOMContentLoaded", () => {
-        const token = localStorage.getItem("authToken");
-        if (token) {
-          // User is already logged in, redirect to dashboard
-          window.location.href = "dashboard.html";
+      window.addEventListener("DOMContentLoaded", async () => {
+        if (AuthService.isAuthenticated()) {
+          const userRole = AuthService.getUserRole();
+          const userData = AuthService.getCurrentUser();
+          console.log("DOMContentLoaded - User already logged in");
+          console.log("DOMContentLoaded - User role:", userRole);
+          console.log("DOMContentLoaded - User data:", userData);
+          console.log(
+            "DOMContentLoaded - onboardingSteps:",
+            userData?.onboardingSteps,
+          );
+          console.log(
+            "DOMContentLoaded - onboardingRequired:",
+            userData?.onboardingRequired,
+          );
+
+          // User is already logged in, redirect based on role
+          if (userRole === "admin") {
+            window.location.href = "admin-dashboard.html";
+          } else if (userRole === "driver" || userRole === "rider") {
+            // First, fetch latest onboarding status from API
+            try {
+              console.log(
+                "DOMContentLoaded - Fetching latest onboarding status from API...",
+              );
+              const statusResponse = await DriverService.getOnboardingStatus();
+              console.log(
+                "DOMContentLoaded - Full API status response:",
+                statusResponse,
+              );
+
+              // Handle both response formats: response.data or direct response
+              const apiData = statusResponse.data || statusResponse;
+              console.log("DOMContentLoaded - Extracted API data:", apiData);
+
+              if (statusResponse.success && apiData) {
+                // Update localStorage with latest data from API
+                const currentUserData = AuthService.getCurrentUser() || {};
+
+                const updatedUserData = {
+                  ...currentUserData,
+                  ...(apiData.user || {}),
+                  ...(apiData.riderDetails || {}),
+                  vehicleDetails:
+                    apiData.vehicleDetails || currentUserData.vehicleDetails,
+                  documents: apiData.documents || currentUserData.documents,
+                  onboardingSteps:
+                    apiData.onboardingSteps || currentUserData.onboardingSteps,
+                  onboardingRequired:
+                    apiData.onboardingRequired !== undefined
+                      ? apiData.onboardingRequired
+                      : currentUserData.onboardingRequired,
+                  verificationStatus:
+                    apiData.riderDetails?.verificationStatus ||
+                    apiData.verificationStatus ||
+                    currentUserData.verificationStatus,
+                  status:
+                    apiData.riderDetails?.status ||
+                    apiData.status ||
+                    currentUserData.status,
+                };
+
+                console.log(
+                  "DOMContentLoaded - Updated user data with API response:",
+                  updatedUserData,
+                );
+                console.log(
+                  "DOMContentLoaded - onboardingRequired:",
+                  updatedUserData.onboardingRequired,
+                );
+                console.log(
+                  "DOMContentLoaded - onboardingSteps:",
+                  updatedUserData.onboardingSteps,
+                );
+                localStorage.setItem(
+                  "userData",
+                  JSON.stringify(updatedUserData),
+                );
+
+                // Now check redirect based on fresh data
+                let redirectUrl = "driver-onboarding.html";
+
+                if (
+                  updatedUserData.onboardingRequired === false ||
+                  (updatedUserData.onboardingSteps?.vehicleDetails &&
+                    updatedUserData.onboardingSteps?.license &&
+                    updatedUserData.onboardingSteps?.insurance &&
+                    updatedUserData.onboardingSteps?.profilePhoto &&
+                    updatedUserData.onboardingSteps?.termsAccepted)
+                ) {
+                  const verificationStatus =
+                    updatedUserData.verificationStatus ||
+                    updatedUserData.status;
+                  console.log(
+                    "DOMContentLoaded - All steps complete, verification status:",
+                    verificationStatus,
+                  );
+
+                  if (
+                    verificationStatus === "pending" ||
+                    verificationStatus === "in_review" ||
+                    verificationStatus === "pending_verification" ||
+                    verificationStatus === "under_review"
+                  ) {
+                    redirectUrl = "verification-pending.html";
+                  } else if (
+                    verificationStatus === "verified" ||
+                    verificationStatus === "approved"
+                  ) {
+                    redirectUrl = "driver-dashboard.html";
+                  } else if (verificationStatus === "rejected") {
+                    redirectUrl = "verification-pending.html";
+                  } else {
+                    redirectUrl = "verification-pending.html"; // Default to pending if status unclear
+                  }
+                } else {
+                  console.log(
+                    "DOMContentLoaded - Onboarding incomplete, staying on onboarding page",
+                  );
+                }
+
+                console.log(
+                  "DOMContentLoaded - Final redirect URL:",
+                  redirectUrl,
+                );
+                window.location.href = redirectUrl;
+              } else {
+                console.log(
+                  "DOMContentLoaded - API did not return success, using localStorage",
+                );
+                const userData = AuthService.getCurrentUser();
+                let redirectUrl = "driver-onboarding.html";
+
+                if (
+                  userData?.onboardingRequired === false ||
+                  (userData?.onboardingSteps?.vehicleDetails &&
+                    userData?.onboardingSteps?.license &&
+                    userData?.onboardingSteps?.insurance &&
+                    userData?.onboardingSteps?.profilePhoto &&
+                    userData?.onboardingSteps?.termsAccepted)
+                ) {
+                  redirectUrl = "verification-pending.html";
+                }
+
+                window.location.href = redirectUrl;
+              }
+            } catch (error) {
+              console.error(
+                "DOMContentLoaded - Error fetching onboarding status:",
+                error,
+              );
+              const userData = AuthService.getCurrentUser();
+              let redirectUrl = "driver-onboarding.html";
+
+              if (
+                userData?.onboardingRequired === false ||
+                (userData?.onboardingSteps?.vehicleDetails &&
+                  userData?.onboardingSteps?.license &&
+                  userData?.onboardingSteps?.insurance &&
+                  userData?.onboardingSteps?.profilePhoto &&
+                  userData?.onboardingSteps?.termsAccepted)
+              ) {
+                redirectUrl = "verification-pending.html";
+              }
+
+              window.location.href = redirectUrl;
+            }
+          } else {
+            window.location.href = "dashboard-new.html";
+          }
         }
       });
     </script>

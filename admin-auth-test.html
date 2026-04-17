@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Auth Test - RideLynk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .status-box {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .status-box.success {
+            background: #f0fdf4;
+            border-color: #10b981;
+        }
+        .status-box.error {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+        .status-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .status-value {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #666;
+            word-break: break-all;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        pre {
+            background: #1f2937;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Admin Authentication Test</h1>
+        <p style="color: #666; margin-bottom: 20px;">Check if admin credentials are properly stored</p>
+
+        <div id="statusContainer"></div>
+
+        <div class="actions">
+            <button class="btn btn-primary" onclick="checkAuth()">Check Auth Status</button>
+            <button class="btn btn-success" onclick="setTestAdmin()">Set Test Admin</button>
+            <button class="btn btn-danger" onclick="clearStorage()">Clear Storage</button>
+            <button class="btn btn-primary" onclick="goToDashboard()">Go to Dashboard</button>
+            <button class="btn btn-primary" onclick="goToLogin()">Go to Login</button>
+        </div>
+
+        <div id="consoleOutput"></div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            console.log(message);
+            const output = document.getElementById('consoleOutput');
+            const pre = document.createElement('pre');
+            pre.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            pre.style.color = type === 'error' ? '#ef4444' : '#10b981';
+            output.appendChild(pre);
+        }
+
+        function checkAuth() {
+            log('Checking authentication status...');
+
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = '';
+
+            const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+            const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+            const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
+
+            // Token status
+            const tokenBox = document.createElement('div');
+            tokenBox.className = `status-box ${token ? 'success' : 'error'}`;
+            tokenBox.innerHTML = `
+                <div class="status-label">${token ? '✅' : '❌'} Auth Token</div>
+                <div class="status-value">${token ? token.substring(0, 50) + '...' : 'NOT FOUND'}</div>
+            `;
+            container.appendChild(tokenBox);
+
+            // Role status
+            const roleBox = document.createElement('div');
+            roleBox.className = `status-box ${role === 'admin' ? 'success' : 'error'}`;
+            roleBox.innerHTML = `
+                <div class="status-label">${role === 'admin' ? '✅' : '❌'} User Role</div>
+                <div class="status-value">${role || 'NOT FOUND'}</div>
+            `;
+            container.appendChild(roleBox);
+
+            // User data status
+            const userBox = document.createElement('div');
+            userBox.className = `status-box ${userData ? 'success' : 'error'}`;
+            userBox.innerHTML = `
+                <div class="status-label">${userData ? '✅' : '❌'} User Data</div>
+                <div class="status-value">${userData ? userData.substring(0, 100) + '...' : 'NOT FOUND'}</div>
+            `;
+            container.appendChild(userBox);
+
+            // Overall status
+            const isValid = token && role === 'admin' && userData;
+            const overallBox = document.createElement('div');
+            overallBox.className = `status-box ${isValid ? 'success' : 'error'}`;
+            overallBox.innerHTML = `
+                <div class="status-label">${isValid ? '✅ READY' : '❌ NOT READY'}</div>
+                <div class="status-value">${isValid ? 'Admin authentication is valid. Dashboard should load.' : 'Admin authentication is invalid. Dashboard will redirect to login.'}</div>
+            `;
+            container.appendChild(overallBox);
+
+            log(isValid ? 'Authentication is VALID' : 'Authentication is INVALID', isValid ? 'info' : 'error');
+        }
+
+        function setTestAdmin() {
+            log('Setting test admin credentials...');
+
+            const testToken = 'test_admin_token_' + Date.now();
+            const testUserData = {
+                _id: 'test_admin_id',
+                email: 'superadmin@gmail.com',
+                name: 'Super Admin',
+                role: 'admin'
+            };
+
+            localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, testToken);
+            localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, 'admin');
+            localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(testUserData));
+
+            log('Test admin credentials set successfully');
+            checkAuth();
+        }
+
+        function clearStorage() {
+            log('Clearing localStorage...');
+            localStorage.clear();
+            log('Storage cleared');
+            checkAuth();
+        }
+
+        function goToDashboard() {
+            log('Redirecting to admin dashboard...');
+            window.location.href = 'admin-dashboard.html';
+        }
+
+        function goToLogin() {
+            log('Redirecting to login...');
+            window.location.href = 'login.html';
+        }
+
+        // Auto-check on load
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded, checking authentication...');
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

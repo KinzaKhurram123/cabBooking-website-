@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - Admin - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Inter", sans-serif; background: #f5f7fa; }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .tab {
+        padding: 15px 30px;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #666;
+        transition: all 0.3s ease;
+      }
+
+      .tab:hover {
+        color: #667eea;
+      }
+
+      .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .settings-section {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      .settings-section h3 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: "Inter", sans-serif;
+      }
+
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 30px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 30px;
+      }
+
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .toggle-slider {
+        background-color: #667eea;
+      }
+
+      input:checked + .toggle-slider:before {
+        transform: translateX(30px);
+      }
+
+      .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 15px;
+      }
+
+      .setting-info h4 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      .setting-info p {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .btn-primary {
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-danger {
+        padding: 12px 30px;
+        background: #dc3545;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-danger:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+      }
+
+      .admins-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      .admins-table thead {
+        background: #f8f9fa;
+      }
+
+      .admins-table th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .admins-table td {
+        padding: 12px;
+        border-top: 1px solid #f0f0f0;
+        color: #666;
+      }
+
+      .admins-table tbody tr:hover {
+        background: #f8f9ff;
+      }
+
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+      }
+
+      .status-active { background: #d4edda; color: #155724; }
+      .status-inactive { background: #f8d7da; color: #721c24; }
+
+      .action-btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        margin-right: 5px;
+      }
+
+      .btn-edit {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-edit:hover {
+        background: #5568d3;
+      }
+
+      .btn-delete {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn-delete:hover {
+        background: #c82333;
+      }
+
+      .btn-toggle {
+        background: #ffc107;
+        color: #333;
+      }
+
+      .btn-toggle:hover {
+        background: #e0a800;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .modal-header h3 {
+        font-size: 1.5rem;
+        color: #333;
+      }
+
+      .close-btn {
+        font-size: 2rem;
+        color: #999;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+
+      .close-btn:hover {
+        color: #333;
+      }
+
+      @media (max-width: 1024px) {
+        .container {
+          padding: 20px 15px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          gap: 15px;
+          align-items: flex-start;
+        }
+        .tabs {
+          overflow-x: auto;
+          flex-wrap: nowrap;
+        }
+        .tab {
+          white-space: nowrap;
+          padding: 12px 20px;
+          font-size: 0.9rem;
+        }
+        .setting-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+        .settings-section {
+          padding: 20px;
+        }
+        .admins-table {
+          font-size: 0.9rem;
+        }
+        .admins-table th, .admins-table td {
+          padding: 10px 8px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header {
+          padding: 15px;
+        }
+        .back-btn {
+          padding: 8px 16px;
+          font-size: 0.9rem;
+        }
+        .tab {
+          padding: 10px 15px;
+          font-size: 0.85rem;
+        }
+        .settings-section {
+          padding: 15px;
+        }
+        .btn-primary, .btn-danger {
+          padding: 10px 20px;
+          font-size: 0.9rem;
+        }
+        .admins-table {
+          font-size: 0.85rem;
+        }
+        .admins-table th, .admins-table td {
+          padding: 8px 5px;
+        }
+        .action-btn {
+          padding: 6px 10px;
+          font-size: 0.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1>Admin Settings</h1>
+        <button class="back-btn" onclick="window.location.href='admin-dashboard.html'">← Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('general')">General</button>
+        <button class="tab" onclick="switchTab('admins')">Admin Management</button>
+        <button class="tab" onclick="switchTab('notifications')">Notifications</button>
+        <button class="tab" onclick="switchTab('pricing')">Pricing</button>
+        <button class="tab" onclick="switchTab('security')">Security</button>
+      </div>
+
+      <!-- General Settings -->
+      <div id="general" class="tab-content active">
+        <div class="settings-section">
+          <h3>⚙️ General Settings</h3>
+
+          <div class="form-group">
+            <label class="form-label">Platform Name</label>
+            <input type="text" class="form-input" value="RideLynk" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Support Email</label>
+            <input type="email" class="form-input" value="support@ridelynk.com" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Support Phone</label>
+            <input type="tel" class="form-input" value="+92 300 1234567" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Maintenance Mode</label>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h4>Enable Maintenance Mode</h4>
+                <p>Temporarily disable the platform for maintenance</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="maintenanceMode" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="saveGeneralSettings()">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Admin Management -->
+      <div id="admins" class="tab-content">
+        <div class="settings-section">
+          <h3>👥 Admin Management</h3>
+          <button class="btn-primary" onclick="openAddAdminModal()" style="margin-bottom: 20px;">+ Add New Admin</button>
+
+          <table class="admins-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminsTableBody">
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 20px;">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div id="notifications" class="tab-content">
+        <div class="settings-section">
+          <h3>🔔 Notification Settings</h3>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Email Notifications</h4>
+              <p>Send email notifications for important events</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>SMS Notifications</h4>
+              <p>Send SMS notifications to users and drivers</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Push Notifications</h4>
+              <p>Send push notifications to mobile apps</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Admin Alerts</h4>
+              <p>Receive alerts for critical system events</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <button class="btn-primary" onclick="saveNotificationSettings()">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div id="pricing" class="tab-content">
+        <div class="settings-section">
+          <h3>💰 Pricing Configuration</h3>
+
+          <div class="form-group">
+            <label class="form-label">Base Fare ($)</label>
+            <input type="number" class="form-input" value="5" step="0.5" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Per Kilometer Rate ($)</label>
+            <input type="number" class="form-input" value="2" step="0.1" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Per Minute Rate ($)</label>
+            <input type="number" class="form-input" value="0.5" step="0.1" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Surge Multiplier</label>
+            <input type="number" class="form-input" value="1.5" step="0.1" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Commission Rate (%)</label>
+            <input type="number" class="form-input" value="20" step="1" />
+          </div>
+
+          <button class="btn-primary" onclick="savePricingSettings()">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div id="security" class="tab-content">
+        <div class="settings-section">
+          <h3>🔒 Security Settings</h3>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Two-Factor Authentication</h4>
+              <p>Require 2FA for admin accounts</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Session Timeout</h4>
+              <p>Automatically log out inactive users</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Session Timeout Duration (minutes)</label>
+            <input type="number" class="form-input" value="30" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password Minimum Length</label>
+            <input type="number" class="form-input" value="8" />
+          </div>
+
+          <button class="btn-primary" onclick="saveSecuritySettings()">Save Changes</button>
+        </div>
+
+        <div class="settings-section">
+          <h3>⚠️ Danger Zone</h3>
+          <p style="color: #666; margin-bottom: 20px;">These actions are irreversible. Please be careful.</p>
+
+          <button class="btn-danger" onclick="clearCache()">Clear System Cache</button>
+          <button class="btn-danger" onclick="resetDatabase()" style="margin-left: 10px;">Reset Database (Dev Only)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Admin Modal -->
+    <div id="addAdminModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Add New Admin</h3>
+          <button class="close-btn" onclick="closeAddAdminModal()">&times;</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-input" id="adminName" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="adminEmail" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="adminPassword" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-select" id="adminRole">
+            <option value="admin">Admin</option>
+            <option value="super_admin">Super Admin</option>
+          </select>
+        </div>
+
+        <button class="btn-primary" onclick="createAdmin()">Create Admin</button>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/admin-service.js"></script>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'admin-login.html';
+          return;
+        }
+
+        const userRole = AuthService.getUserRole();
+        if (userRole !== 'admin') {
+          Utils.showToast('Access denied', 'error');
+          setTimeout(() => window.location.href = 'login.html', 2000);
+          return;
+        }
+
+        await loadAdmins();
+      });
+
+      function switchTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+          tab.classList.remove('active');
+        });
+
+        // Show selected tab content
+        document.getElementById(tabName).classList.add('active');
+
+        // Add active class to clicked tab
+        event.target.classList.add('active');
+      }
+
+      async function loadAdmins() {
+        try {
+          // TODO: Replace with actual API call
+          // const response = await AdminService.getAllAdmins();
+
+          // Mock data
+          const response = {
+            success: true,
+            admins: [
+              { _id: '1', name: 'Super Admin', email: 'admin@ridelynk.com', role: 'super_admin', status: 'active' },
+              { _id: '2', name: 'John Admin', email: 'john@ridelynk.com', role: 'admin', status: 'active' },
+              { _id: '3', name: 'Jane Admin', email: 'jane@ridelynk.com', role: 'admin', status: 'inactive' }
+            ]
+          };
+
+          if (response.success !== false && response.admins) {
+            displayAdmins(response.admins);
+          }
+        } catch (error) {
+          console.error('Error loading admins:', error);
+          Utils.showToast('Failed to load admins', 'error');
+        }
+      }
+
+      function displayAdmins(admins) {
+        const tbody = document.getElementById('adminsTableBody');
+        tbody.innerHTML = admins.map(admin => `
+          <tr>
+            <td>${admin.name}</td>
+            <td>${admin.email}</td>
+            <td>${admin.role === 'super_admin' ? 'Super Admin' : 'Admin'}</td>
+            <td><span class="status-badge status-${admin.status}">${admin.status === 'active' ? 'Active' : 'Inactive'}</span></td>
+            <td>
+              <button class="action-btn btn-edit" onclick="editAdmin('${admin._id}')">Edit</button>
+              <button class="action-btn btn-toggle" onclick="toggleAdminStatus('${admin._id}')">Toggle</button>
+              <button class="action-btn btn-delete" onclick="deleteAdmin('${admin._id}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      function openAddAdminModal() {
+        document.getElementById('addAdminModal').style.display = 'block';
+      }
+
+      function closeAddAdminModal() {
+        document.getElementById('addAdminModal').style.display = 'none';
+      }
+
+      async function createAdmin() {
+        const name = document.getElementById('adminName').value;
+        const email = document.getElementById('adminEmail').value;
+        const password = document.getElementById('adminPassword').value;
+        const role = document.getElementById('adminRole').value;
+
+        if (!name || !email || !password) {
+          Utils.showToast('Please fill in all fields', 'error');
+          return;
+        }
+
+        Utils.showLoader('Creating admin...');
+        try {
+          // TODO: Replace with actual API call
+          // const response = await AdminService.createAdmin({ name, email, password, role });
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          Utils.hideLoader();
+          Utils.showToast('Admin created successfully', 'success');
+          closeAddAdminModal();
+          await loadAdmins();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error creating admin:', error);
+          Utils.showToast(error.message || 'Failed to create admin', 'error');
+        }
+      }
+
+      function editAdmin(adminId) {
+        Utils.showToast('Edit admin feature coming soon', 'info');
+      }
+
+      async function toggleAdminStatus(adminId) {
+        if (!confirm('Are you sure you want to toggle this admin status?')) {
+          return;
+        }
+
+        Utils.showLoader('Updating status...');
+        try {
+          // TODO: Replace with actual API call
+          // const response = await AdminService.toggleAdminStatus(adminId);
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          Utils.hideLoader();
+          Utils.showToast('Admin status updated', 'success');
+          await loadAdmins();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error toggling admin status:', error);
+          Utils.showToast(error.message || 'Failed to update status', 'error');
+        }
+      }
+
+      async function deleteAdmin(adminId) {
+        if (!confirm('Are you sure you want to delete this admin? This action cannot be undone.')) {
+          return;
+        }
+
+        Utils.showLoader('Deleting admin...');
+        try {
+          // TODO: Replace with actual API call
+          // const response = await AdminService.deleteAdmin(adminId);
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          Utils.hideLoader();
+          Utils.showToast('Admin deleted successfully', 'success');
+          await loadAdmins();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error deleting admin:', error);
+          Utils.showToast(error.message || 'Failed to delete admin', 'error');
+        }
+      }
+
+      function saveGeneralSettings() {
+        Utils.showLoader('Saving settings...');
+        setTimeout(() => {
+          Utils.hideLoader();
+          Utils.showToast('Settings saved successfully', 'success');
+        }, 1000);
+      }
+
+      function saveNotificationSettings() {
+        Utils.showLoader('Saving settings...');
+        setTimeout(() => {
+          Utils.hideLoader();
+          Utils.showToast('Notification settings saved', 'success');
+        }, 1000);
+      }
+
+      function savePricingSettings() {
+        Utils.showLoader('Saving settings...');
+        setTimeout(() => {
+          Utils.hideLoader();
+          Utils.showToast('Pricing settings saved', 'success');
+        }, 1000);
+      }
+
+      function saveSecuritySettings() {
+        Utils.showLoader('Saving settings...');
+        setTimeout(() => {
+          Utils.hideLoader();
+          Utils.showToast('Security settings saved', 'success');
+        }, 1000);
+      }
+
+      function clearCache() {
+        if (!confirm('Are you sure you want to clear the system cache?')) {
+          return;
+        }
+
+        Utils.showLoader('Clearing cache...');
+        setTimeout(() => {
+          Utils.hideLoader();
+          Utils.showToast('Cache cleared successfully', 'success');
+        }, 1500);
+      }
+
+      function resetDatabase() {
+        const confirmation = prompt('Type "RESET" to confirm database reset:');
+        if (confirmation !== 'RESET') {
+          Utils.showToast('Database reset cancelled', 'info');
+          return;
+        }
+
+        Utils.showLoader('Resetting database...');
+        setTimeout(() => {
+          Utils.hideLoader();
+          Utils.showToast('Database reset complete', 'success');
+        }, 2000);
+      }
+
+      // Close modal when clicking outside
+      window.onclick = function(event) {
+        const modal = document.getElementById('addAdminModal');
+        if (event.target === modal) {
+          closeAddAdminModal();
+        }
+      }
+    </script>
+  </body>
+</html>

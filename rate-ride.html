@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rate Your Ride - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Inter", sans-serif; background: #f5f7fa; min-height: 100vh; }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .ride-summary {
+        text-align: center;
+        padding: 30px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-bottom: 40px;
+      }
+
+      .driver-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 auto 15px;
+      }
+
+      .driver-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      .ride-date {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .rating-section {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .rating-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .stars {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 10px;
+      }
+
+      .star {
+        font-size: 3rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #ddd;
+      }
+
+      .star:hover,
+      .star.active {
+        color: #ffa500;
+        transform: scale(1.1);
+      }
+
+      .rating-text {
+        font-size: 1.1rem;
+        color: #666;
+        margin-top: 10px;
+      }
+
+      .review-section {
+        margin-bottom: 30px;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .review-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-family: "Inter", sans-serif;
+        font-size: 1rem;
+        resize: vertical;
+        transition: all 0.3s ease;
+      }
+
+      .review-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .char-count {
+        text-align: right;
+        font-size: 0.85rem;
+        color: #999;
+        margin-top: 5px;
+      }
+
+      .tags-section {
+        margin-bottom: 30px;
+      }
+
+      .tags-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+
+      .tag {
+        padding: 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 25px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        background: white;
+      }
+
+      .tag:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+      }
+
+      .tag.selected {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 18px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 768px) {
+        .stars { gap: 10px; }
+        .star { font-size: 2.5rem; }
+        .tags-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1>Rate Your Ride</h1>
+        <button class="back-btn" onclick="window.history.back()">← Back</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p style="color: #666;">Loading ride details...</p>
+      </div>
+
+      <div id="ratingContent" style="display: none;">
+        <div class="card">
+          <!-- Ride Summary -->
+          <div class="ride-summary">
+            <div class="driver-avatar" id="driverAvatar">D</div>
+            <h2 class="driver-name" id="driverName">Driver Name</h2>
+            <p class="ride-date" id="rideDate">December 15, 2024</p>
+          </div>
+
+          <!-- Rating -->
+          <div class="rating-section">
+            <h3 class="rating-title">How was your ride?</h3>
+            <div class="stars" id="starRating">
+              <span class="star" data-rating="1">★</span>
+              <span class="star" data-rating="2">★</span>
+              <span class="star" data-rating="3">★</span>
+              <span class="star" data-rating="4">★</span>
+              <span class="star" data-rating="5">★</span>
+            </div>
+            <p class="rating-text" id="ratingText">Tap to rate</p>
+          </div>
+
+          <!-- Review -->
+          <div class="review-section">
+            <h3 class="section-title">Share your experience (optional)</h3>
+            <textarea
+              class="review-textarea"
+              id="reviewText"
+              placeholder="Tell us about your ride..."
+              maxlength="500"
+            ></textarea>
+            <div class="char-count">
+              <span id="charCount">0</span>/500
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="tags-section">
+            <h3 class="section-title">What did you like?</h3>
+            <div class="tags-grid">
+              <div class="tag" data-tag="Friendly">😊 Friendly</div>
+              <div class="tag" data-tag="Professional">👔 Professional</div>
+              <div class="tag" data-tag="Clean Car">✨ Clean Car</div>
+              <div class="tag" data-tag="Safe Driving">🛡️ Safe Driving</div>
+              <div class="tag" data-tag="On Time">⏰ On Time</div>
+              <div class="tag" data-tag="Good Music">🎵 Good Music</div>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <button class="submit-btn" id="submitBtn" disabled>Submit Review</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/ride-service.js"></script>
+    <script src="js/review-service.js"></script>
+
+    <script>
+      let bookingId = null;
+      let currentRide = null;
+      let selectedRating = 0;
+      let selectedTags = [];
+
+      // Get booking ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      bookingId = urlParams.get('bookingId');
+
+      if (!bookingId) {
+        Utils.showToast('No booking ID provided', 'error');
+        setTimeout(() => window.location.href = 'my-rides.html', 2000);
+      }
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await loadRideDetails();
+        await checkIfCanReview();
+        setupEventListeners();
+      });
+
+      async function loadRideDetails() {
+        try {
+          const response = await RideService.getRideStatus(bookingId);
+
+          if (response.success !== false && response.booking) {
+            currentRide = response.booking;
+            displayRideInfo(currentRide);
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('ratingContent').style.display = 'block';
+          } else {
+            throw new Error('Failed to load ride details');
+          }
+        } catch (error) {
+          console.error('Error loading ride:', error);
+          Utils.showToast('Failed to load ride details', 'error');
+          setTimeout(() => window.location.href = 'my-rides.html', 2000);
+        }
+      }
+
+      async function checkIfCanReview() {
+        try {
+          const response = await ReviewService.canReview(bookingId);
+
+          if (response.canReview === false) {
+            Utils.showToast('You have already reviewed this ride', 'info');
+            setTimeout(() => window.location.href = 'my-rides.html', 2000);
+          }
+        } catch (error) {
+          console.error('Error checking review status:', error);
+        }
+      }
+
+      function displayRideInfo(ride) {
+        if (ride.driver) {
+          document.getElementById('driverAvatar').textContent =
+            (ride.driver.name || 'D').charAt(0).toUpperCase();
+          document.getElementById('driverName').textContent = ride.driver.name || 'Driver';
+        }
+        document.getElementById('rideDate').textContent = Utils.formatDate(ride.createdAt, 'full');
+      }
+
+      function setupEventListeners() {
+        // Star rating
+        const stars = document.querySelectorAll('.star');
+        stars.forEach(star => {
+          star.addEventListener('click', () => {
+            selectedRating = parseInt(star.dataset.rating);
+            updateStars();
+            updateSubmitButton();
+          });
+
+          star.addEventListener('mouseenter', () => {
+            const rating = parseInt(star.dataset.rating);
+            stars.forEach((s, idx) => {
+              if (idx < rating) {
+                s.style.color = '#ffa500';
+              } else {
+                s.style.color = selectedRating > idx ? '#ffa500' : '#ddd';
+              }
+            });
+          });
+        });
+
+        document.getElementById('starRating').addEventListener('mouseleave', updateStars);
+
+        // Review text
+        const reviewText = document.getElementById('reviewText');
+        reviewText.addEventListener('input', () => {
+          document.getElementById('charCount').textContent = reviewText.value.length;
+        });
+
+        // Tags
+        const tags = document.querySelectorAll('.tag');
+        tags.forEach(tag => {
+          tag.addEventListener('click', () => {
+            const tagValue = tag.dataset.tag;
+
+            if (tag.classList.contains('selected')) {
+              tag.classList.remove('selected');
+              selectedTags = selectedTags.filter(t => t !== tagValue);
+            } else {
+              tag.classList.add('selected');
+              selectedTags.push(tagValue);
+            }
+          });
+        });
+
+        // Submit button
+        document.getElementById('submitBtn').addEventListener('click', submitReview);
+      }
+
+      function updateStars() {
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((star, idx) => {
+          if (idx < selectedRating) {
+            star.classList.add('active');
+            star.style.color = '#ffa500';
+          } else {
+            star.classList.remove('active');
+            star.style.color = '#ddd';
+          }
+        });
+
+        const ratingTexts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+        document.getElementById('ratingText').textContent =
+          selectedRating > 0 ? ratingTexts[selectedRating] : 'Tap to rate';
+      }
+
+      function updateSubmitButton() {
+        document.getElementById('submitBtn').disabled = selectedRating === 0;
+      }
+
+      async function submitReview() {
+        if (selectedRating === 0) {
+          Utils.showToast('Please select a rating', 'warning');
+          return;
+        }
+
+        Utils.showLoader('Submitting review...');
+
+        try {
+          const reviewData = {
+            rating: selectedRating,
+            review: document.getElementById('reviewText').value.trim(),
+            tags: selectedTags
+          };
+
+          const response = await ReviewService.createReview(bookingId, reviewData);
+          Utils.hideLoader();
+
+          if (response.success !== false) {
+            Utils.showToast('Thank you for your review!', 'success');
+            setTimeout(() => {
+              window.location.href = 'my-rides.html';
+            }, 2000);
+          } else {
+            throw new Error(response.message || 'Failed to submit review');
+          }
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error submitting review:', error);
+          Utils.showToast(error.message || 'Failed to submit review', 'error');
+        }
+      }
+    </script>
+  </body>
+</html>

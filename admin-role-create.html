@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Role - RideLynk Admin</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            padding-left: 25px;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 3px solid white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .top-bar h1 {
+            color: #2c3e50;
+            font-size: 28px;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .admin-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Content */
+        .content-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .content-header h2 {
+            color: #2c3e50;
+            font-size: 22px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Permissions */
+        .permissions-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .permission-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .permission-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .permission-header input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .permission-header label {
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        .permission-description {
+            color: #7f8c8d;
+            font-size: 13px;
+            margin-left: 28px;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .permissions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>RideLynk Admin</h2>
+            <p>Management Portal</p>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Main</div>
+            <a href="admin-dashboard.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">User Management</div>
+            <a href="admin-user-list.html" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>User List</span>
+            </a>
+            <a href="admin-driver-list.html" class="menu-item">
+                <i class="fas fa-car"></i>
+                <span>Driver List</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Access Control</div>
+            <a href="admin-role-list.html" class="menu-item">
+                <i class="fas fa-user-shield"></i>
+                <span>Role List</span>
+            </a>
+            <a href="admin-role-create.html" class="menu-item active">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Role</span>
+            </a>
+            <a href="admin-permission-list.html" class="menu-item">
+                <i class="fas fa-key"></i>
+                <span>Permission List</span>
+            </a>
+            <a href="admin-permission-create.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Permission</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Cab Management</div>
+            <a href="admin-categories.html" class="menu-item">
+                <i class="fas fa-list"></i>
+                <span>Categories</span>
+            </a>
+            <a href="admin-cab-masters.html" class="menu-item">
+                <i class="fas fa-car"></i>
+                <span>Cab Masters</span>
+            </a>
+            <a href="admin-pricing.html" class="menu-item">
+                <i class="fas fa-tag"></i>
+                <span>Pricing</span>
+            </a>
+            <a href="admin-surcharge.html" class="menu-item">
+                <i class="fas fa-percentage"></i>
+                <span>Surcharge</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Referral & Earnings</div>
+            <a href="admin-referral-earnings.html" class="menu-item">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Referral Earnings</span>
+            </a>
+            <a href="admin-my-referrals.html" class="menu-item">
+                <i class="fas fa-user-plus"></i>
+                <span>My Referrals</span>
+            </a>
+            <a href="admin-my-earnings.html" class="menu-item">
+                <i class="fas fa-wallet"></i>
+                <span>My Earnings</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Promotions</div>
+            <a href="admin-coupons.html" class="menu-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Coupons</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Ride Management</div>
+            <a href="admin-all-rides.html" class="menu-item">
+                <i class="fas fa-route"></i>
+                <span>All Rides</span>
+            </a>
+            <a href="admin-new-requests.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>New Requests</span>
+            </a>
+            <a href="admin-ride-history.html" class="menu-item">
+                <i class="fas fa-history"></i>
+                <span>Ride History</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Settings</div>
+            <a href="admin-settings.html" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </div>
+
+        <button class="logout-btn" onclick="logout()" style="margin: 20px; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: calc(100% - 40px);">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>Create New Role</h1>
+            <div class="top-bar-right">
+                <div class="admin-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff" alt="Admin">
+                    <div class="admin-profile-info">
+                        <h4 id="adminName">Admin User</h4>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="successAlert" class="alert alert-success" style="display: none;">
+            <i class="fas fa-check-circle"></i> Role created successfully!
+        </div>
+        <div id="errorAlert" class="alert alert-error" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Content -->
+        <div class="content-card">
+            <div class="content-header">
+                <h2>Role Information</h2>
+                <div>
+                    <button class="btn-secondary" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="btn" onclick="saveRole()" style="margin-left: 10px;">
+                        <i class="fas fa-save"></i> Save Role
+                    </button>
+                </div>
+            </div>
+
+            <!-- Role Form -->
+            <form id="roleForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="roleName">Role Name *</label>
+                        <input type="text" id="roleName" name="roleName" placeholder="e.g., Manager, Supervisor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="roleSlug">Role Slug *</label>
+                        <input type="text" id="roleSlug" name="roleSlug" placeholder="e.g., manager, supervisor" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="roleDescription">Description</label>
+                    <textarea id="roleDescription" name="roleDescription" placeholder="Describe the role and its responsibilities"></textarea>
+                </div>
+
+                <!-- Permissions Section -->
+                <div class="permissions-section">
+                    <h3>Permissions</h3>
+                    <p style="color: #7f8c8d; margin-bottom: 15px;">Select the permissions for this role</p>
+
+                    <div class="permissions-grid" id="permissionsGrid">
+                        <!-- Permissions will be loaded here -->
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/admin-service.js"></script>
+    <script>
+        // Go back
+        function goBack() {
+            window.location.href = 'admin-role-list.html';
+        }
+
+        // Load permissions
+        async function loadPermissions() {
+            try {
+                const permissions = await AdminService.getPermissions();
+                const permissionsGrid = document.getElementById('permissionsGrid');
+                
+                permissionsGrid.innerHTML = '';
+                
+                // Group permissions by module
+                const groupedPermissions = {};
+                permissions.forEach(perm => {
+                    const module = perm.module || 'General';
+                    if (!groupedPermissions[module]) {
+                        groupedPermissions[module] = [];
+                    }
+                    groupedPermissions[module].push(perm);
+                });
+
+                // Create permission items
+                for (const [module, modulePermissions] of Object.entries(groupedPermissions)) {
+                    const moduleHeader = document.createElement('div');
+                    moduleHeader.className = 'permission-item';
+                    moduleHeader.style.gridColumn = '1 / -1';
+                    moduleHeader.style.background = '#e3f2fd';
+                    moduleHeader.style.borderColor = '#bbdefb';
+                    moduleHeader.innerHTML = `
+                        <div class="permission-header">
+                            <input type="checkbox" id="module-${module}" onchange="toggleModule('${module}')">
+                            <label for="module-${module}" style="font-size: 16px;">${module}</label>
+                        </div>
+                    `;
+                    permissionsGrid.appendChild(moduleHeader);
+
+                    modulePermissions.forEach(perm => {
+                        const permItem = document.createElement('div');
+                        permItem.className = 'permission-item';
+                        permItem.innerHTML = `
+                            <div class="permission-header">
+                                <input type="checkbox" id="perm-${perm.id}" name="permissions" value="${perm.id}">
+                                <label for="perm-${perm.id}">${perm.name}</label>
+                            </div>
+                            <div class="permission-description">
+                                ${perm.description || 'No description'}
+                            </div>
+                        `;
+                        permissionsGrid.appendChild(permItem);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading permissions:', error);
+            }
+        }
+
+        // Toggle all permissions in a module
+        function toggleModule(module) {
+            const moduleCheckbox = document.getElementById(`module-${module}`);
+            const checkboxes = document.querySelectorAll(`input[name="permissions"]`);
+            
+            // Find all checkboxes in this module (simplified approach)
+            // In a real implementation, you would need to track which permissions belong to which module
+            checkboxes.forEach(checkbox => {
+                // This is a simplified toggle - in real implementation, you would need proper module-permission mapping
+                if (moduleCheckbox.checked) {
+                    checkbox.checked = true;
+                } else {
+                    checkbox.checked = false;
+                }
+            });
+        }
+
+        // Save role
+        async function saveRole() {
+            const roleName = document.getElementById('roleName').value;
+            const roleSlug = document.getElementById('roleSlug').value;
+            const roleDescription = document.getElementById('roleDescription').value;
+            
+            // Get selected permissions
+            const selectedPermissions = [];
+            document.querySelectorAll('input[name="permissions"]:checked').forEach(checkbox => {
+                selectedPermissions.push(checkbox.value);
+            });
+
+            // Validation
+            if (!roleName || !roleSlug) {
+                showError('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const roleData = {
+                    name: roleName,
+                    slug: roleSlug,
+                    description: roleDescription,
+                    permissions: selectedPermissions
+                };
+
+                const result = await AdminService.createRole(roleData);
+                
+                if (result.success) {
+                    showSuccess();
+                    setTimeout(() => {
+                        window.location.href = 'admin-role-list.html';
+                    }, 2000);
+                } else {
+                    showError(result.message || 'Failed to create role');
+                }
+            } catch (error) {
+                console.error('Error creating role:', error);
+                showError('Failed to create role. Please try again.');
+            }
+        }
+
+        // Show success message
+        function showSuccess() {
+            document.getElementById('successAlert').style.display = 'block';
+            document.getElementById('errorAlert').style.display = 'none';
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('errorAlert').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('successAlert').style.display = 'none';
+        }
+
+        // Logout
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'admin-login.html';
+        }
+
+        // Check authentication
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+            const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+
+            if (!token || role !== 'admin') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            loadPermissions();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verification Pending - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 600px;
+        width: 100%;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        padding: 50px 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        animation: slideUp 0.5s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .icon-container {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 30px;
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      .icon {
+        font-size: 4rem;
+      }
+
+      .title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .subtitle {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.6;
+      }
+
+      .status-box {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        text-align: left;
+      }
+
+      .status-box h3 {
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .status-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .status-item:last-child {
+        border-bottom: none;
+      }
+
+      .status-label {
+        color: #666;
+        font-size: 0.95rem;
+      }
+
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .status-pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-verified {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-rejected {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .info-box {
+        background: #e7f3ff;
+        border-left: 4px solid #2196f3;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: left;
+      }
+
+      .info-box h4 {
+        color: #1976d2;
+        margin-bottom: 10px;
+        font-size: 1rem;
+      }
+
+      .info-box ul {
+        margin-left: 20px;
+        color: #555;
+        line-height: 1.8;
+      }
+
+      .info-box ul li {
+        margin-bottom: 8px;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 16px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .btn-secondary:hover {
+        background: #e0e0e0;
+      }
+
+      .contact-info {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .contact-info a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .contact-info a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          padding: 40px 25px;
+        }
+        .title {
+          font-size: 1.6rem;
+        }
+        .subtitle {
+          font-size: 1rem;
+        }
+        .btn-group {
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .card {
+          padding: 30px 20px;
+        }
+        .icon-container {
+          width: 100px;
+          height: 100px;
+        }
+        .icon {
+          font-size: 3rem;
+        }
+        .title {
+          font-size: 1.4rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="icon-container">
+          <div class="icon">⏳</div>
+        </div>
+
+        <h1 class="title">Verification Pending</h1>
+        <p class="subtitle">
+          Thank you for submitting your documents! Our team is currently reviewing your application.
+        </p>
+
+        <div class="status-box">
+          <h3>📋 Document Status</h3>
+          <div class="status-item">
+            <span class="status-label">Vehicle Details</span>
+            <span class="status-badge status-pending" id="vehicleStatus">Pending</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Driver's License</span>
+            <span class="status-badge status-pending" id="licenseStatus">Pending</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Insurance</span>
+            <span class="status-badge status-pending" id="insuranceStatus">Pending</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Profile Photo</span>
+            <span class="status-badge status-pending" id="photoStatus">Pending</span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <h4>📧 What happens next?</h4>
+          <ul>
+            <li>Our verification team will review your documents within <strong>24-48 hours</strong></li>
+            <li>You'll receive an <strong>email notification</strong> once your account is verified</li>
+            <li>If any documents need correction, we'll contact you via email</li>
+            <li>Once approved, you can start accepting rides immediately</li>
+          </ul>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="checkStatus()">🔄 Check Status</button>
+          <button class="btn btn-primary" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="contact-info">
+          Need help? Contact us at <a href="mailto:support@ridelynk.com">support@ridelynk.com</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/driver-service.js"></script>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', async () => {
+        // Check if user is authenticated
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        // Load verification status
+        await loadVerificationStatus();
+      });
+
+      async function loadVerificationStatus() {
+        try {
+          const response = await DriverService.getOnboardingStatus();
+
+          if (response.success && response.status) {
+            const status = response.status;
+
+            // Update status badges
+            updateStatusBadge('vehicleStatus', status.vehicleDetails);
+            updateStatusBadge('licenseStatus', status.license);
+            updateStatusBadge('insuranceStatus', status.insurance);
+            updateStatusBadge('photoStatus', status.profilePhoto);
+
+            // If all verified, redirect to dashboard
+            if (status.overallStatus === 'verified' || status.overallStatus === 'approved') {
+              Utils.showToast('Your account has been verified!', 'success');
+              setTimeout(() => {
+                window.location.href = 'driver-dashboard.html';
+              }, 2000);
+            }
+
+            // If rejected, show message
+            if (status.overallStatus === 'rejected') {
+              document.querySelector('.title').textContent = 'Verification Failed';
+              document.querySelector('.subtitle').textContent = 'Unfortunately, your application was not approved. Please check your email for details.';
+              document.querySelector('.icon').textContent = '❌';
+              document.querySelector('.icon-container').style.background = 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)';
+            }
+          }
+        } catch (error) {
+          console.error('Error loading verification status:', error);
+        }
+      }
+
+      function updateStatusBadge(elementId, status) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        element.classList.remove('status-pending', 'status-verified', 'status-rejected');
+
+        if (status === 'verified' || status === 'approved') {
+          element.textContent = 'Verified';
+          element.classList.add('status-verified');
+        } else if (status === 'rejected') {
+          element.textContent = 'Rejected';
+          element.classList.add('status-rejected');
+        } else {
+          element.textContent = 'Pending';
+          element.classList.add('status-pending');
+        }
+      }
+
+      async function checkStatus() {
+        Utils.showLoader('Checking status...');
+        await loadVerificationStatus();
+        Utils.hideLoader();
+        Utils.showToast('Status updated', 'info');
+      }
+
+      function logout() {
+        AuthService.logout();
+        window.location.href = 'login.html';
+      }
+    </script>
+  </body>
+</html>

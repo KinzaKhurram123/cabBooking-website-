@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cab Categories - RideLynk Admin</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            padding-left: 25px;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 3px solid white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .top-bar h1 {
+            color: #2c3e50;
+            font-size: 28px;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .admin-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Content */
+        .content-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .content-header h2 {
+            color: #2c3e50;
+            font-size: 22px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        /* Table */
+        .dataTables_wrapper {
+            margin-top: 20px;
+        }
+
+        table.dataTable {
+            width: 100% !important;
+            border-collapse: collapse;
+        }
+
+        table.dataTable thead th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+            padding: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        table.dataTable tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .action-edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-view {
+            background: #2ecc71;
+            color: white;
+        }
+
+        /* Category Card */
+        .category-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .category-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .category-card-header h3 {
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .category-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            min-width: 150px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .category-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>RideLynk Admin</h2>
+            <p>Management Portal</p>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Main</div>
+            <a href="admin-dashboard.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">User Management</div>
+            <a href="admin-user-list.html" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>User List</span>
+            </a>
+            <a href="admin-driver-list.html" class="menu-item">
+                <i class="fas fa-car"></i>
+                <span>Driver List</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Access Control</div>
+            <a href="admin-role-list.html" class="menu-item">
+                <i class="fas fa-user-shield"></i>
+                <span>Role List</span>
+            </a>
+            <a href="admin-role-create.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Role</span>
+            </a>
+            <a href="admin-permission-list.html" class="menu-item">
+                <i class="fas fa-key"></i>
+                <span>Permission List</span>
+            </a>
+            <a href="admin-permission-create.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Permission</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Cab Management</div>
+            <a href="admin-categories.html" class="menu-item active">
+                <i class="fas fa-list"></i>
+                <span>Categories</span>
+            </a>
+            <a href="admin-cab-masters.html" class="menu-item">
+                <i class="fas fa-car"></i>
+                <span>Cab Masters</span>
+            </a>
+            <a href="admin-pricing.html" class="menu-item">
+                <i class="fas fa-tag"></i>
+                <span>Pricing</span>
+            </a>
+            <a href="admin-surcharge.html" class="menu-item">
+                <i class="fas fa-percentage"></i>
+                <span>Surcharge</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Referral & Earnings</div>
+            <a href="admin-referral-earnings.html" class="menu-item">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Referral Earnings</span>
+            </a>
+            <a href="admin-my-referrals.html" class="menu-item">
+                <i class="fas fa-user-plus"></i>
+                <span>My Referrals</span>
+            </a>
+            <a href="admin-my-earnings.html" class="menu-item">
+                <i class="fas fa-wallet"></i>
+                <span>My Earnings</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Promotions</div>
+            <a href="admin-coupons.html" class="menu-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Coupons</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Ride Management</div>
+            <a href="admin-all-rides.html" class="menu-item">
+                <i class="fas fa-route"></i>
+                <span>All Rides</span>
+            </a>
+            <a href="admin-new-requests.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>New Requests</span>
+            </a>
+            <a href="admin-ride-history.html" class="menu-item">
+                <i class="fas fa-history"></i>
+                <span>Ride History</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Settings</div>
+            <a href="admin-settings.html" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </div>
+
+        <button class="logout-btn" onclick="logout()" style="margin: 20px; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: calc(100% - 40px);">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>Cab Categories</h1>
+            <div class="top-bar-right">
+                <div class="admin-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff" alt="Admin">
+                    <div class="admin-profile-info">
+                        <h4 id="adminName">Admin User</h4>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-card">
+            <div class="content-header">
+                <h2>Cab Categories</h2>
+                <button class="btn" onclick="createCategory()">
+                    <i class="fas fa-plus"></i> Add Category
+                </button>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search categories..." onkeyup="searchCategories()">
+                </div>
+                <select class="filter-select" id="statusFilter" onchange="filterCategories()">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <!-- Categories Table -->
+            <table id="categoriesTable" class="display">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Category</th>
+                        <th>Icon</th>
+                        <th>Base Fare</th>
+                        <th>Per KM</th>
+                        <th>Per Minute</th>
+                        <th>Capacity</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="categoriesTableBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/admin-service.js"></script>
+    <script>
+        let categoriesTable;
+
+        // Initialize DataTable
+        $(document).ready(function() {
+            categoriesTable = $('#categoriesTable').DataTable({
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                order: [[0, 'desc']]
+            });
+
+            loadCategories();
+        });
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const categories = await AdminService.getCategories();
+                
+                categoriesTable.clear();
+                
+                categories.forEach(category => {
+                    let statusClass = 'status-active';
+                    if (category.status === 'inactive') statusClass = 'status-inactive';
+
+                    categoriesTable.row.add([
+                        category.id,
+                        `<strong>${category.name}</strong><br><small>${category.description || ''}</small>`,
+                        `<div class="category-icon">
+                            <i class="fas fa-${category.icon || 'car'}"></i>
+                        </div>`,
+                        `$${category.base_fare || '0.00'}`,
+                        `$${category.per_km || '0.00'}`,
+                        `$${category.per_minute || '0.00'}`,
+                        category.capacity || '4',
+                        `<span class="status-badge ${statusClass}">${category.status}</span>`,
+                        `
+                        <div class="action-buttons">
+                            <button class="action-btn action-view" onclick="viewCategory(${category.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn action-edit" onclick="editCategory(${category.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn action-delete" onclick="deleteCategory(${category.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        `
+                    ]);
+                });
+
+                categoriesTable.draw();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Search categories
+        function searchCategories() {
+            const searchValue = $('#searchInput').val();
+            categoriesTable.search(searchValue).draw();
+        }
+
+        // Filter categories
+        function filterCategories() {
+            const status = $('#statusFilter').val();
+            
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const rowStatus = data[7].toLowerCase();
+                    
+                    let statusMatch = true;
+                    
+                    if (status) {
+                        statusMatch = rowStatus.includes(status);
+                    }
+                    
+                    return statusMatch;
+                }
+            );
+            
+            categoriesTable.draw();
+            $.fn.dataTable.ext.search.pop();
+        }
+
+        // Create category
+        function createCategory() {
+            alert('Create new category functionality will be implemented');
+            // window.location.href = 'admin-category-create.html';
+        }
+
+        // View category
+        function viewCategory(categoryId) {
+            alert(`View category ${categoryId} details`);
+            // window.location.href = `admin-category-view.html?id=${categoryId}`;
+        }
+
+        // Edit category
+        function editCategory(categoryId) {
+            alert(`Edit category ${categoryId}`);
+            // window.location.href = `admin-category-edit.html?id=${categoryId}`;
+        }
+
+        // Delete category
+        function deleteCategory(categoryId) {
+            if (confirm('Are you sure you want to delete this category?')) {
+                alert(`Category ${categoryId} deleted`);
+                // Implement API call to delete category
+                loadCategories();
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'admin-login.html';
+        }
+
+        // Check authentication
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+            const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+
+            if (!token || role !== 'admin') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

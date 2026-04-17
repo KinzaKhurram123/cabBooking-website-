@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - RideLynk</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      .sidebar {
+        width: 280px;
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        color: white;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .logo-section img {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+      }
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .user-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        margin-bottom: 10px;
+      }
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .user-info {
+        flex: 1;
+      }
+
+      .user-name {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 5px;
+      }
+
+      .user-email {
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+
+      .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: white;
+      }
+
+      .nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+      }
+
+      .nav-item.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .nav-icon {
+        font-size: 1.3rem;
+      }
+
+      .main-content {
+        margin-left: 280px;
+        flex: 1;
+        padding: 40px;
+      }
+
+      .header {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 10px;
+      }
+
+      .page-subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+      }
+
+      .content-grid {
+        display: grid;
+        gap: 25px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        background: #f9fafb;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+      }
+
+      .setting-item:hover {
+        background: #f3f4f6;
+      }
+
+      .setting-info {
+        flex: 1;
+      }
+
+      .setting-label {
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 5px;
+        font-size: 1.05rem;
+      }
+
+      .setting-description {
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 60px;
+        height: 30px;
+        background: #e5e7eb;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .toggle-slider {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 24px;
+        height: 24px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active .toggle-slider {
+        left: 33px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 10px;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .save-btn {
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .save-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .danger-zone {
+        border: 2px solid #fee2e2;
+        background: #fef2f2;
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 20px;
+      }
+
+      .danger-title {
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+      }
+
+      .danger-description {
+        color: #991b1b;
+        margin-bottom: 15px;
+      }
+
+      .danger-btn {
+        padding: 12px 24px;
+        background: #dc2626;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .danger-btn:hover {
+        background: #b91c1c;
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 80px;
+          padding: 20px 10px;
+        }
+
+        .logo-title,
+        .user-info,
+        .nav-item span:not(.nav-icon) {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 80px;
+          padding: 20px;
+        }
+
+        .setting-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo-section">
+        <img src="images/white_logo.png" alt="RideLynk" />
+        <div class="logo-title">RideLynk</div>
+      </div>
+
+      <div class="user-section">
+        <div class="user-avatar" id="sidebarAvatar">U</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarName">User Name</div>
+          <div class="user-email" id="sidebarEmail">user@email.com</div>
+        </div>
+      </div>
+
+      <div class="nav-menu">
+        <a href="dashboard-new.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home</span>
+        </a>
+        <a href="my-rides.html" class="nav-item">
+          <span class="nav-icon">🚗</span>
+          <span>My Rides</span>
+        </a>
+        <a href="payment.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payment</span>
+        </a>
+        <a href="offers.html" class="nav-item">
+          <span class="nav-icon">🎁</span>
+          <span>Offers</span>
+        </a>
+        <div class="nav-item active">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </div>
+        <div class="nav-item" id="logoutBtn" style="cursor: pointer">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h1 class="page-title">⚙️ Settings</h1>
+        <p class="page-subtitle">Manage your account and preferences</p>
+      </div>
+
+      <div class="content-grid">
+        <!-- Profile Settings -->
+        <div class="card">
+          <h2 class="card-title">👤 Profile Settings</h2>
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input
+              type="text"
+              class="form-input"
+              id="fullName"
+              placeholder="Enter your full name"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input
+              type="email"
+              class="form-input"
+              id="email"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input
+              type="tel"
+              class="form-input"
+              id="phone"
+              placeholder="+92 300 1234567"
+            />
+          </div>
+          <button class="save-btn" onclick="saveProfile()">
+            Save Changes
+          </button>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="card">
+          <h2 class="card-title">🔔 Notifications</h2>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Push Notifications</div>
+              <div class="setting-description">
+                Receive notifications about your rides
+              </div>
+            </div>
+            <div
+              class="toggle-switch active"
+              onclick="toggleSetting(this)"
+              data-setting="push"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Email Notifications</div>
+              <div class="setting-description">
+                Get ride updates via email
+              </div>
+            </div>
+            <div
+              class="toggle-switch active"
+              onclick="toggleSetting(this)"
+              data-setting="email"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">SMS Notifications</div>
+              <div class="setting-description">
+                Receive SMS for ride confirmations
+              </div>
+            </div>
+            <div
+              class="toggle-switch"
+              onclick="toggleSetting(this)"
+              data-setting="sms"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Promotional Offers</div>
+              <div class="setting-description">
+                Get notified about special offers and discounts
+              </div>
+            </div>
+            <div
+              class="toggle-switch active"
+              onclick="toggleSetting(this)"
+              data-setting="promo"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacy Settings -->
+        <div class="card">
+          <h2 class="card-title">🔒 Privacy & Security</h2>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Share Location</div>
+              <div class="setting-description">
+                Allow app to access your location
+              </div>
+            </div>
+            <div
+              class="toggle-switch active"
+              onclick="toggleSetting(this)"
+              data-setting="location"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Share Ride Status</div>
+              <div class="setting-description">
+                Share your ride status with emergency contacts
+              </div>
+            </div>
+            <div
+              class="toggle-switch"
+              onclick="toggleSetting(this)"
+              data-setting="shareRide"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Two-Factor Authentication</div>
+              <div class="setting-description">
+                Add extra security to your account
+              </div>
+            </div>
+            <div
+              class="toggle-switch"
+              onclick="toggleSetting(this)"
+              data-setting="2fa"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 25px">
+            <label class="form-label">Change Password</label>
+            <input
+              type="password"
+              class="form-input"
+              placeholder="Enter new password"
+              style="margin-bottom: 10px"
+            />
+            <input
+              type="password"
+              class="form-input"
+              placeholder="Confirm new password"
+            />
+          </div>
+          <button class="save-btn" onclick="changePassword()">
+            Update Password
+          </button>
+        </div>
+
+        <!-- App Preferences -->
+        <div class="card">
+          <h2 class="card-title">🎨 App Preferences</h2>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Dark Mode</div>
+              <div class="setting-description">
+                Switch to dark theme
+              </div>
+            </div>
+            <div
+              class="toggle-switch"
+              onclick="toggleSetting(this)"
+              data-setting="darkMode"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Auto-Save Locations</div>
+              <div class="setting-description">
+                Automatically save frequently visited places
+              </div>
+            </div>
+            <div
+              class="toggle-switch active"
+              onclick="toggleSetting(this)"
+              data-setting="autoSave"
+            >
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 25px">
+            <label class="form-label">Language</label>
+            <select class="form-input">
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="card">
+          <h2 class="card-title">⚠️ Danger Zone</h2>
+          <div class="danger-zone">
+            <div class="danger-title">Delete Account</div>
+            <div class="danger-description">
+              Once you delete your account, there is no going back. Please be
+              certain.
+            </div>
+            <button class="danger-btn" onclick="deleteAccount()">
+              Delete My Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Auth check
+      window.addEventListener("DOMContentLoaded", () => {
+        const authToken = localStorage.getItem("authToken");
+        const userRole = localStorage.getItem("userRole");
+
+        if (!authToken) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        if (userRole === "admin") {
+          window.location.href = "dashboard.html";
+          return;
+        }
+
+        const userData = localStorage.getItem("userData");
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            document.getElementById("sidebarName").textContent =
+              user.name || "User Name";
+            document.getElementById("sidebarEmail").textContent =
+              user.email || "user@email.com";
+            document.getElementById("sidebarAvatar").textContent = (
+              user.name || "U"
+            )
+              .charAt(0)
+              .toUpperCase();
+
+            // Populate form fields
+            document.getElementById("fullName").value = user.name || "";
+            document.getElementById("email").value = user.email || "";
+            document.getElementById("phone").value = user.phone || "";
+          } catch (error) {
+            console.error("Error parsing user data:", error);
+          }
+        }
+      });
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        if (confirm("Are you sure you want to logout?")) {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("userData");
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("userRole");
+          localStorage.removeItem("rememberMe");
+          window.location.href = "login.html";
+        }
+      });
+
+      function toggleSetting(element) {
+        element.classList.toggle("active");
+        const setting = element.dataset.setting;
+        const isActive = element.classList.contains("active");
+        console.log(`${setting} is now ${isActive ? "enabled" : "disabled"}`);
+      }
+
+      function saveProfile() {
+        const name = document.getElementById("fullName").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+
+        if (name && email && phone) {
+          alert("Profile updated successfully! ✅");
+        } else {
+          alert("Please fill in all fields");
+        }
+      }
+
+      function changePassword() {
+        alert("Password updated successfully! ✅");
+      }
+
+      function deleteAccount() {
+        const confirmation = prompt(
+          'Type "DELETE" to confirm account deletion:'
+        );
+        if (confirmation === "DELETE") {
+          alert("Account deleted successfully. Redirecting to login...");
+          localStorage.clear();
+          window.location.href = "login.html";
+        } else {
+          alert("Account deletion cancelled");
+        }
+      }
+    </script>
+  </body>
+</html>

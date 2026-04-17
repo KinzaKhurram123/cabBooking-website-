@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role List - RideLynk Admin</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            padding-left: 25px;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 3px solid white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .top-bar h1 {
+            color: #2c3e50;
+            font-size: 28px;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .admin-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Content */
+        .content-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .content-header h2 {
+            color: #2c3e50;
+            font-size: 22px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        /* Table */
+        .dataTables_wrapper {
+            margin-top: 20px;
+        }
+
+        table.dataTable {
+            width: 100% !important;
+            border-collapse: collapse;
+        }
+
+        table.dataTable thead th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+            padding: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        table.dataTable tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .permission-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .action-edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-permissions {
+            background: #9b59b6;
+            color: white;
+        }
+
+        /* Search */
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Role Card */
+        .role-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .role-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .role-card-header h3 {
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .role-description {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .role-permissions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>RideLynk Admin</h2>
+            <p>Management Portal</p>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Main</div>
+            <a href="admin-dashboard.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">User Management</div>
+            <a href="admin-user-list.html" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>User List</span>
+            </a>
+            <a href="admin-driver-list.html" class="menu-item">
+                <i class="fas fa-car"></i>
+                <span>Driver List</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Access Control</div>
+            <a href="admin-role-list.html" class="menu-item active">
+                <i class="fas fa-user-shield"></i>
+                <span>Role List</span>
+            </a>
+            <a href="admin-role-create.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Role</span>
+            </a>
+            <a href="admin-permission-list.html" class="menu-item">
+                <i class="fas fa-key"></i>
+                <span>Permission List</span>
+            </a>
+            <a href="admin-permission-create.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Permission</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Cab Management</div>
+            <a href="admin-categories.html" class="menu-item">
+                <i class="fas fa-list"></i>
+                <span>Categories</span>
+            </a>
+            <a href="admin-cab-masters.html" class="menu-item">
+                <i class="fas fa-car"></i>
+                <span>Cab Masters</span>
+            </a>
+            <a href="admin-pricing.html" class="menu-item">
+                <i class="fas fa-tag"></i>
+                <span>Pricing</span>
+            </a>
+            <a href="admin-surcharge.html" class="menu-item">
+                <i class="fas fa-percentage"></i>
+                <span>Surcharge</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Referral & Earnings</div>
+            <a href="admin-referral-earnings.html" class="menu-item">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Referral Earnings</span>
+            </a>
+            <a href="admin-my-referrals.html" class="menu-item">
+                <i class="fas fa-user-plus"></i>
+                <span>My Referrals</span>
+            </a>
+            <a href="admin-my-earnings.html" class="menu-item">
+                <i class="fas fa-wallet"></i>
+                <span>My Earnings</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Promotions</div>
+            <a href="admin-coupons.html" class="menu-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Coupons</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Ride Management</div>
+            <a href="admin-all-rides.html" class="menu-item">
+                <i class="fas fa-route"></i>
+                <span>All Rides</span>
+            </a>
+            <a href="admin-new-requests.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>New Requests</span>
+            </a>
+            <a href="admin-ride-history.html" class="menu-item">
+                <i class="fas fa-history"></i>
+                <span>Ride History</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Settings</div>
+            <a href="admin-settings.html" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </div>
+
+        <button class="logout-btn" onclick="logout()" style="margin: 20px; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: calc(100% - 40px);">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>Role Management</h1>
+            <div class="top-bar-right">
+                <div class="admin-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff" alt="Admin">
+                    <div class="admin-profile-info">
+                        <h4 id="adminName">Admin User</h4>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-card">
+            <div class="content-header">
+                <h2>Role List</h2>
+                <button class="btn" onclick="createRole()">
+                    <i class="fas fa-plus"></i> Create New Role
+                </button>
+            </div>
+
+            <!-- Search -->
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search roles..." onkeyup="searchRoles()">
+            </div>
+
+            <!-- Roles Table -->
+            <table id="rolesTable" class="display">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Role Name</th>
+                        <th>Description</th>
+                        <th>Permissions</th>
+                        <th>Users Count</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="rolesTableBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/admin-service.js"></script>
+    <script>
+        let rolesTable;
+
+        // Initialize DataTable
+        $(document).ready(function() {
+            rolesTable = $('#rolesTable').DataTable({
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                order: [[0, 'desc']]
+            });
+
+            loadRoles();
+        });
+
+        // Load roles
+        async function loadRoles() {
+            try {
+                const roles = await AdminService.getRoles();
+                
+                rolesTable.clear();
+                
+                roles.forEach(role => {
+                    const permissions = role.permissions || [];
+                    const permissionsHtml = permissions.map(perm => 
+                        `<span class="permission-badge">${perm}</span>`
+                    ).join('');
+
+                    rolesTable.row.add([
+                        role.id,
+                        `<strong>${role.name}</strong>`,
+                        role.description || 'No description',
+                        permissionsHtml || 'No permissions',
+                        role.users_count || 0,
+                        new Date(role.created_at).toLocaleDateString(),
+                        `
+                        <div class="action-buttons">
+                            <button class="action-btn action-permissions" onclick="managePermissions(${role.id})">
+                                <i class="fas fa-key"></i> Permissions
+                            </button>
+                            <button class="action-btn action-edit" onclick="editRole(${role.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${role.name !== 'admin' ? `
+                            <button class="action-btn action-delete" onclick="deleteRole(${role.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            ` : ''}
+                        </div>
+                        `
+                    ]);
+                });
+
+                rolesTable.draw();
+            } catch (error) {
+                console.error('Error loading roles:', error);
+            }
+        }
+
+        // Search roles
+        function searchRoles() {
+            const searchValue = $('#searchInput').val();
+            rolesTable.search(searchValue).draw();
+        }
+
+        // Create role
+        function createRole() {
+            window.location.href = 'admin-role-create.html';
+        }
+
+        // Edit role
+        function editRole(roleId) {
+            alert(`Edit role ${roleId}`);
+            // window.location.href = `admin-role-edit.html?id=${roleId}`;
+        }
+
+        // Manage permissions
+        function managePermissions(roleId) {
+            alert(`Manage permissions for role ${roleId}`);
+            // window.location.href = `admin-role-permissions.html?id=${roleId}`;
+        }
+
+        // Delete role
+        function deleteRole(roleId) {
+            if (confirm('Are you sure you want to delete this role?')) {
+                alert(`Role ${roleId} deleted`);
+                // Implement API call to delete role
+                loadRoles();
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'admin-login.html';
+        }
+
+        // Check authentication
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+            const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+
+            if (!token || role !== 'admin') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

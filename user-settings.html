@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Settings - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #000000;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        padding: 20px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 173, 239, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        color: #00ADEF;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .back-btn {
+        background: rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(0, 173, 239, 0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: #00ADEF;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .back-btn:hover {
+        background: rgba(0, 173, 239, 0.3);
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.3);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      /* Settings Grid */
+      .settings-grid {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 30px;
+      }
+
+      /* Sidebar */
+      .settings-sidebar {
+        background: #0a0a0a;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        border-radius: 15px;
+        padding: 20px;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .sidebar-item {
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #9ca3af;
+        margin-bottom: 8px;
+      }
+
+      .sidebar-item:hover {
+        background: rgba(0, 173, 239, 0.1);
+        color: #00ADEF;
+      }
+
+      .sidebar-item.active {
+        background: rgba(0, 173, 239, 0.2);
+        color: #00ADEF;
+        border-left: 3px solid #00ADEF;
+      }
+
+      .sidebar-item i {
+        font-size: 1.2rem;
+        width: 25px;
+      }
+
+      /* Settings Content */
+      .settings-content {
+        background: #0a0a0a;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        border-radius: 15px;
+        padding: 30px;
+      }
+
+      .settings-section {
+        display: none;
+      }
+
+      .settings-section.active {
+        display: block;
+      }
+
+      .section-title {
+        color: #00ADEF;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-description {
+        color: #9ca3af;
+        margin-bottom: 30px;
+        line-height: 1.6;
+      }
+
+      /* Setting Item */
+      .setting-item {
+        padding: 20px;
+        background: rgba(0, 173, 239, 0.05);
+        border: 1px solid rgba(0, 173, 239, 0.1);
+        border-radius: 12px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+      }
+
+      .setting-item:hover {
+        background: rgba(0, 173, 239, 0.1);
+        border-color: rgba(0, 173, 239, 0.3);
+      }
+
+      .setting-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .setting-label {
+        color: #e5e7eb;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .setting-description {
+        color: #9ca3af;
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+
+      /* Toggle Switch */
+      .toggle-switch {
+        position: relative;
+        width: 50px;
+        height: 26px;
+        background: rgba(156, 163, 175, 0.3);
+        border-radius: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active {
+        background: #00ADEF;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active .toggle-slider {
+        left: 27px;
+      }
+
+      /* Input Fields */
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      .input-label {
+        color: #9ca3af;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .input-field {
+        width: 100%;
+        padding: 12px 15px;
+        background: #000000;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 10px;
+        color: #e5e7eb;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+
+      .input-field:focus {
+        outline: none;
+        border-color: #00ADEF;
+        box-shadow: 0 0 10px rgba(0, 173, 239, 0.2);
+      }
+
+      .select-field {
+        width: 100%;
+        padding: 12px 15px;
+        background: #000000;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 10px;
+        color: #e5e7eb;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+
+      .select-field:focus {
+        outline: none;
+        border-color: #00ADEF;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+      }
+
+      .btn-primary {
+        background: #00ADEF;
+        color: #000000;
+      }
+
+      .btn-primary:hover {
+        background: #00e5ff;
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
+      }
+
+      .btn-secondary {
+        background: rgba(0, 173, 239, 0.2);
+        color: #00ADEF;
+        border: 1px solid rgba(0, 173, 239, 0.3);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(0, 173, 239, 0.3);
+      }
+
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+      }
+
+      .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.3);
+      }
+
+      .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+      }
+
+      /* Danger Zone */
+      .danger-zone {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 30px;
+      }
+
+      .danger-title {
+        color: #ef4444;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .danger-description {
+        color: #9ca3af;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      /* Responsive */
+      @media (max-width: 968px) {
+        .settings-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .settings-sidebar {
+          position: static;
+          display: flex;
+          overflow-x: auto;
+          padding: 15px;
+        }
+
+        .sidebar-item {
+          white-space: nowrap;
+          margin-bottom: 0;
+          margin-right: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1><i class="fas fa-cog"></i> Account Settings</h1>
+        <a href="dashboard.html" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="settings-grid">
+        <!-- Sidebar -->
+        <div class="settings-sidebar">
+          <div class="sidebar-item active" onclick="showSection('general')">
+            <i class="fas fa-user"></i>
+            <span>General</span>
+          </div>
+          <div class="sidebar-item" onclick="showSection('notifications')">
+            <i class="fas fa-bell"></i>
+            <span>Notifications</span>
+          </div>
+          <div class="sidebar-item" onclick="showSection('privacy')">
+            <i class="fas fa-shield-alt"></i>
+            <span>Privacy</span>
+          </div>
+          <div class="sidebar-item" onclick="showSection('security')">
+            <i class="fas fa-lock"></i>
+            <span>Security</span>
+          </div>
+          <div class="sidebar-item" onclick="showSection('preferences')">
+            <i class="fas fa-sliders-h"></i>
+            <span>Preferences</span>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="settings-content">
+          <!-- General Settings -->
+          <div class="settings-section active" id="general">
+            <h2 class="section-title">
+              <i class="fas fa-user"></i> General Settings
+            </h2>
+            <p class="section-description">
+              Manage your account information and preferences
+            </p>
+
+            <div class="input-group">
+              <label class="input-label">Full Name</label>
+              <input type="text" class="input-field" id="fullName" placeholder="Enter your full name">
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Email Address</label>
+              <input type="email" class="input-field" id="email" placeholder="Enter your email">
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Phone Number</label>
+              <input type="tel" class="input-field" id="phone" placeholder="Enter your phone number">
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Date of Birth</label>
+              <input type="date" class="input-field" id="dob">
+            </div>
+
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="saveGeneralSettings()">
+                <i class="fas fa-save"></i> Save Changes
+              </button>
+              <button class="btn btn-secondary" onclick="cancelChanges()">
+                Cancel
+              </button>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="settings-section" id="notifications">
+            <h2 class="section-title">
+              <i class="fas fa-bell"></i> Notification Settings
+            </h2>
+            <p class="section-description">
+              Choose what notifications you want to receive
+            </p>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Push Notifications</div>
+                  <div class="setting-description">Receive push notifications on your device</div>
+                </div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Email Notifications</div>
+                  <div class="setting-description">Receive notifications via email</div>
+                </div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">SMS Notifications</div>
+                  <div class="setting-description">Receive notifications via SMS</div>
+                </div>
+                <div class="toggle-switch" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Ride Updates</div>
+                  <div class="setting-description">Get notified about ride status changes</div>
+                </div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Promotional Offers</div>
+                  <div class="setting-description">Receive offers and discounts</div>
+                </div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="saveNotificationSettings()">
+                <i class="fas fa-save"></i> Save Preferences
+              </button>
+            </div>
+          </div>
+
+          <!-- Privacy -->
+          <div class="settings-section" id="privacy">
+            <h2 class="section-title">
+              <i class="fas fa-shield-alt"></i> Privacy Settings
+            </h2>
+            <p class="section-description">
+              Control your privacy and data sharing preferences
+            </p>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Share Location</div>
+                  <div class="setting-description">Allow app to access your location for better service</div>
+                </div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Share Ride History</div>
+                  <div class="setting-description">Share your ride history with emergency contacts</div>
+                </div>
+                <div class="toggle-switch" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Profile Visibility</div>
+                  <div class="setting-description">Make your profile visible to drivers</div>
+                </div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Data Analytics</div>
+                  <div class="setting-description">Help us improve by sharing anonymous usage data</div>
+                </div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="savePrivacySettings()">
+                <i class="fas fa-save"></i> Save Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- Security -->
+          <div class="settings-section" id="security">
+            <h2 class="section-title">
+              <i class="fas fa-lock"></i> Security Settings
+            </h2>
+            <p class="section-description">
+              Manage your account security and authentication
+            </p>
+
+            <div class="input-group">
+              <label class="input-label">Current Password</label>
+              <input type="password" class="input-field" placeholder="Enter current password">
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">New Password</label>
+              <input type="password" class="input-field" placeholder="Enter new password">
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Confirm New Password</label>
+              <input type="password" class="input-field" placeholder="Confirm new password">
+            </div>
+
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="changePassword()">
+                <i class="fas fa-key"></i> Change Password
+              </button>
+            </div>
+
+            <div class="setting-item" style="margin-top: 30px;">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Two-Factor Authentication</div>
+                  <div class="setting-description">Add an extra layer of security to your account</div>
+                </div>
+                <div class="toggle-switch" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Biometric Login</div>
+                  <div class="setting-description">Use fingerprint or face recognition to login</div>
+                </div>
+                <div class="toggle-switch" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="danger-zone">
+              <h3 class="danger-title">
+                <i class="fas fa-exclamation-triangle"></i> Danger Zone
+              </h3>
+              <p class="danger-description">
+                Once you delete your account, there is no going back. Please be certain.
+              </p>
+              <button class="btn btn-danger" onclick="deleteAccount()">
+                <i class="fas fa-trash"></i> Delete Account
+              </button>
+            </div>
+          </div>
+
+          <!-- Preferences -->
+          <div class="settings-section" id="preferences">
+            <h2 class="section-title">
+              <i class="fas fa-sliders-h"></i> App Preferences
+            </h2>
+            <p class="section-description">
+              Customize your app experience
+            </p>
+
+            <div class="input-group">
+              <label class="input-label">Language</label>
+              <select class="select-field">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="ur">Urdu</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Currency</label>
+              <select class="select-field">
+                <option value="usd">USD ($)</option>
+                <option value="eur">EUR (€)</option>
+                <option value="gbp">GBP (£)</option>
+                <option value="pkr">PKR (₨)</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Theme</label>
+              <select class="select-field">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="auto">Auto</option>
+              </select>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Auto-Accept Rides</div>
+                  <div class="setting-description">Automatically accept ride requests from drivers</div>
+                </div>
+                <div class="toggle-switch" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <div>
+                  <div class="setting-label">Save Favorite Locations</div>
+                  <div class="setting-description">Remember frequently used locations</div>
+                </div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="savePreferences()">
+                <i class="fas fa-save"></i> Save Preferences
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+
+        if (!token) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        loadUserSettings();
+      });
+
+      function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.settings-section').forEach(section => {
+          section.classList.remove('active');
+        });
+
+        // Remove active from all sidebar items
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+          item.classList.remove('active');
+        });
+
+        // Show selected section
+        document.getElementById(sectionId).classList.add('active');
+
+        // Add active to clicked sidebar item
+        event.currentTarget.classList.add('active');
+      }
+
+      function toggleSwitch(element) {
+        element.classList.toggle('active');
+      }
+
+      function loadUserSettings() {
+        const userDataStr = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
+        if (userDataStr) {
+          const userData = JSON.parse(userDataStr);
+          document.getElementById('fullName').value = userData.name || '';
+          document.getElementById('email').value = userData.email || '';
+          document.getElementById('phone').value = userData.phone || '';
+          if (userData.dateOfBirth) {
+            document.getElementById('dob').value = userData.dateOfBirth.split('T')[0];
+          }
+        }
+      }
+
+      function saveGeneralSettings() {
+        alert('General settings saved successfully!');
+      }
+
+      function cancelChanges() {
+        loadUserSettings();
+      }
+
+      function saveNotificationSettings() {
+        alert('Notification preferences saved!');
+      }
+
+      function savePrivacySettings() {
+        alert('Privacy settings saved!');
+      }
+
+      function changePassword() {
+        alert('Password change feature coming soon!');
+      }
+
+      function savePreferences() {
+        alert('Preferences saved successfully!');
+      }
+
+      function deleteAccount() {
+        if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+          if (confirm('This will permanently delete all your data. Are you absolutely sure?')) {
+            alert('Account deletion feature coming soon!');
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

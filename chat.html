@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Inter", sans-serif; background: #f5f7fa; height: 100vh; overflow: hidden; }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 15px 20px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .chat-header-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .chat-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: white;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+      }
+
+      .chat-user-info h2 {
+        font-size: 1.2rem;
+        margin-bottom: 2px;
+      }
+
+      .online-status {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+
+      .online-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #4caf50;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+
+      .back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .chat-container {
+        max-width: 800px;
+        margin: 0 auto;
+        height: calc(100vh - 75px);
+        display: flex;
+        flex-direction: column;
+        background: white;
+      }
+
+      .messages-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .message {
+        display: flex;
+        gap: 10px;
+        max-width: 70%;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message.sent {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
+
+      .message.received {
+        align-self: flex-start;
+      }
+
+      .message-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .message-content {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .message-bubble {
+        padding: 12px 16px;
+        border-radius: 18px;
+        word-wrap: break-word;
+        line-height: 1.4;
+      }
+
+      .message.sent .message-bubble {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-bottom-right-radius: 4px;
+      }
+
+      .message.received .message-bubble {
+        background: #f0f0f0;
+        color: #333;
+        border-bottom-left-radius: 4px;
+      }
+
+      .message-time {
+        font-size: 0.75rem;
+        color: #999;
+        padding: 0 5px;
+      }
+
+      .message.sent .message-time {
+        text-align: right;
+      }
+
+      .message.received .message-time {
+        text-align: left;
+      }
+
+      .typing-indicator {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .typing-indicator.active {
+        display: flex;
+      }
+
+      .typing-dots {
+        display: flex;
+        gap: 4px;
+      }
+
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        background: #999;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%, 60%, 100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .input-container {
+        padding: 20px;
+        border-top: 1px solid #e0e0e0;
+        background: white;
+      }
+
+      .input-wrapper {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+      }
+
+      .message-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 25px;
+        font-family: "Inter", sans-serif;
+        font-size: 1rem;
+        resize: none;
+        max-height: 120px;
+        transition: all 0.3s ease;
+      }
+
+      .message-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .send-btn {
+        width: 50px;
+        height: 50px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+
+      .send-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .date-divider {
+        text-align: center;
+        margin: 20px 0;
+        position: relative;
+      }
+
+      .date-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e0e0e0;
+      }
+
+      .date-label {
+        display: inline-block;
+        padding: 5px 15px;
+        background: white;
+        color: #999;
+        font-size: 0.85rem;
+        border-radius: 15px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+      }
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 15px;
+      }
+
+      .empty-text {
+        font-size: 1.1rem;
+      }
+
+      .loading {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 768px) {
+        .header-content {
+          padding: 0 10px;
+        }
+        .chat-avatar {
+          width: 40px;
+          height: 40px;
+          font-size: 1rem;
+        }
+        .chat-user-info h2 {
+          font-size: 1rem;
+        }
+        .online-status {
+          font-size: 0.75rem;
+        }
+        .message {
+          max-width: 85%;
+        }
+        .message-bubble {
+          padding: 12px 15px;
+        }
+        .chat-container {
+          height: calc(100vh - 70px);
+        }
+        .messages-container {
+          padding: 15px;
+        }
+        .input-container {
+          padding: 12px;
+        }
+        .message-input {
+          font-size: 0.9rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .chat-user-info h2 {
+          font-size: 0.9rem;
+        }
+        .back-btn {
+          padding: 6px 12px;
+          font-size: 0.85rem;
+        }
+        .message {
+          max-width: 90%;
+        }
+        .message-bubble {
+          font-size: 0.9rem;
+          padding: 10px 12px;
+        }
+        .send-btn {
+          width: 45px;
+          height: 45px;
+          font-size: 1.1rem;
+        }
+        .message-input {
+          padding: 10px 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <div class="chat-header-info">
+          <div class="chat-avatar" id="chatAvatar">U</div>
+          <div class="chat-user-info">
+            <h2 id="chatUserName">User</h2>
+            <p class="online-status">
+              <span class="online-dot"></span>
+              <span id="onlineStatus">Online</span>
+            </p>
+          </div>
+        </div>
+        <button class="back-btn" onclick="window.history.back()">← Back</button>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <div class="messages-container" id="messagesContainer">
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <div class="typing-indicator" id="typingIndicator">
+        <span id="typingUserName">User</span> is typing
+        <div class="typing-dots">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+
+      <div class="input-container">
+        <div class="input-wrapper">
+          <textarea
+            class="message-input"
+            id="messageInput"
+            placeholder="Type a message..."
+            rows="1"
+          ></textarea>
+          <button class="send-btn" id="sendBtn" disabled>➤</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/chat-service.js"></script>
+    <script src="js/pusher-service.js"></script>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
+    <script>
+      let rideId = null;
+      let currentUser = null;
+      let otherUser = null;
+      let messages = [];
+      let pusherChannel = null;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      rideId = urlParams.get('rideId');
+
+      if (!rideId) {
+        Utils.showToast('No ride ID provided', 'error');
+        setTimeout(() => window.history.back(), 2000);
+      }
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        currentUser = AuthService.getCurrentUser();
+        await loadMessages();
+        setupInputHandlers();
+        initializePusher();
+        scrollToBottom();
+      });
+
+      async function loadMessages() {
+        try {
+          const response = await ChatService.getMessages(rideId);
+
+          if (response.success !== false && response.messages) {
+            messages = response.messages;
+            displayMessages(messages);
+
+            // Mark messages as read
+            await ChatService.markAsRead(rideId);
+          } else {
+            displayEmptyState();
+          }
+        } catch (error) {
+          console.error('Error loading messages:', error);
+          displayEmptyState();
+        }
+      }
+
+      function displayMessages(messages) {
+        const container = document.getElementById('messagesContainer');
+
+        if (messages.length === 0) {
+          displayEmptyState();
+          return;
+        }
+
+        let lastDate = null;
+        let html = '';
+
+        messages.forEach(msg => {
+          const messageDate = new Date(msg.createdAt).toDateString();
+
+          if (messageDate !== lastDate) {
+            html += `
+              <div class="date-divider">
+                <span class="date-label">${Utils.formatDate(msg.createdAt, 'date')}</span>
+              </div>
+            `;
+            lastDate = messageDate;
+          }
+
+          const isSent = msg.sender._id === currentUser._id;
+          const sender = isSent ? currentUser : msg.sender;
+
+          if (!isSent && !otherUser) {
+            otherUser = msg.sender;
+            updateChatHeader(otherUser);
+          }
+
+          html += `
+            <div class="message ${isSent ? 'sent' : 'received'}">
+              <div class="message-avatar">${(sender.name || 'U').charAt(0).toUpperCase()}</div>
+              <div class="message-content">
+                <div class="message-bubble">${escapeHtml(msg.message)}</div>
+                <div class="message-time">${Utils.formatDate(msg.createdAt, 'time')}</div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      function displayEmptyState() {
+        const container = document.getElementById('messagesContainer');
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <p class="empty-text">No messages yet. Start the conversation!</p>
+          </div>
+        `;
+      }
+
+      function updateChatHeader(user) {
+        document.getElementById('chatAvatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
+        document.getElementById('chatUserName').textContent = user.name || 'User';
+        document.getElementById('typingUserName').textContent = user.name || 'User';
+      }
+
+      function setupInputHandlers() {
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        input.addEventListener('input', () => {
+          sendBtn.disabled = input.value.trim() === '';
+          autoResize(input);
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        });
+
+        sendBtn.addEventListener('click', sendMessage);
+      }
+
+      function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+      }
+
+      async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        const sendBtn = document.getElementById('sendBtn');
+        sendBtn.disabled = true;
+
+        try {
+          const response = await ChatService.sendMessage(rideId, message);
+
+          if (response.success !== false) {
+            input.value = '';
+            input.style.height = 'auto';
+            sendBtn.disabled = true;
+
+            // Message will be added via Pusher event
+          } else {
+            throw new Error('Failed to send message');
+          }
+        } catch (error) {
+          console.error('Error sending message:', error);
+          Utils.showToast('Failed to send message', 'error');
+          sendBtn.disabled = false;
+        }
+      }
+
+      function initializePusher() {
+        const channelName = `chat-${rideId}`;
+
+        pusherChannel = PusherService.subscribe(channelName, {
+          'new-message': (data) => {
+            addMessageToUI(data.message);
+            scrollToBottom();
+
+            // Mark as read if not sent by current user
+            if (data.message.sender._id !== currentUser._id) {
+              ChatService.markAsRead(rideId);
+            }
+          },
+          'user-typing': (data) => {
+            if (data.userId !== currentUser._id) {
+              showTypingIndicator();
+            }
+          },
+          'user-stopped-typing': (data) => {
+            if (data.userId !== currentUser._id) {
+              hideTypingIndicator();
+            }
+          }
+        });
+      }
+
+      function addMessageToUI(message) {
+        const container = document.getElementById('messagesContainer');
+
+        // Remove empty state if present
+        const emptyState = container.querySelector('.empty-state');
+        if (emptyState) {
+          container.innerHTML = '';
+        }
+
+        const isSent = message.sender._id === currentUser._id;
+        const sender = isSent ? currentUser : message.sender;
+
+        if (!isSent && !otherUser) {
+          otherUser = message.sender;
+          updateChatHeader(otherUser);
+        }
+
+        const messageHTML = `
+          <div class="message ${isSent ? 'sent' : 'received'}">
+            <div class="message-avatar">${(sender.name || 'U').charAt(0).toUpperCase()}</div>
+            <div class="message-content">
+              <div class="message-bubble">${escapeHtml(message.message)}</div>
+              <div class="message-time">${Utils.formatDate(message.createdAt, 'time')}</div>
+            </div>
+          </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', messageHTML);
+      }
+
+      function showTypingIndicator() {
+        document.getElementById('typingIndicator').classList.add('active');
+        scrollToBottom();
+      }
+
+      function hideTypingIndicator() {
+        document.getElementById('typingIndicator').classList.remove('active');
+      }
+
+      function scrollToBottom() {
+        const container = document.getElementById('messagesContainer');
+        setTimeout(() => {
+          container.scrollTop = container.scrollHeight;
+        }, 100);
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      window.addEventListener('beforeunload', () => {
+        if (pusherChannel) {
+          PusherService.unsubscribe(`chat-${rideId}`);
+        }
+      });
+    </script>
+  </body>
+</html>

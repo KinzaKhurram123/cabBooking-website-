@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ride History - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #000000;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        padding: 20px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 173, 239, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        color: #00ADEF;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .back-btn {
+        background: rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(0, 173, 239, 0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: #00ADEF;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .back-btn:hover {
+        background: rgba(0, 173, 239, 0.3);
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.3);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      /* Stats Cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: #0a0a0a;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        border-color: rgba(0, 173, 239, 0.5);
+        box-shadow: 0 0 20px rgba(0, 173, 239, 0.2);
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #00ADEF;
+        margin-bottom: 8px;
+      }
+
+      .stat-label {
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
+
+      /* Filters */
+      .filters {
+        background: #0a0a0a;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        margin-bottom: 20px;
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .filter-btn {
+        padding: 10px 20px;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 25px;
+        background: transparent;
+        color: #9ca3af;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .filter-btn:hover {
+        border-color: #00ADEF;
+        color: #00ADEF;
+        background: rgba(0, 173, 239, 0.1);
+      }
+
+      .filter-btn.active {
+        border-color: #00ADEF;
+        background: #00ADEF;
+        color: #000000;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 10px;
+        background: #000000;
+        color: #e5e7eb;
+        font-size: 0.95rem;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #00ADEF;
+        box-shadow: 0 0 10px rgba(0, 173, 239, 0.2);
+      }
+
+      .date-filter {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .date-input {
+        padding: 10px 15px;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 8px;
+        background: #000000;
+        color: #e5e7eb;
+        font-size: 0.9rem;
+      }
+
+      .date-input:focus {
+        outline: none;
+        border-color: #00ADEF;
+      }
+
+      /* Ride History Cards */
+      .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .history-card {
+        background: #0a0a0a;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .history-card:hover {
+        border-color: rgba(0, 173, 239, 0.5);
+        box-shadow: 0 0 20px rgba(0, 173, 239, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+      }
+
+      .ride-id {
+        font-weight: 700;
+        color: #00ADEF;
+        font-size: 1.1rem;
+      }
+
+      .ride-date {
+        color: #9ca3af;
+        font-size: 0.85rem;
+      }
+
+      .status-badge {
+        padding: 6px 14px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+      }
+
+      .status-completed {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid #10b981;
+      }
+
+      .status-cancelled {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+      }
+
+      .card-content {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 20px;
+      }
+
+      .route-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .location-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .location-icon {
+        color: #00ADEF;
+        font-size: 1.2rem;
+        width: 20px;
+      }
+
+      .location-text {
+        color: #e5e7eb;
+        font-size: 0.95rem;
+      }
+
+      .ride-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+      }
+
+      .fare-amount {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #00ADEF;
+      }
+
+      .meta-info {
+        text-align: right;
+        color: #9ca3af;
+        font-size: 0.85rem;
+      }
+
+      .card-footer {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(0, 173, 239, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .driver-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .driver-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: 2px solid #00ADEF;
+      }
+
+      .driver-name {
+        color: #e5e7eb;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .action-links {
+        display: flex;
+        gap: 15px;
+      }
+
+      .action-link {
+        color: #00ADEF;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .action-link:hover {
+        color: #00e5ff;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: #0a0a0a;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+      }
+
+      .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 20px;
+        color: #00ADEF;
+      }
+
+      .empty-state h2 {
+        color: #e5e7eb;
+        margin-bottom: 10px;
+      }
+
+      .empty-state p {
+        color: #9ca3af;
+      }
+
+      /* Loading */
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(0, 173, 239, 0.2);
+        border-top: 4px solid #00ADEF;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .card-content {
+          grid-template-columns: 1fr;
+        }
+
+        .ride-meta {
+          align-items: flex-start;
+        }
+
+        .meta-info {
+          text-align: left;
+        }
+
+        .card-footer {
+          flex-direction: column;
+          gap: 15px;
+          align-items: flex-start;
+        }
+
+        .date-filter {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .date-input {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1><i class="fas fa-history"></i> Ride History</h1>
+        <a href="dashboard.html" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p style="color: #9ca3af;">Loading ride history...</p>
+      </div>
+
+      <div id="contentArea" style="display: none;">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalRides">0</div>
+            <div class="stat-label">Total Rides</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completedRides">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="cancelledRides">0</div>
+            <div class="stat-label">Cancelled</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalSpent">$0</div>
+            <div class="stat-label">Total Spent</div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-row">
+            <button class="filter-btn active" data-status="all">All</button>
+            <button class="filter-btn" data-status="completed">Completed</button>
+            <button class="filter-btn" data-status="cancelled">Cancelled</button>
+
+            <div class="search-box">
+              <input
+                type="text"
+                class="search-input"
+                id="searchInput"
+                placeholder="Search by location or driver..."
+              />
+            </div>
+
+            <div class="date-filter">
+              <label style="color: #9ca3af; font-size: 0.9rem;">From:</label>
+              <input type="date" class="date-input" id="dateFrom" />
+              <label style="color: #9ca3af; font-size: 0.9rem;">To:</label>
+              <input type="date" class="date-input" id="dateTo" />
+            </div>
+          </div>
+        </div>
+
+        <!-- History List -->
+        <div class="history-list" id="historyList">
+          <!-- History cards will be inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-icon">
+            <i class="fas fa-inbox"></i>
+          </div>
+          <h2>No Ride History</h2>
+          <p>You haven't completed any rides yet</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/ride-service.js"></script>
+
+    <script>
+      let allRides = [];
+      let filteredRides = [];
+      let currentFilter = 'all';
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+
+        if (!token) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await loadRideHistory();
+        setupFilters();
+        setupSearch();
+        setupDateFilters();
+      });
+
+      async function loadRideHistory() {
+        try {
+          const response = await RideService.getMyRides();
+
+          if (response.success !== false && response.rides) {
+            allRides = response.rides.filter(r =>
+              r.status === 'completed' || r.status === 'cancelled'
+            );
+            filteredRides = allRides;
+            updateStats();
+            displayHistory();
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('contentArea').style.display = 'block';
+          }
+        } catch (error) {
+          console.error('Error loading ride history:', error);
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('contentArea').style.display = 'block';
+          document.getElementById('emptyState').style.display = 'block';
+        }
+      }
+
+      function updateStats() {
+        const completed = allRides.filter(r => r.status === 'completed').length;
+        const cancelled = allRides.filter(r => r.status === 'cancelled').length;
+        const totalSpent = allRides
+          .filter(r => r.status === 'completed')
+          .reduce((sum, r) => sum + (r.fare || 0), 0);
+
+        document.getElementById('totalRides').textContent = allRides.length;
+        document.getElementById('completedRides').textContent = completed;
+        document.getElementById('cancelledRides').textContent = cancelled;
+        document.getElementById('totalSpent').textContent = '$' + totalSpent.toFixed(2);
+      }
+
+      function setupFilters() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.status;
+            applyFilters();
+          });
+        });
+      }
+
+      function setupSearch() {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', applyFilters);
+      }
+
+      function setupDateFilters() {
+        document.getElementById('dateFrom').addEventListener('change', applyFilters);
+        document.getElementById('dateTo').addEventListener('change', applyFilters);
+      }
+
+      function applyFilters() {
+        let filtered = allRides;
+
+        // Status filter
+        if (currentFilter !== 'all') {
+          filtered = filtered.filter(r => r.status === currentFilter);
+        }
+
+        // Search filter
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        if (searchQuery) {
+          filtered = filtered.filter(r => {
+            const pickup = (r.pickupLocationName || '').toLowerCase();
+            const dropoff = (r.dropoffLocationName || '').toLowerCase();
+            const driver = (r.driver?.name || '').toLowerCase();
+            return pickup.includes(searchQuery) ||
+                   dropoff.includes(searchQuery) ||
+                   driver.includes(searchQuery);
+          });
+        }
+
+        // Date filter
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo = document.getElementById('dateTo').value;
+
+        if (dateFrom) {
+          filtered = filtered.filter(r =>
+            new Date(r.createdAt) >= new Date(dateFrom)
+          );
+        }
+
+        if (dateTo) {
+          filtered = filtered.filter(r =>
+            new Date(r.createdAt) <= new Date(dateTo + 'T23:59:59')
+          );
+        }
+
+        filteredRides = filtered;
+        displayHistory();
+      }
+
+      function displayHistory() {
+        const list = document.getElementById('historyList');
+        const emptyState = document.getElementById('emptyState');
+
+        if (filteredRides.length === 0) {
+          list.style.display = 'none';
+          emptyState.style.display = 'block';
+          return;
+        }
+
+        list.style.display = 'flex';
+        emptyState.style.display = 'none';
+
+        list.innerHTML = filteredRides.map(ride => `
+          <div class="history-card" onclick="viewRideDetails('${ride._id}')">
+            <div class="card-header">
+              <div>
+                <div class="ride-id">#${ride._id.slice(-8).toUpperCase()}</div>
+                <div class="ride-date">${new Date(ride.createdAt).toLocaleString()}</div>
+              </div>
+              <span class="status-badge status-${ride.status}">
+                ${ride.status === 'completed' ? 'Completed' : 'Cancelled'}
+              </span>
+            </div>
+
+            <div class="card-content">
+              <div class="route-info">
+                <div class="location-row">
+                  <i class="fas fa-map-marker-alt location-icon"></i>
+                  <span class="location-text">${truncate(ride.pickupLocationName || 'N/A', 50)}</span>
+                </div>
+                <div class="location-row">
+                  <i class="fas fa-flag-checkered location-icon"></i>
+                  <span class="location-text">${truncate(ride.dropoffLocationName || 'N/A', 50)}</span>
+                </div>
+              </div>
+
+              <div class="ride-meta">
+                <div class="fare-amount">$${(ride.fare || 0).toFixed(2)}</div>
+                <div class="meta-info">
+                  <div>${(ride.distance || 0).toFixed(1)} km</div>
+                  <div>${ride.paymentMethod || 'Cash'}</div>
+                </div>
+              </div>
+            </div>
+
+            ${ride.driver ? `
+              <div class="card-footer">
+                <div class="driver-info">
+                  <img class="driver-avatar"
+                       src="${ride.driver.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(ride.driver.name || 'Driver')}&background=00ADEF&color=000&size=35`}"
+                       alt="Driver">
+                  <span class="driver-name">${ride.driver.name || 'Driver'}</span>
+                </div>
+                <div class="action-links">
+                  <a href="#" class="action-link" onclick="event.stopPropagation(); viewReceipt('${ride._id}')">
+                    <i class="fas fa-receipt"></i> Receipt
+                  </a>
+                  ${ride.status === 'completed' ? `
+                    <a href="#" class="action-link" onclick="event.stopPropagation(); rateRide('${ride._id}')">
+                      <i class="fas fa-star"></i> Rate
+                    </a>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+      }
+
+      function truncate(str, length) {
+        return str.length > length ? str.substring(0, length) + '...' : str;
+      }
+
+      function viewRideDetails(rideId) {
+        alert('Ride details page coming soon!\nBooking ID: ' + rideId);
+      }
+
+      function viewReceipt(rideId) {
+        alert('Receipt feature coming soon!\nBooking ID: ' + rideId);
+      }
+
+      function rateRide(rideId) {
+        alert('Rating feature coming soon!\nBooking ID: ' + rideId);
+      }
+    </script>
+  </body>
+</html>

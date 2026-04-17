@@ -1,0 +1,90 @@
+{
+  "success": true,
+  "message": "Insurance uploaded successfully",
+  "data": {
+    "user": {
+      "_id": "69e1f6346bb93efa827a450f",
+      "name": "John doe",
+      "email": "johndoe@gmail.com",
+      "phoneNumber": "0112454845",
+      "role": "driver",
+      "profileImage": null,
+      "createdAt": "2026-04-17T08:58:28.174Z",
+      "updatedAt": "2026-04-17T08:58:28.174Z"
+    },
+    "riderDetails": {
+      "_id": "69e1ff1d6bb93efa827a452c",
+      "isVerified": false,
+      "verificationStatus": "in_review",
+      "status": "pending_verification",
+      "rejectionReason": null,
+      "verifiedAt": null,
+      "totalRides": 0,
+      "totalEarning": 0,
+      "rating": 5,
+      "termsAccepted": true,
+      "termsAcceptedAt": "2026-04-17T11:45:03.487Z",
+      "location": {
+        "type": "Point",
+        "coordinates": [0, 0]
+      },
+      "address": null,
+      "city": null,
+      "emergencyContact": {
+        "name": null,
+        "phone": null,
+        "relation": null
+      }
+    },
+    "vehicleDetails": {
+      "category": "ride",
+      "vehicleType": "SEDAN",
+      "make": "toyata",
+      "model": "camry",
+      "year": "2020",
+      "color": "black",
+      "licensePlate": "acb123",
+      "vehicleNumber": null
+    },
+    "documents": {
+      "license": {
+        "licenseNumber": "3236547848",
+        "expiryDate": "2023-02-12T00:00:00.000Z",
+        "frontImage": "https://res.cloudinary.com/dwgts98qa/image/upload/v1776426225/riders/license/front/omw1lvsn7e6mbmutbxwo.png",
+        "backImage": "https://res.cloudinary.com/dwgts98qa/image/upload/v1776426225/riders/license/back/x2trzhsnuyxxsbixqqd2.png",
+        "status": "pending",
+        "rejectionReason": null,
+        "uploadedAt": "2026-04-17T11:43:46.176Z"
+      },
+      "insurance": {
+        "provider": "State Farm",
+        "policyNumber": "INS-987654321",
+        "expiryDate": "2026-12-31T00:00:00.000Z",
+        "documentUrl": "https://res.cloudinary.com/dwgts98qa/image/upload/v1776426451/riders/insurance/jrlmjs1n3mm4duxoifat.jpg",
+        "status": "pending",
+        "rejectionReason": null,
+        "uploadedAt": "2026-04-17T11:47:31.804Z"
+      },
+      "profilePhoto": {
+        "url": "https://res.cloudinary.com/dwgts98qa/image/upload/v1776426294/riders/profile_photos/nzfsac67zyok1zilcxuj.jpg",
+        "status": "pending",
+        "uploadedAt": "2026-04-17T11:44:55.213Z"
+      },
+      "vehicleRegistration": {
+        "documentUrl": null,
+        "registrationNumber": null,
+        "status": "pending",
+        "uploadedAt": null
+      }
+    },
+    "onboardingSteps": {
+      "vehicleDetails": true,
+      "license": true,
+      "insurance": true,
+      "profilePhoto": true,
+      "termsAccepted": true
+    },
+    "onboardingRequired": false,
+    "notificationMessage": "As soon as your account is verified, we will send you a notification."
+  }
+}

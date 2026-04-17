@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Receipt - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Inter", sans-serif; background: #f5f7fa; min-height: 100vh; }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+
+      .receipt-card {
+        background: white;
+        border-radius: 20px;
+        padding: 50px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .receipt-header {
+        text-align: center;
+        padding-bottom: 30px;
+        border-bottom: 2px solid #f0f0f0;
+        margin-bottom: 30px;
+      }
+
+      .company-logo {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+
+      .company-name {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #667eea;
+        margin-bottom: 5px;
+      }
+
+      .receipt-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        margin-top: 20px;
+      }
+
+      .receipt-number {
+        color: #666;
+        font-size: 0.95rem;
+        margin-top: 5px;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        background: #d4edda;
+        color: #155724;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-top: 15px;
+        font-size: 0.9rem;
+      }
+
+      .receipt-section {
+        margin-bottom: 30px;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .info-label {
+        font-size: 0.85rem;
+        color: #666;
+        font-weight: 500;
+      }
+
+      .info-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .route-display {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .route-point {
+        flex: 1;
+      }
+
+      .route-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 5px;
+      }
+
+      .route-value {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .route-arrow {
+        font-size: 1.5rem;
+        color: #667eea;
+      }
+
+      .payment-breakdown {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 12px;
+      }
+
+      .breakdown-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .breakdown-row:last-child {
+        border-bottom: none;
+        padding-top: 15px;
+        margin-top: 10px;
+        border-top: 2px solid #667eea;
+      }
+
+      .breakdown-label {
+        color: #666;
+        font-size: 0.95rem;
+      }
+
+      .breakdown-value {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .breakdown-row:last-child .breakdown-label,
+      .breakdown-row:last-child .breakdown-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #667eea;
+      }
+
+      .payment-method-display {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+      }
+
+      .payment-icon {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .payment-details h4 {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 3px;
+      }
+
+      .payment-details p {
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .btn {
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .btn-secondary:hover {
+        background: #e0e0e0;
+      }
+
+      .receipt-footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+        color: #999;
+        font-size: 0.85rem;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media print {
+        body { background: white; }
+        .header, .back-btn, .action-buttons { display: none; }
+        .receipt-card { box-shadow: none; padding: 20px; }
+      }
+
+      @media (max-width: 768px) {
+        .receipt-card { padding: 30px 20px; }
+        .info-grid { grid-template-columns: 1fr; }
+        .action-buttons { grid-template-columns: 1fr; }
+        .route-display { flex-direction: column; }
+        .route-arrow { transform: rotate(90deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1>Payment Receipt</h1>
+        <button class="back-btn" onclick="window.history.back()">← Back</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p style="color: #666;">Loading receipt...</p>
+      </div>
+
+      <div id="receiptContent" style="display: none;">
+        <div class="receipt-card">
+          <!-- Header -->
+          <div class="receipt-header">
+            <div class="company-logo">🚗</div>
+            <h1 class="company-name">RideLynk</h1>
+            <h2 class="receipt-title">Payment Receipt</h2>
+            <p class="receipt-number" id="receiptNumber">Receipt #000000</p>
+            <span class="status-badge" id="paymentStatus">Paid</span>
+          </div>
+
+          <!-- Ride Information -->
+          <div class="receipt-section">
+            <h3 class="section-title">Ride Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Date & Time</span>
+                <span class="info-value" id="rideDate">Loading...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Booking ID</span>
+                <span class="info-value" id="bookingId">#000000</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Distance</span>
+                <span class="info-value" id="distance">0 km</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Duration</span>
+                <span class="info-value" id="duration">0 min</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Route -->
+          <div class="receipt-section">
+            <h3 class="section-title">Route</h3>
+            <div class="route-display">
+              <div class="route-point">
+                <div class="route-label">Pickup</div>
+                <div class="route-value" id="pickupLocation">Loading...</div>
+              </div>
+              <div class="route-arrow">→</div>
+              <div class="route-point">
+                <div class="route-label">Dropoff</div>
+                <div class="route-value" id="dropoffLocation">Loading...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Driver Information -->
+          <div class="receipt-section" id="driverSection">
+            <h3 class="section-title">Driver Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Driver Name</span>
+                <span class="info-value" id="driverName">Driver</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Vehicle</span>
+                <span class="info-value" id="vehicleInfo">Vehicle Info</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Breakdown -->
+          <div class="receipt-section">
+            <h3 class="section-title">Payment Breakdown</h3>
+            <div class="payment-breakdown">
+              <div class="breakdown-row">
+                <span class="breakdown-label">Base Fare</span>
+                <span class="breakdown-value" id="baseFare">$0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Distance Charge</span>
+                <span class="breakdown-value" id="distanceCharge">$0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Service Fee</span>
+                <span class="breakdown-value" id="serviceFee">$0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Total Amount</span>
+                <span class="breakdown-value" id="totalAmount">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="receipt-section">
+            <h3 class="section-title">Payment Method</h3>
+            <div class="payment-method-display">
+              <div class="payment-icon">💳</div>
+              <div class="payment-details">
+                <h4 id="paymentMethodName">Card Payment</h4>
+                <p id="paymentMethodDetails">•••• •••• •••• 4242</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="btn btn-primary" onclick="window.print()">
+              🖨️ Print Receipt
+            </button>
+            <button class="btn btn-secondary" onclick="downloadReceipt()">
+              📥 Download PDF
+            </button>
+            <button class="btn btn-secondary" onclick="emailReceipt()">
+              📧 Email Receipt
+            </button>
+            <button class="btn btn-secondary" onclick="window.location.href='payment.html'">
+              💳 Payment Methods
+            </button>
+          </div>
+
+          <!-- Footer -->
+          <div class="receipt-footer">
+            <p>Thank you for riding with RideLynk!</p>
+            <p style="margin-top: 10px;">For support, contact us at support@ridelynk.com</p>
+            <p style="margin-top: 5px;">© 2024 RideLynk. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/ride-service.js"></script>
+    <script src="js/payment-service.js"></script>
+
+    <script>
+      let bookingId = null;
+      let currentRide = null;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      bookingId = urlParams.get('bookingId');
+
+      if (!bookingId) {
+        Utils.showToast('No booking ID provided', 'error');
+        setTimeout(() => window.location.href = 'my-rides.html', 2000);
+      }
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await loadReceiptData();
+      });
+
+      async function loadReceiptData() {
+        try {
+          const response = await RideService.getRideStatus(bookingId);
+
+          if (response.success !== false && response.booking) {
+            currentRide = response.booking;
+            displayReceipt(currentRide);
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('receiptContent').style.display = 'block';
+          } else {
+            throw new Error('Failed to load receipt data');
+          }
+        } catch (error) {
+          console.error('Error loading receipt:', error);
+          Utils.showToast('Failed to load receipt', 'error');
+          setTimeout(() => window.location.href = 'my-rides.html', 2000);
+        }
+      }
+
+      function displayReceipt(ride) {
+        // Receipt number
+        document.getElementById('receiptNumber').textContent = `Receipt #${ride._id.slice(-8).toUpperCase()}`;
+
+        // Payment status
+        const statusBadge = document.getElementById('paymentStatus');
+        if (ride.status === 'completed') {
+          statusBadge.textContent = 'Paid';
+          statusBadge.style.background = '#d4edda';
+          statusBadge.style.color = '#155724';
+        } else {
+          statusBadge.textContent = 'Pending';
+          statusBadge.style.background = '#fff3cd';
+          statusBadge.style.color = '#856404';
+        }
+
+        // Ride information
+        document.getElementById('rideDate').textContent = Utils.formatDate(ride.createdAt, 'full');
+        document.getElementById('bookingId').textContent = `#${ride._id.slice(-8).toUpperCase()}`;
+        document.getElementById('distance').textContent = ride.distance ? `${ride.distance.toFixed(1)} km` : 'N/A';
+        document.getElementById('duration').textContent = ride.duration ? `${ride.duration} min` : 'N/A';
+
+        // Route
+        document.getElementById('pickupLocation').textContent = ride.pickupLocationName || 'Pickup location';
+        document.getElementById('dropoffLocation').textContent = ride.dropoffLocationName || 'Dropoff location';
+
+        // Driver information
+        if (ride.driver) {
+          document.getElementById('driverName').textContent = ride.driver.name || 'Driver';
+          if (ride.vehicle) {
+            document.getElementById('vehicleInfo').textContent =
+              `${ride.vehicle.make || ''} ${ride.vehicle.model || ''} • ${ride.vehicle.licensePlate || ''}`;
+          }
+        } else {
+          document.getElementById('driverSection').style.display = 'none';
+        }
+
+        // Payment breakdown
+        const baseFare = 5.00;
+        const distanceCharge = ride.distance ? ride.distance * 1.5 : 0;
+        const serviceFee = (baseFare + distanceCharge) * 0.1;
+        const total = ride.fare || (baseFare + distanceCharge + serviceFee);
+
+        document.getElementById('baseFare').textContent = Utils.formatCurrency(baseFare);
+        document.getElementById('distanceCharge').textContent = Utils.formatCurrency(distanceCharge);
+        document.getElementById('serviceFee').textContent = Utils.formatCurrency(serviceFee);
+        document.getElementById('totalAmount').textContent = Utils.formatCurrency(total);
+
+        // Payment method
+        document.getElementById('paymentMethodName').textContent = ride.paymentMethod || 'Cash';
+        if (ride.paymentMethod === 'card') {
+          document.getElementById('paymentMethodDetails').textContent = '•••• •••• •••• 4242';
+        } else {
+          document.getElementById('paymentMethodDetails').textContent = 'Cash payment';
+        }
+      }
+
+      function downloadReceipt() {
+        Utils.showToast('PDF download feature coming soon', 'info');
+        // TODO: Implement PDF generation
+      }
+
+      function emailReceipt() {
+        Utils.showToast('Email receipt feature coming soon', 'info');
+        // TODO: Implement email receipt
+      }
+    </script>
+  </body>
+</html>

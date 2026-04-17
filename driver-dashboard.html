@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Driver Dashboard - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Inter", sans-serif; background: #f5f7fa; }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .driver-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .driver-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: white;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.3rem;
+      }
+
+      .status-toggle {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 10px 20px;
+        border-radius: 30px;
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 60px;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active {
+        background: #4caf50;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 24px;
+        height: 24px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active .toggle-slider {
+        left: 33px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .ride-request {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .ride-request h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+      }
+
+      .ride-details {
+        margin: 15px 0;
+      }
+
+      .ride-location {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-size: 1rem;
+      }
+
+      .ride-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .ride-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-accept {
+        background: #4caf50;
+        color: white;
+      }
+
+      .btn-decline {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+      }
+
+      .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 15px;
+      }
+
+      .verification-banner {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .verification-banner.approved {
+        background: #d4edda;
+        border-color: #28a745;
+      }
+
+      .verification-banner.rejected {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+
+      @media (max-width: 1024px) {
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <div class="driver-info">
+          <div class="driver-avatar" id="driverAvatar">D</div>
+          <div>
+            <h2 id="driverName">Driver Name</h2>
+            <p id="driverRating">⭐ 4.8 Rating</p>
+          </div>
+        </div>
+        <div class="status-toggle">
+          <span id="statusText">Offline</span>
+          <div class="toggle-switch" id="statusToggle">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Verification Status Banner -->
+      <div id="verificationBanner" style="display: none;"></div>
+
+      <div class="dashboard-grid">
+        <!-- Main Content -->
+        <div>
+          <!-- Stats -->
+          <div class="card">
+            <h3 class="card-title">Today's Summary</h3>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value" id="todayRides">0</div>
+                <div class="stat-label">Rides Today</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="todayEarnings">$0</div>
+                <div class="stat-label">Earnings Today</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalRides">0</div>
+                <div class="stat-label">Total Rides</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ride Requests -->
+          <div class="card" style="margin-top: 20px;">
+            <h3 class="card-title">Ride Requests</h3>
+            <div id="rideRequests">
+              <div class="empty-state">
+                <div class="empty-state-icon">🚗</div>
+                <p>No ride requests at the moment</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">Turn on your status to start receiving requests</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+          <!-- Current Ride -->
+          <div class="card" id="currentRideCard" style="display: none;">
+            <h3 class="card-title">Current Ride</h3>
+            <div id="currentRideInfo"></div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <h3 class="card-title">Quick Actions</h3>
+            <button class="btn btn-accept" style="width: 100%; margin-bottom: 10px;" onclick="window.location.href='my-rides.html'">
+              📋 My Rides
+            </button>
+            <button class="btn btn-accept" style="width: 100%; margin-bottom: 10px;" onclick="window.location.href='settings.html'">
+              ⚙️ Settings
+            </button>
+            <button class="btn btn-decline" style="width: 100%;" id="logoutBtn">
+              🚪 Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/driver-service.js"></script>
+    <script src="js/ride-service.js"></script>
+    <script src="js/pusher-service.js"></script>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
+    <script>
+      let currentUser = null;
+      let isOnline = false;
+      let pendingRides = [];
+      let currentRide = null;
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        const userRole = AuthService.getUserRole();
+        if (userRole !== 'driver' && userRole !== 'rider') {
+          Utils.showToast('Access denied. Driver account required.', 'error');
+          setTimeout(() => window.location.href = 'dashboard-new.html', 2000);
+          return;
+        }
+
+        // Check verification status
+        try {
+          const statusResponse = await DriverService.getOnboardingStatus();
+          if (statusResponse.success && statusResponse.status) {
+            const verificationStatus = statusResponse.status.overallStatus;
+
+            // If not verified, redirect to appropriate page
+            if (verificationStatus === 'pending' || verificationStatus === 'under_review') {
+              window.location.href = 'verification-pending.html';
+              return;
+            } else if (verificationStatus === 'rejected') {
+              window.location.href = 'verification-pending.html';
+              return;
+            } else if (!verificationStatus || verificationStatus === 'incomplete') {
+              window.location.href = 'driver-onboarding.html';
+              return;
+            }
+            // If verified/approved, continue loading dashboard
+          }
+        } catch (error) {
+          console.error('Error checking verification status:', error);
+          // Continue loading dashboard if error (fallback)
+        }
+
+        await loadDriverData();
+        setupStatusToggle();
+        initializePusher();
+        startPolling();
+      });
+
+      async function loadDriverData() {
+        Utils.showLoader('Loading dashboard...');
+        try {
+          // Check onboarding status first
+          const onboardingResponse = await DriverService.getOnboardingStatus();
+
+          console.log('Onboarding response:', onboardingResponse);
+
+          // If driver hasn't completed onboarding, redirect to onboarding page
+          if (onboardingResponse.success === false ||
+              !onboardingResponse.onboardingComplete ||
+              onboardingResponse.message?.includes('not found') ||
+              onboardingResponse.message?.includes('registration')) {
+            Utils.hideLoader();
+            Utils.showToast('Please complete your driver registration first', 'info');
+            setTimeout(() => {
+              window.location.href = 'driver-onboarding.html';
+            }, 2000);
+            return;
+          }
+
+          // Load profile
+          const profileResponse = await AuthService.getProfile();
+          if (profileResponse.success !== false && profileResponse.user) {
+            currentUser = profileResponse.user;
+            updateDriverUI(currentUser);
+          }
+
+          // Display verification status
+          if (onboardingResponse.success !== false) {
+            displayVerificationStatus(onboardingResponse);
+          }
+
+          // Load rides
+          const ridesResponse = await RideService.getDriverRides();
+          if (ridesResponse.success !== false && ridesResponse.rides) {
+            updateStats(ridesResponse.rides);
+            checkCurrentRide(ridesResponse.rides);
+          }
+
+          Utils.hideLoader();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error loading driver data:', error);
+
+          // If error mentions profile not found, redirect to onboarding
+          if (error.message?.includes('not found') || error.message?.includes('registration')) {
+            Utils.showToast('Please complete your driver registration first', 'info');
+            setTimeout(() => {
+              window.location.href = 'driver-onboarding.html';
+            }, 2000);
+          } else {
+            Utils.showToast('Failed to load dashboard data', 'error');
+          }
+        }
+      }
+
+      function updateDriverUI(user) {
+        document.getElementById('driverName').textContent = user.name || 'Driver';
+        document.getElementById('driverAvatar').textContent = (user.name || 'D').charAt(0).toUpperCase();
+        document.getElementById('driverRating').textContent = `⭐ ${user.rating || '4.8'} Rating`;
+      }
+
+      function displayVerificationStatus(status) {
+        const banner = document.getElementById('verificationBanner');
+
+        if (status.verificationStatus === 'pending' || status.verificationStatus === 'in_review') {
+          banner.className = 'verification-banner';
+          banner.innerHTML = '⏳ Your documents are under review. You\'ll be notified once approved.';
+          banner.style.display = 'flex';
+        } else if (status.verificationStatus === 'rejected') {
+          banner.className = 'verification-banner rejected';
+          banner.innerHTML = `❌ Verification rejected: ${status.rejectionReason || 'Please resubmit documents'}`;
+          banner.style.display = 'flex';
+        } else if (status.verificationStatus === 'approved') {
+          banner.className = 'verification-banner approved';
+          banner.innerHTML = '✓ You are verified and can start accepting rides!';
+          banner.style.display = 'flex';
+        }
+      }
+
+      function updateStats(rides) {
+        const today = new Date().toDateString();
+        const todayRides = rides.filter(r => new Date(r.createdAt).toDateString() === today);
+        const completedToday = todayRides.filter(r => r.status === 'completed');
+        const todayEarnings = completedToday.reduce((sum, r) => sum + (r.fare || 0), 0);
+        const totalCompleted = rides.filter(r => r.status === 'completed').length;
+
+        document.getElementById('todayRides').textContent = completedToday.length;
+        document.getElementById('todayEarnings').textContent = Utils.formatCurrency(todayEarnings);
+        document.getElementById('totalRides').textContent = totalCompleted;
+      }
+
+      function checkCurrentRide(rides) {
+        currentRide = rides.find(r =>
+          r.status === 'accepted' || r.status === 'onTheWay' ||
+          r.status === 'arrived' || r.status === 'inProgress'
+        );
+
+        if (currentRide) {
+          displayCurrentRide(currentRide);
+        }
+      }
+
+      function displayCurrentRide(ride) {
+        const card = document.getElementById('currentRideCard');
+        const info = document.getElementById('currentRideInfo');
+
+        card.style.display = 'block';
+        info.innerHTML = `
+          <p style="margin-bottom: 10px;"><strong>Status:</strong> ${formatStatus(ride.status)}</p>
+          <p style="margin-bottom: 10px;"><strong>Pickup:</strong> ${ride.pickupLocationName}</p>
+          <button class="btn btn-accept" style="width: 100%;" onclick="window.location.href='driver-ride-active.html?bookingId=${ride._id}'">
+            Manage Ride →
+          </button>
+        `;
+      }
+
+      function setupStatusToggle() {
+        const toggle = document.getElementById('statusToggle');
+        const statusText = document.getElementById('statusText');
+
+        toggle.addEventListener('click', async () => {
+          const newStatus = !isOnline;
+
+          try {
+            const response = await DriverService.updateStatus(newStatus ? 'available' : 'offline');
+
+            if (response.success !== false) {
+              isOnline = newStatus;
+              toggle.classList.toggle('active', isOnline);
+              statusText.textContent = isOnline ? 'Online' : 'Offline';
+              Utils.showToast(isOnline ? 'You are now online' : 'You are now offline', 'success');
+
+              if (isOnline) {
+                loadPendingRides();
+              }
+            }
+          } catch (error) {
+            console.error('Status update error:', error);
+            Utils.showToast('Failed to update status', 'error');
+          }
+        });
+      }
+
+      async function loadPendingRides() {
+        try {
+          const response = await RideService.getNearbyRides(0, 0, 10000);
+          if (response.success !== false && response.rides) {
+            pendingRides = response.rides.filter(r => r.status === 'pending');
+            displayRideRequests(pendingRides);
+          }
+        } catch (error) {
+          console.error('Error loading rides:', error);
+        }
+      }
+
+      function displayRideRequests(rides) {
+        const container = document.getElementById('rideRequests');
+
+        if (rides.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🚗</div>
+              <p>No ride requests at the moment</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = rides.map(ride => `
+          <div class="ride-request">
+            <h3>New Ride Request</h3>
+            <div class="ride-details">
+              <div class="ride-location">📍 ${ride.pickupLocationName || 'Pickup location'}</div>
+              <div class="ride-location">🎯 ${ride.dropoffLocationName || 'Dropoff location'}</div>
+            </div>
+            <div class="ride-info-row">
+              <span>💰 ${Utils.formatCurrency(ride.fare || 0)}</span>
+              <span>📏 ${ride.distance ? ride.distance.toFixed(1) + ' km' : 'N/A'}</span>
+              <span>⏱️ ${ride.duration || '0'} min</span>
+            </div>
+            <div class="ride-actions">
+              <button class="btn btn-accept" onclick="acceptRide('${ride._id}')">Accept</button>
+              <button class="btn btn-decline" onclick="declineRide('${ride._id}')">Decline</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      async function acceptRide(bookingId) {
+        Utils.showLoader('Accepting ride...');
+        try {
+          const response = await RideService.acceptRide(bookingId);
+          Utils.hideLoader();
+
+          if (response.success !== false) {
+            Utils.showToast('Ride accepted!', 'success');
+            window.location.href = `driver-ride-active.html?bookingId=${bookingId}`;
+          }
+        } catch (error) {
+          Utils.hideLoader();
+          Utils.showToast('Failed to accept ride', 'error');
+        }
+      }
+
+      function declineRide(bookingId) {
+        pendingRides = pendingRides.filter(r => r._id !== bookingId);
+        displayRideRequests(pendingRides);
+      }
+
+      function initializePusher() {
+        PusherService.subscribeToDriverStatus({
+          onDriverAvailable: (data) => {
+            console.log('New ride available:', data);
+            loadPendingRides();
+          }
+        });
+      }
+
+      function startPolling() {
+        setInterval(() => {
+          if (isOnline) {
+            loadPendingRides();
+          }
+        }, 30000);
+      }
+
+      function formatStatus(status) {
+        const map = {
+          accepted: 'Accepted',
+          onTheWay: 'On The Way',
+          arrived: 'Arrived',
+          inProgress: 'In Progress'
+        };
+        return map[status] || status;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to logout?')) {
+          AuthService.logout();
+        }
+      });
+    </script>
+  </body>
+</html>

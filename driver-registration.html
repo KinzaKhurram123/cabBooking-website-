@@ -256,13 +256,14 @@
       }
 
       .success-message {
-        background: rgba(0, 255, 0, 0.2);
-        border: 1px solid rgba(0, 255, 0, 0.5);
-        color: #51cf66;
+        background: rgba(76, 175, 80, 0.2);
+        border: 2px solid #4caf50;
+        color: #4caf50;
         padding: 12px 20px;
         border-radius: 10px;
         margin-bottom: 20px;
         display: none;
+        font-weight: 600;
       }
 
       @media (max-width: 1024px) {
@@ -348,6 +349,11 @@
 
       <div class="right-side">
         <div class="register-form">
+          <div style="text-align: left; margin-bottom: 20px;">
+            <a href="index.html" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.3s ease;">
+              <span style="font-size: 1.2rem;">←</span> Back to Home
+            </a>
+          </div>
           <h2 class="form-title">Join as Driver</h2>
           <p class="form-subtitle">Start earning with RideLynk today</p>
 
@@ -406,9 +412,13 @@
       </div>
     </div>
 
-    <script>
-      const API_BASE_URL = 'https://krystal-imaginable-hurtlingly.ngrok-free.dev';
+    <!-- Service Layer Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
 
+    <script>
       const form = document.getElementById('driverRegisterForm');
       const submitBtn = document.getElementById('submitBtn');
       const errorMessage = document.getElementById('errorMessage');
@@ -425,31 +435,99 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Registering...';
 
-        // TEMPORARY: Use mock driver registration directly (bypass API)
-        console.log('Using mock driver registration for testing...');
-
-        // Create mock driver data from form
-        const mockDriver = {
+        // Prepare driver registration data
+        const driverData = {
           name: document.getElementById('name').value.trim(),
           email: document.getElementById('email').value.trim(),
-          phone: document.getElementById('phone').value.trim(),
+          password: document.getElementById('password').value,
+          phoneNumber: document.getElementById('phone').value.trim(),
           city: document.getElementById('city').value.trim(),
-          country: document.getElementById('country').value.trim(),
-          role: 'driver',
-          profilePicture: 'images/profile/1.jpg'
+          country: document.getElementById('country').value.trim()
         };
 
-        // Store mock data
-        localStorage.setItem('authToken', 'mock-token-' + Date.now());
-        localStorage.setItem('userData', JSON.stringify(mockDriver));
+        try {
+          // Call driver registration API using AuthService
+          console.log('Driver Registration - Sending data:', driverData);
+          const response = await AuthService.registerDriver(driverData);
+          console.log('Driver Registration - API Response:', response);
+          console.log('Driver Registration - Response token:', response.token);
+          console.log('Driver Registration - Response success:', response.success);
 
-        successMessage.textContent = 'Driver registration successful! Redirecting to dashboard...';
-        successMessage.style.display = 'block';
+          // Check if registration was successful
+          if (response.success !== false && response.token) {
+            console.log('Driver Registration - Success! Token found');
+            // Show success message
+            successMessage.textContent = 'Driver registration successful! Redirecting to onboarding...';
+            successMessage.style.display = 'block';
 
-        // Redirect to dashboard
-        setTimeout(() => {
-          window.location.href = 'account-dashboard.html';
-        }, 1500);
+            // Redirect to driver onboarding
+            setTimeout(() => {
+              window.location.href = 'driver-onboarding.html';
+            }, 1500);
+          } else {
+            console.log('Driver Registration - Failed, no token in response');
+            // Registration failed
+            errorMessage.textContent = response.message || 'Driver registration failed. Please try again.';
+            errorMessage.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register as Driver';
+          }
+        } catch (error) {
+          console.error('Driver registration error:', error);
+          console.log('Error details:', error);
+          console.log('Error response:', error.response);
+
+          // Display error message
+          let errorMsg = 'An error occurred during registration. Please try again.';
+
+          // Check for specific error messages from API
+          if (error.response?.data?.message) {
+            errorMsg = error.response.data.message;
+          } else if (error.message) {
+            errorMsg = error.message;
+          } else if (error.error === 'NETWORK_ERROR') {
+            errorMsg = 'Network error. Please check your connection and try again.';
+          } else if (error.status === 422 && error.errors) {
+            // Validation errors
+            errorMsg = error.errors.map(e => e.message).join(', ');
+          }
+
+          // Handle common error scenarios
+          if (errorMsg.toLowerCase().includes('already exists') ||
+              errorMsg.toLowerCase().includes('already registered') ||
+              errorMsg.toLowerCase().includes('email already')) {
+            errorMsg = 'This email is already registered. Please login or use a different email.';
+          } else if (errorMsg.toLowerCase().includes('phone') &&
+                     errorMsg.toLowerCase().includes('exists')) {
+            errorMsg = 'This phone number is already registered. Please use a different number.';
+          } else if (errorMsg.toLowerCase().includes('invalid email')) {
+            errorMsg = 'Invalid email format. Please enter a valid email address.';
+          } else if (errorMsg.toLowerCase().includes('password') &&
+                     (errorMsg.toLowerCase().includes('weak') ||
+                      errorMsg.toLowerCase().includes('short'))) {
+            errorMsg = 'Password is too weak. Use at least 8 characters with letters and numbers.';
+          }
+
+          errorMessage.textContent = errorMsg;
+          errorMessage.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Register as Driver';
+        }
+      });
+
+      // Check if user is already logged in
+      window.addEventListener('DOMContentLoaded', () => {
+        if (AuthService.isAuthenticated()) {
+          const userRole = AuthService.getUserRole();
+          // Redirect based on role
+          if (userRole === 'driver' || userRole === 'rider') {
+            window.location.href = 'driver-dashboard.html';
+          } else if (userRole === 'admin') {
+            window.location.href = 'dashboard.html';
+          } else {
+            window.location.href = 'dashboard-new.html';
+          }
+        }
       });
     </script>
   </body>

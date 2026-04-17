@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Earnings - RideLynk Driver</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #000000;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        padding: 20px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 173, 239, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        color: #00ADEF;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .back-btn {
+        background: rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(0, 173, 239, 0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: #00ADEF;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .back-btn:hover {
+        background: rgba(0, 173, 239, 0.3);
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.3);
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      /* Earnings Summary Card */
+      .earnings-card {
+        background: linear-gradient(135deg, #00ADEF 0%, #00d4aa 100%);
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 173, 239, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .earnings-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+      }
+
+      .earnings-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .earnings-label {
+        color: rgba(0, 0, 0, 0.7);
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .period-selector {
+        display: flex;
+        gap: 10px;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 5px;
+        border-radius: 10px;
+      }
+
+      .period-btn {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: rgba(0, 0, 0, 0.7);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .period-btn.active {
+        background: #000000;
+        color: #00ADEF;
+      }
+
+      .total-earnings {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #000000;
+        margin-bottom: 20px;
+      }
+
+      .earnings-meta {
+        display: flex;
+        gap: 30px;
+      }
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(0, 0, 0, 0.8);
+        font-weight: 600;
+      }
+
+      .meta-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      .withdraw-btn {
+        background: #000000;
+        color: #00ADEF;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .withdraw-btn:hover {
+        background: #1a1a1a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: #0a0a0a;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        border-color: rgba(0, 173, 239, 0.5);
+        box-shadow: 0 0 20px rgba(0, 173, 239, 0.2);
+      }
+
+      .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .icon-rides {
+        background: rgba(0, 173, 239, 0.2);
+        color: #00ADEF;
+      }
+
+      .icon-hours {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+      }
+
+      .icon-rating {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+      }
+
+      .icon-tips {
+        background: rgba(236, 72, 153, 0.2);
+        color: #ec4899;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #00ADEF;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
+
+      .stat-change {
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .change-positive {
+        color: #10b981;
+      }
+
+      .change-negative {
+        color: #ef4444;
+      }
+
+      /* Charts Section */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .chart-card {
+        background: #0a0a0a;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+      }
+
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+      }
+
+      .chart-title {
+        color: #00ADEF;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      /* Earnings Breakdown */
+      .breakdown-section {
+        background: #0a0a0a;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        margin-bottom: 30px;
+      }
+
+      .breakdown-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: rgba(0, 173, 239, 0.05);
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+
+      .breakdown-label {
+        color: #e5e7eb;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .breakdown-amount {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #00ADEF;
+      }
+
+      /* Payment History */
+      .payment-history {
+        background: #0a0a0a;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 173, 239, 0.2);
+      }
+
+      .history-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: rgba(0, 173, 239, 0.05);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .history-item:hover {
+        background: rgba(0, 173, 239, 0.1);
+      }
+
+      .history-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .history-icon {
+        width: 45px;
+        height: 45px;
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      .history-details {
+        flex: 1;
+      }
+
+      .history-title {
+        color: #e5e7eb;
+        font-weight: 600;
+        margin-bottom: 3px;
+      }
+
+      .history-date {
+        color: #9ca3af;
+        font-size: 0.85rem;
+      }
+
+      .history-amount {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #10b981;
+      }
+
+      .status-badge {
+        padding: 5px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .status-completed {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid #10b981;
+      }
+
+      .status-pending {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+        border: 1px solid #f59e0b;
+      }
+
+      /* Loading */
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(0, 173, 239, 0.2);
+        border-top: 4px solid #00ADEF;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Responsive */
+      @media (max-width: 968px) {
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .total-earnings {
+          font-size: 2.5rem;
+        }
+
+        .earnings-meta {
+          flex-direction: column;
+          gap: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1><i class="fas fa-dollar-sign"></i> My Earnings</h1>
+        <a href="dashboard.html" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p style="color: #9ca3af;">Loading earnings...</p>
+      </div>
+
+      <div id="contentArea" style="display: none;">
+        <!-- Earnings Summary -->
+        <div class="earnings-card">
+          <div class="earnings-header">
+            <div class="earnings-label">Total Earnings</div>
+            <div class="period-selector">
+              <button class="period-btn" onclick="changePeriod('today')">Today</button>
+              <button class="period-btn active" onclick="changePeriod('week')">Week</button>
+              <button class="period-btn" onclick="changePeriod('month')">Month</button>
+            </div>
+          </div>
+
+          <div class="total-earnings" id="totalEarnings">$0.00</div>
+
+          <div class="earnings-meta">
+            <div class="meta-item">
+              <div class="meta-icon">
+                <i class="fas fa-car"></i>
+              </div>
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 700;" id="totalRides">0</div>
+                <div style="font-size: 0.85rem;">Total Rides</div>
+              </div>
+            </div>
+
+            <div class="meta-item">
+              <div class="meta-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 700;" id="totalHours">0h</div>
+                <div style="font-size: 0.85rem;">Online Hours</div>
+              </div>
+            </div>
+
+            <div class="meta-item">
+              <div class="meta-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 700;" id="avgPerRide">$0</div>
+                <div style="font-size: 0.85rem;">Avg per Ride</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="withdraw-btn" onclick="withdrawEarnings()">
+            <i class="fas fa-money-bill-wave"></i> Withdraw Earnings
+          </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="completedRides">0</div>
+                <div class="stat-label">Completed Rides</div>
+              </div>
+              <div class="stat-icon icon-rides">
+                <i class="fas fa-check-circle"></i>
+              </div>
+            </div>
+            <div class="stat-change change-positive">
+              <i class="fas fa-arrow-up"></i> 12% from last week
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="onlineHours">0h</div>
+                <div class="stat-label">Online Hours</div>
+              </div>
+              <div class="stat-icon icon-hours">
+                <i class="fas fa-clock"></i>
+              </div>
+            </div>
+            <div class="stat-change change-positive">
+              <i class="fas fa-arrow-up"></i> 8% from last week
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="rating">5.0</div>
+                <div class="stat-label">Average Rating</div>
+              </div>
+              <div class="stat-icon icon-rating">
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+            <div class="stat-change change-positive">
+              <i class="fas fa-arrow-up"></i> Excellent
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="totalTips">$0</div>
+                <div class="stat-label">Tips Received</div>
+              </div>
+              <div class="stat-icon icon-tips">
+                <i class="fas fa-hand-holding-usd"></i>
+              </div>
+            </div>
+            <div class="stat-change change-positive">
+              <i class="fas fa-arrow-up"></i> 15% from last week
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Earnings Trend</h3>
+            </div>
+            <canvas id="earningsChart" height="80"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Earnings Breakdown</h3>
+            </div>
+            <canvas id="breakdownChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Earnings Breakdown -->
+        <div class="breakdown-section">
+          <div class="chart-header">
+            <h3 class="chart-title">Detailed Breakdown</h3>
+          </div>
+
+          <div class="breakdown-item">
+            <div class="breakdown-label">
+              <i class="fas fa-car" style="color: #00ADEF;"></i>
+              Ride Fares
+            </div>
+            <div class="breakdown-amount" id="rideFares">$0.00</div>
+          </div>
+
+          <div class="breakdown-item">
+            <div class="breakdown-label">
+              <i class="fas fa-hand-holding-usd" style="color: #ec4899;"></i>
+              Tips
+            </div>
+            <div class="breakdown-amount" id="tips">$0.00</div>
+          </div>
+
+          <div class="breakdown-item">
+            <div class="breakdown-label">
+              <i class="fas fa-gift" style="color: #10b981;"></i>
+              Bonuses
+            </div>
+            <div class="breakdown-amount" id="bonuses">$0.00</div>
+          </div>
+
+          <div class="breakdown-item">
+            <div class="breakdown-label">
+              <i class="fas fa-minus-circle" style="color: #ef4444;"></i>
+              Commission (20%)
+            </div>
+            <div class="breakdown-amount" style="color: #ef4444;" id="commission">-$0.00</div>
+          </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="payment-history">
+          <div class="chart-header">
+            <h3 class="chart-title">Payment History</h3>
+          </div>
+
+          <div id="paymentList">
+            <!-- Payment history will be inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+
+    <script>
+      let currentPeriod = 'week';
+      let earningsData = null;
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+        const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+
+        if (!token || role !== 'driver') {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await loadEarningsData();
+        initCharts();
+      });
+
+      async function loadEarningsData() {
+        try {
+          const response = await ApiService.get('/driver/earnings');
+
+          if (response.success !== false && response.earnings) {
+            earningsData = response.earnings;
+          } else {
+            // Mock data
+            earningsData = {
+              week: {
+                total: 1250.50,
+                rides: 45,
+                hours: 32,
+                avgPerRide: 27.79,
+                tips: 125.00,
+                bonuses: 50.00,
+                commission: 250.10,
+                rating: 4.9
+              },
+              payments: [
+                {
+                  id: 1,
+                  amount: 850.00,
+                  date: new Date(Date.now() - 604800000).toISOString(),
+                  status: 'completed',
+                  method: 'Bank Transfer'
+                },
+                {
+                  id: 2,
+                  amount: 1200.00,
+                  date: new Date(Date.now() - 1209600000).toISOString(),
+                  status: 'completed',
+                  method: 'Bank Transfer'
+                },
+                {
+                  id: 3,
+                  amount: 450.00,
+                  date: new Date(Date.now() - 172800000).toISOString(),
+                  status: 'pending',
+                  method: 'Bank Transfer'
+                }
+              ]
+            };
+          }
+
+          displayEarningsData();
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('contentArea').style.display = 'block';
+        } catch (error) {
+          console.error('Error loading earnings:', error);
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('contentArea').style.display = 'block';
+        }
+      }
+
+      function displayEarningsData() {
+        const data = earningsData[currentPeriod] || earningsData.week;
+
+        document.getElementById('totalEarnings').textContent = '$' + (data.total || 0).toFixed(2);
+        document.getElementById('totalRides').textContent = data.rides || 0;
+        document.getElementById('totalHours').textContent = (data.hours || 0) + 'h';
+        document.getElementById('avgPerRide').textContent = '$' + (data.avgPerRide || 0).toFixed(2);
+
+        document.getElementById('completedRides').textContent = data.rides || 0;
+        document.getElementById('onlineHours').textContent = (data.hours || 0) + 'h';
+        document.getElementById('rating').textContent = (data.rating || 5.0).toFixed(1);
+        document.getElementById('totalTips').textContent = '$' + (data.tips || 0).toFixed(2);
+
+        const rideFares = data.total - (data.tips || 0) - (data.bonuses || 0) + (data.commission || 0);
+        document.getElementById('rideFares').textContent = '$' + rideFares.toFixed(2);
+        document.getElementById('tips').textContent = '$' + (data.tips || 0).toFixed(2);
+        document.getElementById('bonuses').textContent = '$' + (data.bonuses || 0).toFixed(2);
+        document.getElementById('commission').textContent = '-$' + (data.commission || 0).toFixed(2);
+
+        displayPaymentHistory();
+      }
+
+      function displayPaymentHistory() {
+        const container = document.getElementById('paymentList');
+        const payments = earningsData.payments || [];
+
+        container.innerHTML = payments.map(payment => `
+          <div class="history-item">
+            <div class="history-info">
+              <div class="history-icon">
+                <i class="fas fa-${payment.status === 'completed' ? 'check' : 'clock'}"></i>
+              </div>
+              <div class="history-details">
+                <div class="history-title">${payment.method}</div>
+                <div class="history-date">${new Date(payment.date).toLocaleDateString()}</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div class="history-amount">$${payment.amount.toFixed(2)}</div>
+              <span class="status-badge status-${payment.status}">${payment.status}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function changePeriod(period) {
+        currentPeriod = period;
+        document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        displayEarningsData();
+      }
+
+      function initCharts() {
+        // Earnings Trend Chart
+        const ctx1 = document.getElementById('earningsChart').getContext('2d');
+        new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              label: 'Earnings',
+              data: [150, 200, 180, 220, 250, 280, 170],
+              borderColor: '#00ADEF',
+              backgroundColor: 'rgba(0, 173, 239, 0.1)',
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(0, 173, 239, 0.1)' },
+                ticks: { color: '#9ca3af' }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#9ca3af' }
+              }
+            }
+          }
+        });
+
+        // Breakdown Chart
+        const ctx2 = document.getElementById('breakdownChart').getContext('2d');
+        new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            labels: ['Ride Fares', 'Tips', 'Bonuses'],
+            datasets: [{
+              data: [1000, 125, 50],
+              backgroundColor: ['#00ADEF', '#ec4899', '#10b981']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: '#9ca3af' }
+              }
+            }
+          }
+        });
+      }
+
+      function withdrawEarnings() {
+        alert('Withdraw earnings feature coming soon!');
+      }
+    </script>
+  </body>
+</html>

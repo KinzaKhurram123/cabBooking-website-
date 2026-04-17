@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offers - RideLynk</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      .sidebar {
+        width: 280px;
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        color: white;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .logo-section img {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+      }
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .user-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        margin-bottom: 10px;
+      }
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .user-info {
+        flex: 1;
+      }
+
+      .user-name {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 5px;
+      }
+
+      .user-email {
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+
+      .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: white;
+      }
+
+      .nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+      }
+
+      .nav-item.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .nav-icon {
+        font-size: 1.3rem;
+      }
+
+      .main-content {
+        margin-left: 280px;
+        flex: 1;
+        padding: 40px;
+      }
+
+      .header {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 10px;
+      }
+
+      .page-subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+      }
+
+      .content-grid {
+        display: grid;
+        gap: 25px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 25px;
+      }
+
+      .offers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+      }
+
+      .offer-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 30px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .offer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+      }
+
+      .offer-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+      }
+
+      .offer-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+      }
+
+      .offer-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .offer-description {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      .offer-code {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+        margin-bottom: 15px;
+        backdrop-filter: blur(10px);
+      }
+
+      .offer-validity {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        text-align: center;
+      }
+
+      .apply-btn {
+        width: 100%;
+        padding: 12px;
+        background: white;
+        color: #667eea;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+      }
+
+      .apply-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+      }
+
+      .promo-input-section {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+      }
+
+      .promo-input-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 15px;
+      }
+
+      .promo-input-group {
+        display: flex;
+        gap: 15px;
+      }
+
+      .promo-input {
+        flex: 1;
+        padding: 15px 20px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .promo-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .promo-apply-btn {
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .promo-apply-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 80px;
+          padding: 20px 10px;
+        }
+
+        .logo-title,
+        .user-info,
+        .nav-item span:not(.nav-icon) {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 80px;
+          padding: 20px;
+        }
+
+        .offers-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .promo-input-group {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo-section">
+        <img src="images/white_logo.png" alt="RideLynk" />
+        <div class="logo-title">RideLynk</div>
+      </div>
+
+      <div class="user-section">
+        <div class="user-avatar" id="sidebarAvatar">U</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarName">User Name</div>
+          <div class="user-email" id="sidebarEmail">user@email.com</div>
+        </div>
+      </div>
+
+      <div class="nav-menu">
+        <a href="dashboard-new.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home</span>
+        </a>
+        <a href="my-rides.html" class="nav-item">
+          <span class="nav-icon">🚗</span>
+          <span>My Rides</span>
+        </a>
+        <a href="payment.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payment</span>
+        </a>
+        <div class="nav-item active">
+          <span class="nav-icon">🎁</span>
+          <span>Offers</span>
+        </div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+        <div class="nav-item" id="logoutBtn" style="cursor: pointer">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h1 class="page-title">🎁 Offers & Promotions</h1>
+        <p class="page-subtitle">
+          Save more on your rides with exclusive offers
+        </p>
+      </div>
+
+      <div class="content-grid">
+        <div class="card">
+          <div class="promo-input-section">
+            <div class="promo-input-title">Have a promo code?</div>
+            <div class="promo-input-group">
+              <input
+                type="text"
+                class="promo-input"
+                placeholder="Enter promo code"
+                id="promoCodeInput"
+              />
+              <button class="promo-apply-btn" onclick="applyPromoCode()">
+                Apply Code
+              </button>
+            </div>
+          </div>
+
+          <h2 class="card-title">Available Offers</h2>
+
+          <div class="offers-grid">
+            <div class="offer-card">
+              <div class="offer-badge">NEW</div>
+              <div class="offer-icon">🎉</div>
+              <div class="offer-title">Welcome Bonus</div>
+              <div class="offer-description">
+                Get 50% off on your first 3 rides! Valid for new users only.
+              </div>
+              <div class="offer-code">WELCOME50</div>
+              <div class="offer-validity">Valid till: Dec 31, 2024</div>
+              <button class="apply-btn" onclick="applyOffer('WELCOME50')">
+                Apply Offer
+              </button>
+            </div>
+
+            <div class="offer-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+              <div class="offer-badge">HOT</div>
+              <div class="offer-icon">🔥</div>
+              <div class="offer-title">Weekend Special</div>
+              <div class="offer-description">
+                Enjoy 30% off on all rides during weekends (Sat & Sun).
+              </div>
+              <div class="offer-code">WEEKEND30</div>
+              <div class="offer-validity">Valid every weekend</div>
+              <button class="apply-btn" onclick="applyOffer('WEEKEND30')" style="color: #f59e0b;">
+                Apply Offer
+              </button>
+            </div>
+
+            <div class="offer-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+              <div class="offer-badge">SAVE</div>
+              <div class="offer-icon">💰</div>
+              <div class="offer-title">Flat Rs. 200 Off</div>
+              <div class="offer-description">
+                Get flat Rs. 200 off on rides above Rs. 500. Limited time offer!
+              </div>
+              <div class="offer-code">FLAT200</div>
+              <div class="offer-validity">Valid till: Dec 25, 2024</div>
+              <button class="apply-btn" onclick="applyOffer('FLAT200')" style="color: #10b981;">
+                Apply Offer
+              </button>
+            </div>
+
+            <div class="offer-card" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+              <div class="offer-badge">LIMITED</div>
+              <div class="offer-icon">⚡</div>
+              <div class="offer-title">Flash Sale</div>
+              <div class="offer-description">
+                40% off on all rides for the next 24 hours only! Hurry up!
+              </div>
+              <div class="offer-code">FLASH40</div>
+              <div class="offer-validity">Valid for 24 hours</div>
+              <button class="apply-btn" onclick="applyOffer('FLASH40')" style="color: #ef4444;">
+                Apply Offer
+              </button>
+            </div>
+
+            <div class="offer-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+              <div class="offer-badge">PREMIUM</div>
+              <div class="offer-icon">👑</div>
+              <div class="offer-title">Premium Rides</div>
+              <div class="offer-description">
+                Get 25% off on premium cab bookings. Travel in style!
+              </div>
+              <div class="offer-code">PREMIUM25</div>
+              <div class="offer-validity">Valid till: Jan 15, 2025</div>
+              <button class="apply-btn" onclick="applyOffer('PREMIUM25')" style="color: #8b5cf6;">
+                Apply Offer
+              </button>
+            </div>
+
+            <div class="offer-card" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+              <div class="offer-badge">REFERRAL</div>
+              <div class="offer-icon">🤝</div>
+              <div class="offer-title">Refer & Earn</div>
+              <div class="offer-description">
+                Refer a friend and both get Rs. 100 off on next ride!
+              </div>
+              <div class="offer-code">REFER100</div>
+              <div class="offer-validity">No expiry</div>
+              <button class="apply-btn" onclick="applyOffer('REFER100')" style="color: #06b6d4;">
+                Apply Offer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Auth check
+      window.addEventListener("DOMContentLoaded", () => {
+        const authToken = localStorage.getItem("authToken");
+        const userRole = localStorage.getItem("userRole");
+
+        if (!authToken) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        if (userRole === "admin") {
+          window.location.href = "dashboard.html";
+          return;
+        }
+
+        const userData = localStorage.getItem("userData");
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            document.getElementById("sidebarName").textContent =
+              user.name || "User Name";
+            document.getElementById("sidebarEmail").textContent =
+              user.email || "user@email.com";
+            document.getElementById("sidebarAvatar").textContent = (
+              user.name || "U"
+            )
+              .charAt(0)
+              .toUpperCase();
+          } catch (error) {
+            console.error("Error parsing user data:", error);
+          }
+        }
+      });
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        if (confirm("Are you sure you want to logout?")) {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("userData");
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("userRole");
+          localStorage.removeItem("rememberMe");
+          window.location.href = "login.html";
+        }
+      });
+
+      function applyPromoCode() {
+        const code = document.getElementById("promoCodeInput").value.trim();
+        if (code) {
+          alert(`Promo code "${code}" applied successfully! ✅`);
+          document.getElementById("promoCodeInput").value = "";
+        } else {
+          alert("Please enter a promo code");
+        }
+      }
+
+      function applyOffer(code) {
+        alert(`Offer "${code}" applied successfully! ✅\n\nYou can now book a ride to use this offer.`);
+      }
+    </script>
+  </body>
+</html>

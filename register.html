@@ -625,14 +625,15 @@
       }
 
       .success-message {
-        background: rgba(0, 255, 0, 0.2);
-        border: 1px solid rgba(0, 255, 0, 0.5);
-        color: #51cf66;
+        background: rgba(76, 175, 80, 0.2);
+        border: 2px solid #4caf50;
+        color: #4caf50;
         padding: 12px 20px;
         border-radius: 10px;
         margin-bottom: 20px;
         display: none;
         animation: fadeInDown 0.3s ease;
+        font-weight: 600;
       }
     </style>
   </head>
@@ -681,6 +682,11 @@
       <!-- Right Side - Signup Form -->
       <div class="right-side">
         <div class="signup-form">
+          <div style="text-align: left; margin-bottom: 20px;">
+            <a href="index.html" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.3s ease;">
+              <span style="font-size: 1.2rem;">←</span> Back to Home
+            </a>
+          </div>
           <h2 class="form-title">Sign Up</h2>
           <p class="form-subtitle">Create your account to get started</p>
 
@@ -706,6 +712,17 @@
                 id="email"
                 name="email"
                 placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Enter your phone number"
                 required
               />
             </div>
@@ -809,10 +826,13 @@
       </div>
     </div>
 
-    <script>
-      const API_BASE_URL =
-        "https://krystal-imaginable-hurtlingly.ngrok-free.dev";
+    <!-- Service Layer Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
 
+    <script>
       const form = document.getElementById("registerForm");
       const submitBtn = document.getElementById("submitBtn");
       const errorMessage = document.getElementById("errorMessage");
@@ -827,8 +847,7 @@
 
         // Get form data
         const password = document.getElementById("password").value;
-        const confirmPassword =
-          document.getElementById("confirm-password").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
 
         // Validate passwords match
         if (password !== confirmPassword) {
@@ -848,53 +867,94 @@
         submitBtn.disabled = true;
         submitBtn.textContent = "Creating Account...";
 
-        // TEMPORARY: Use mock registration directly (bypass API)
-        console.log("Using mock registration for testing...");
-
-        // Create mock user data from form
-        const mockUser = {
+        // Prepare registration data
+        const userData = {
           name: document.getElementById("name").value.trim(),
           email: document.getElementById("email").value.trim(),
-          phone: document.getElementById("email").value.trim(),
-          role: "user",
-          profilePicture: "images/profile/1.jpg"
+          password: password,
+          phoneNumber: document.getElementById("phone").value.trim()
         };
 
-        // Store mock data
-        localStorage.setItem("authToken", "mock-token-" + Date.now());
-        localStorage.setItem("userData", JSON.stringify(mockUser));
+        try {
+          // Call register API using AuthService
+          console.log('Registration - Sending data:', userData);
+          const response = await AuthService.register(userData);
+          console.log('Registration - API Response:', response);
+          console.log('Registration - Response token:', response.token);
+          console.log('Registration - Response success:', response.success);
 
-        successMessage.textContent = "Account created successfully! Redirecting to dashboard...";
-        successMessage.style.display = "block";
+          // Check if registration was successful
+          if (response.success !== false && response.token) {
+            console.log('Registration - Success! Token found');
+            // Show success message
+            successMessage.textContent = "Account created successfully! Redirecting to dashboard...";
+            successMessage.style.display = "block";
 
-        // Redirect to dashboard
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1500);
-      });
-            profilePicture: "images/profile/1.jpg"
-          };
+            // Redirect to dashboard
+            setTimeout(() => {
+              window.location.href = "dashboard-new.html";
+            }, 1500);
+          } else {
+            console.log('Registration - Failed, no token in response');
+            // Registration failed
+            errorMessage.textContent = response.message || "Registration failed. Please try again.";
+            errorMessage.style.display = "block";
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Create Account";
+          }
+        } catch (error) {
+          console.error("Registration error:", error);
+          console.log('Error details:', error);
+          console.log('Error response:', error.response);
 
-          // Store mock data
-          localStorage.setItem("authToken", "mock-token-" + Date.now());
-          localStorage.setItem("userData", JSON.stringify(mockUser));
+          // Display error message
+          let errorMsg = "An error occurred during registration. Please try again.";
 
-          successMessage.textContent = "Account created successfully! Redirecting to dashboard...";
-          successMessage.style.display = "block";
+          // Check for specific error messages from API
+          if (error.response?.data?.message) {
+            errorMsg = error.response.data.message;
+          } else if (error.message) {
+            errorMsg = error.message;
+          } else if (error.error === 'NETWORK_ERROR') {
+            errorMsg = "Network error. Please check your connection and try again.";
+          } else if (error.status === 422 && error.errors) {
+            // Validation errors
+            errorMsg = error.errors.map(e => e.message).join(', ');
+          }
 
-          // Redirect to dashboard
-          setTimeout(() => {
-            window.location.href = "account-dashboard.html";
-          }, 1500);
+          // Handle common error scenarios
+          if (errorMsg.toLowerCase().includes('already exists') ||
+              errorMsg.toLowerCase().includes('already registered') ||
+              errorMsg.toLowerCase().includes('email already')) {
+            errorMsg = "This email is already registered. Please login or use a different email.";
+          } else if (errorMsg.toLowerCase().includes('phone') &&
+                     errorMsg.toLowerCase().includes('exists')) {
+            errorMsg = "This phone number is already registered. Please use a different number.";
+          } else if (errorMsg.toLowerCase().includes('invalid email')) {
+            errorMsg = "Invalid email format. Please enter a valid email address.";
+          } else if (errorMsg.toLowerCase().includes('password') &&
+                     (errorMsg.toLowerCase().includes('weak') ||
+                      errorMsg.toLowerCase().includes('short'))) {
+            errorMsg = "Password is too weak. Use at least 8 characters with letters and numbers.";
+          }
+
+          errorMessage.textContent = errorMsg;
+          errorMessage.style.display = "block";
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Create Account";
         }
       });
 
       // Check if user is already logged in
       window.addEventListener("DOMContentLoaded", () => {
-        const token = localStorage.getItem("authToken");
-        if (token) {
+        if (AuthService.isAuthenticated()) {
           // User is already logged in, redirect to dashboard
-          window.location.href = "dashboard.html";
+          const userRole = AuthService.getUserRole();
+          if (userRole === "admin") {
+            window.location.href = "dashboard.html";
+          } else {
+            window.location.href = "dashboard-new.html";
+          }
         }
       });
     </script>

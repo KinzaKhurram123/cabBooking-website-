@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RideLynk - Payment Methods</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f5f7fa;
+        overflow-x: hidden;
+      }
+
+      /* Sidebar - Same as My Rides */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        height: 100vh;
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        padding: 30px 0;
+        z-index: 1000;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .logo-section {
+        padding: 0 30px 30px 30px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .logo-section img {
+        height: 50px;
+        margin-bottom: 10px;
+      }
+
+      .logo-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: white;
+        letter-spacing: -0.5px;
+      }
+
+      .user-section {
+        padding: 20px;
+        margin: 20px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #667eea;
+        font-weight: 800;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+      }
+
+      .user-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .user-name {
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-email {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .nav-menu {
+        padding: 20px 0;
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .nav-menu::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .nav-menu::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+
+      .nav-menu::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+      }
+
+      .nav-menu::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .nav-item {
+        padding: 15px 30px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        text-decoration: none;
+      }
+
+      .nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border-left: 4px solid white;
+      }
+
+      .nav-icon {
+        font-size: 1.3rem;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 280px;
+        padding: 40px;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      .header {
+        margin-bottom: 40px;
+      }
+
+      .page-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+      }
+
+      .page-subtitle {
+        font-size: 1.1rem;
+        color: #6b7280;
+        font-weight: 500;
+      }
+
+      /* Content Grid */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+      }
+
+      /* Payment Methods Section */
+      .payment-methods {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a1a2e;
+      }
+
+      .btn-add {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      /* Payment Card */
+      .payment-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .payment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      .payment-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .card-type {
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .card-logo {
+        font-size: 2rem;
+      }
+
+      .card-number {
+        font-size: 1.3rem;
+        letter-spacing: 3px;
+        margin-bottom: 20px;
+        font-weight: 500;
+      }
+
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .card-holder {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .card-expiry {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .default-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .btn-card-action {
+        flex: 1;
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+      }
+
+      .btn-card-action:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Wallet Options */
+      .wallet-options {
+        display: grid;
+        gap: 15px;
+      }
+
+      .wallet-card {
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .wallet-card:hover {
+        border-color: #667eea;
+        background: #f0f4ff;
+      }
+
+      .wallet-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: white;
+        border: 2px solid #e5e7eb;
+      }
+
+      .wallet-info {
+        flex: 1;
+      }
+
+      .wallet-name {
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 3px;
+      }
+
+      .wallet-status {
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
+
+      .wallet-connected {
+        color: #10b981;
+        font-weight: 600;
+      }
+
+      /* Transaction History */
+      .transaction-history {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .transaction-item {
+        padding: 20px;
+        background: #f9fafb;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+
+      .transaction-item:hover {
+        background: #f0f4ff;
+      }
+
+      .transaction-info h4 {
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 5px;
+      }
+
+      .transaction-info p {
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
+
+      .transaction-amount {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #667eea;
+      }
+
+      /* Add Payment Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .modal-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a1a2e;
+      }
+
+      .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6b7280;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      .btn-submit {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      /* Responsive */
+      @media (max-width: 1200px) {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 992px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .main-content {
+          margin-left: 0;
+          padding: 30px 20px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .page-title {
+          font-size: 1.5rem;
+        }
+
+        .payment-methods,
+        .transaction-history {
+          padding: 20px;
+        }
+
+        .section-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+
+        .btn-add {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .modal-content {
+          padding: 30px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo-section">
+        <img src="images/white_logo.png" alt="RideLynk" />
+        <div class="logo-title">RideLynk</div>
+      </div>
+
+      <div class="user-section">
+        <div class="user-avatar" id="sidebarAvatar">U</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarName">User Name</div>
+          <div class="user-email" id="sidebarEmail">user@email.com</div>
+        </div>
+      </div>
+
+      <div class="nav-menu">
+        <a href="dashboard-new.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home</span>
+        </a>
+        <a href="my-rides.html" class="nav-item">
+          <span class="nav-icon">🚗</span>
+          <span>My Rides</span>
+        </a>
+        <a href="payment.html" class="nav-item active">
+          <span class="nav-icon">💳</span>
+          <span>Payment</span>
+        </a>
+        <a href="offers.html" class="nav-item">
+          <span class="nav-icon">🎁</span>
+          <span>Offers</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+        <div class="nav-item" id="logoutBtn" style="cursor: pointer">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <h1 class="page-title">Payment Methods</h1>
+        <p class="page-subtitle">Manage your payment options and view transaction history</p>
+      </div>
+
+      <!-- Content Grid -->
+      <div class="content-grid">
+        <!-- Left Column -->
+        <div>
+          <!-- Payment Methods -->
+          <div class="payment-methods">
+            <div class="section-header">
+              <h2 class="section-title">Saved Cards</h2>
+              <button class="btn-add" id="addCardBtn">
+                <span>+</span>
+                <span>Add Card</span>
+              </button>
+            </div>
+
+            <!-- Card 1 - Default -->
+            <div class="payment-card">
+              <span class="default-badge">Default</span>
+              <div class="card-header">
+                <div class="card-type">Visa</div>
+                <div class="card-logo">💳</div>
+              </div>
+              <div class="card-number">•••• •••• •••• 4242</div>
+              <div class="card-footer">
+                <div class="card-holder">John Doe</div>
+                <div class="card-expiry">12/25</div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-card-action">Set Default</button>
+                <button class="btn-card-action">Edit</button>
+                <button class="btn-card-action">Remove</button>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="payment-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+              <div class="card-header">
+                <div class="card-type">Mastercard</div>
+                <div class="card-logo">💳</div>
+              </div>
+              <div class="card-number">•••• •••• •••• 8888</div>
+              <div class="card-footer">
+                <div class="card-holder">John Doe</div>
+                <div class="card-expiry">09/26</div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-card-action">Set Default</button>
+                <button class="btn-card-action">Edit</button>
+                <button class="btn-card-action">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital Wallets -->
+          <div class="payment-methods" style="margin-top: 30px;">
+            <div class="section-header">
+              <h2 class="section-title">Digital Wallets</h2>
+            </div>
+
+            <div class="wallet-options">
+              <div class="wallet-card">
+                <div class="wallet-icon">📱</div>
+                <div class="wallet-info">
+                  <div class="wallet-name">Apple Pay</div>
+                  <div class="wallet-status wallet-connected">Connected</div>
+                </div>
+              </div>
+
+              <div class="wallet-card">
+                <div class="wallet-icon">🔵</div>
+                <div class="wallet-info">
+                  <div class="wallet-name">Google Pay</div>
+                  <div class="wallet-status">Not Connected</div>
+                </div>
+              </div>
+
+              <div class="wallet-card">
+                <div class="wallet-icon">💰</div>
+                <div class="wallet-info">
+                  <div class="wallet-name">PayPal</div>
+                  <div class="wallet-status">Not Connected</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Transaction History -->
+        <div class="transaction-history">
+          <h2 class="section-title" style="margin-bottom: 25px;">Recent Transactions</h2>
+
+          <div class="transaction-item">
+            <div class="transaction-info">
+              <h4>Ride Payment</h4>
+              <p>Today, 9:30 AM</p>
+            </div>
+            <div class="transaction-amount">-$12.50</div>
+          </div>
+
+          <div class="transaction-item">
+            <div class="transaction-info">
+              <h4>Ride Payment</h4>
+              <p>Yesterday, 7:15 PM</p>
+            </div>
+            <div class="transaction-amount">-$8.20</div>
+          </div>
+
+          <div class="transaction-item">
+            <div class="transaction-info">
+              <h4>Wallet Top-up</h4>
+              <p>Dec 10, 2024</p>
+            </div>
+            <div class="transaction-amount" style="color: #10b981;">+$50.00</div>
+          </div>
+
+          <div class="transaction-item">
+            <div class="transaction-info">
+              <h4>Ride Payment</h4>
+              <p>Dec 10, 2024</p>
+            </div>
+            <div class="transaction-amount">-$25.00</div>
+          </div>
+
+          <div class="transaction-item">
+            <div class="transaction-info">
+              <h4>Refund</h4>
+              <p>Dec 9, 2024</p>
+            </div>
+            <div class="transaction-amount" style="color: #10b981;">+$15.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Card Modal -->
+    <div class="modal" id="addCardModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add New Card</h2>
+          <button class="btn-close" id="closeModalBtn">×</button>
+        </div>
+
+        <form id="addCardForm">
+          <div class="form-group">
+            <label class="form-label">Card Number</label>
+            <input
+              type="text"
+              class="form-input"
+              placeholder="1234 5678 9012 3456"
+              maxlength="19"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cardholder Name</label>
+            <input
+              type="text"
+              class="form-input"
+              placeholder="John Doe"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Expiry Date</label>
+              <input
+                type="text"
+                class="form-input"
+                placeholder="MM/YY"
+                maxlength="5"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CVV</label>
+              <input
+                type="text"
+                class="form-input"
+                placeholder="123"
+                maxlength="3"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" />
+              <span>Set as default payment method</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-submit">Add Card</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/payment-service.js"></script>
+
+    <script>
+      let savedCards = [];
+      let currentUser = null;
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        if (!AuthService.isAuthenticated()) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const userRole = AuthService.getUserRole();
+        if (userRole === "admin") {
+          window.location.href = "dashboard.html";
+          return;
+        }
+
+        currentUser = AuthService.getCurrentUser();
+        updateUserUI(currentUser);
+
+        await loadPaymentMethods();
+      });
+
+      function updateUserUI(user) {
+        document.getElementById("sidebarName").textContent = user.name || "User Name";
+        document.getElementById("sidebarEmail").textContent = user.email || "user@email.com";
+        document.getElementById("sidebarAvatar").textContent = (user.name || "U").charAt(0).toUpperCase();
+      }
+
+      async function loadPaymentMethods() {
+        Utils.showLoader('Loading payment methods...');
+        try {
+          const response = await PaymentService.getCards();
+
+          if (response.success !== false && response.paymentMethods) {
+            savedCards = response.paymentMethods;
+            displayPaymentCards(savedCards);
+          } else {
+            displayNoCards();
+          }
+
+          Utils.hideLoader();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error loading payment methods:', error);
+          displayNoCards();
+        }
+      }
+
+      function displayPaymentCards(cards) {
+        const container = document.querySelector('.payment-methods');
+        const header = container.querySelector('.section-header');
+
+        if (cards.length === 0) {
+          displayNoCards();
+          return;
+        }
+
+        const cardsHTML = cards.map(card => {
+          const isDefault = card.isDefault;
+          const brand = card.card?.brand || 'card';
+          const last4 = card.card?.last4 || '****';
+          const expMonth = card.card?.exp_month || '00';
+          const expYear = card.card?.exp_year ? String(card.card.exp_year).slice(-2) : '00';
+
+          const gradients = {
+            visa: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            mastercard: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            amex: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            discover: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            default: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          };
+
+          const gradient = gradients[brand.toLowerCase()] || gradients.default;
+
+          return `
+            <div class="payment-card" style="background: ${gradient};">
+              ${isDefault ? '<span class="default-badge">Default</span>' : ''}
+              <div class="card-header">
+                <div class="card-type">${brand.toUpperCase()}</div>
+                <div class="card-logo">💳</div>
+              </div>
+              <div class="card-number">•••• •••• •••• ${last4}</div>
+              <div class="card-footer">
+                <div class="card-holder">${currentUser.name || 'Cardholder'}</div>
+                <div class="card-expiry">${expMonth}/${expYear}</div>
+              </div>
+              <div class="card-actions">
+                ${!isDefault ? `<button class="btn-card-action" onclick="setDefaultCard('${card.id}')">Set Default</button>` : ''}
+                <button class="btn-card-action" onclick="removeCard('${card.id}')">Remove</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        container.innerHTML = '';
+        container.appendChild(header);
+        container.insertAdjacentHTML('beforeend', cardsHTML);
+      }
+
+      function displayNoCards() {
+        const container = document.querySelector('.payment-methods');
+        const header = container.querySelector('.section-header');
+
+        container.innerHTML = '';
+        container.appendChild(header);
+        container.insertAdjacentHTML('beforeend', `
+          <div style="text-align: center; padding: 40px; color: #999;">
+            <div style="font-size: 3rem; margin-bottom: 15px;">💳</div>
+            <p style="font-size: 1.1rem;">No payment methods added yet</p>
+            <p style="font-size: 0.9rem; margin-top: 10px;">Add a card to start booking rides</p>
+          </div>
+        `);
+      }
+
+      async function setDefaultCard(paymentMethodId) {
+        Utils.showLoader('Setting default card...');
+        try {
+          const response = await PaymentService.setDefaultCard(paymentMethodId);
+
+          if (response.success !== false) {
+            Utils.showToast('Default card updated', 'success');
+            await loadPaymentMethods();
+          } else {
+            throw new Error(response.message || 'Failed to set default card');
+          }
+
+          Utils.hideLoader();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error setting default card:', error);
+          Utils.showToast(error.message || 'Failed to set default card', 'error');
+        }
+      }
+
+      async function removeCard(paymentMethodId) {
+        if (!confirm('Are you sure you want to remove this card?')) {
+          return;
+        }
+
+        Utils.showLoader('Removing card...');
+        try {
+          const response = await PaymentService.removeCard(paymentMethodId);
+
+          if (response.success !== false) {
+            Utils.showToast('Card removed successfully', 'success');
+            await loadPaymentMethods();
+          } else {
+            throw new Error(response.message || 'Failed to remove card');
+          }
+
+          Utils.hideLoader();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error removing card:', error);
+          Utils.showToast(error.message || 'Failed to remove card', 'error');
+        }
+      }
+
+      // Add card button - redirect to Stripe integration page
+      document.getElementById("addCardBtn").addEventListener("click", () => {
+        window.location.href = "add-payment-method.html";
+      });
+
+      // Logout functionality
+      document.getElementById("logoutBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        if (confirm("Are you sure you want to logout?")) {
+          AuthService.logout();
+        }
+      });
+    </script>
+  </body>
+</html>
