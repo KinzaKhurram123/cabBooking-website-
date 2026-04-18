@@ -29,7 +29,7 @@
         top: 0;
         width: 280px;
         height: 100vh;
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(180deg, #44bfd2 0%, #2e8b9e 100%);
         padding: 30px 0;
         z-index: 1000;
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
@@ -73,7 +73,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #667eea;
+        color: #44bfd2;
         font-weight: 800;
         font-size: 1.3rem;
         flex-shrink: 0;
@@ -210,7 +210,7 @@
 
       .btn-add {
         padding: 10px 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
         color: white;
         border: none;
         border-radius: 10px;
@@ -224,12 +224,12 @@
 
       .btn-add:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 5px 15px rgba(68, 191, 210, 0.4);
       }
 
       /* Payment Card */
       .payment-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
         border-radius: 15px;
         padding: 25px;
         margin-bottom: 20px;
@@ -242,7 +242,7 @@
 
       .payment-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 10px 30px rgba(68, 191, 210, 0.4);
       }
 
       .payment-card::before {
@@ -353,7 +353,7 @@
       }
 
       .wallet-card:hover {
-        border-color: #667eea;
+        border-color: #44bfd2;
         background: #f0f4ff;
       }
 
@@ -426,7 +426,7 @@
       .transaction-amount {
         font-size: 1.2rem;
         font-weight: 700;
-        color: #667eea;
+        color: #44bfd2;
       }
 
       /* Add Payment Modal */
@@ -500,8 +500,8 @@
 
       .form-input:focus {
         outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        border-color: #44bfd2;
+        box-shadow: 0 0 0 4px rgba(68, 191, 210, 0.1);
       }
 
       .form-row {
@@ -513,7 +513,7 @@
       .btn-submit {
         width: 100%;
         padding: 15px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
         color: white;
         border: none;
         border-radius: 10px;
@@ -525,7 +525,7 @@
 
       .btn-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 5px 15px rgba(68, 191, 210, 0.4);
       }
 
       /* Responsive */
@@ -899,11 +899,11 @@
           const expYear = card.card?.exp_year ? String(card.card.exp_year).slice(-2) : '00';
 
           const gradients = {
-            visa: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            visa: 'linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%)',
             mastercard: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
             amex: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
             discover: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-            default: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+            default: 'linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%)'
           };
 
           const gradient = gradients[brand.toLowerCase()] || gradients.default;

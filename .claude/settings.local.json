@@ -6,7 +6,9 @@
       "Bash(wc -l \"D:/refactored-enigma-website-main/refactored-enigma-website-main\"/*.html)",
       "Bash(find *)",
       "Bash(curl -I http://142.93.59.204:5000/api/ride-types)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   }
 }

@@ -1120,6 +1120,7 @@
                 }, 1000);
               }
             } else {
+              // User/Customer role - redirect to dashboard
               setTimeout(() => {
                 window.location.href = "dashboard-new.html";
               }, 1000);
@@ -1197,7 +1198,6 @@
           if (userRole === "admin") {
             window.location.href = "admin-dashboard.html";
           } else if (userRole === "driver" || userRole === "rider") {
-            // First, fetch latest onboarding status from API
             try {
               console.log(
                 "DOMContentLoaded - Fetching latest onboarding status from API...",
@@ -1290,7 +1290,7 @@
                   } else if (verificationStatus === "rejected") {
                     redirectUrl = "verification-pending.html";
                   } else {
-                    redirectUrl = "verification-pending.html"; // Default to pending if status unclear
+                    redirectUrl = "verification-pending.html";
                   }
                 } else {
                   console.log(
@@ -1345,6 +1345,7 @@
               window.location.href = redirectUrl;
             }
           } else {
+            // User/Customer role - redirect to dashboard
             window.location.href = "dashboard-new.html";
           }
         }

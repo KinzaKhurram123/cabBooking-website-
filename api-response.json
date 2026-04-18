@@ -1,0 +1,107 @@
+// user login ka response 
+{
+    "success": true,
+    "message": "Login successful",
+    "data": {
+        "user": {
+            "_id": "69e236866bb93efa827a466a",
+            "name": "test",
+            "email": "user@gmail.com",
+            "phoneNumber": "5487888",
+            "profileImage": null,
+            "defaultPaymentMethod": null,
+            "role": "customer",
+            "referredBy": null,
+            "referralCount": 0,
+            "walletBalance": 0,
+            "totalEarnedFromReferrals": 0,
+            "createdAt": "2026-04-17T13:32:54.248Z",
+            "updatedAt": "2026-04-17T13:32:54.297Z",
+            "__v": 0,
+            "referralCode": "REF96A2172B"
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTIzNjg2NmJiOTNlZmE4MjdhNDY2YSIsImlhdCI6MTc3NjUwODg1NSwiZXhwIjoxNzc5MTAwODU1fQ.0b2-MAeX1-8J1J5lZIL0I3geRohsgFCXHbKhoM733q4"
+    }
+}
+
+// Rider Login ka Reponse 
+{
+    "success": true,
+    "message": "Login successful",
+    "data": {
+        "user": {
+            "driverDetails": {
+                "documents": {
+                    "license": {
+                        "status": "pending"
+                    },
+                    "insurance": {
+                        "status": "pending"
+                    },
+                    "profilePhoto": {
+                        "status": "pending"
+                    },
+                    "vehicleRegistration": {
+                        "status": "pending"
+                    }
+                },
+                "isVerified": false,
+                "verificationStatus": "pending",
+                "status": "pending_verification",
+                "termsAccepted": false,
+                "rejectionReason": null,
+                "verifiedAt": null,
+                "totalRides": 0,
+                "totalEarning": 0,
+                "rating": 5
+            },
+            "_id": "69e1f6346bb93efa827a450f",
+            "name": "John doe",
+            "email": "johndoe@gmail.com",
+            "phoneNumber": "0112454845",
+            "profileImage": null,
+            "city": "Karachi",
+            "country": "pakistan",
+            "defaultPaymentMethod": null,
+            "role": "driver",
+            "referredBy": null,
+            "referralCount": 0,
+            "walletBalance": 0,
+            "totalEarnedFromReferrals": 0,
+            "createdAt": "2026-04-17T08:58:28.174Z",
+            "updatedAt": "2026-04-17T08:58:28.174Z",
+            "__v": 0
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmNjM0NmJiOTNlZmE4MjdhNDUwZiIsImlhdCI6MTc3NjUwOTY3MywiZXhwIjoxNzc5MTAxNjczfQ.Glf29Lp-PPUGMNEL1DtlMJNoQcedxsH7L4OuGoZp-Cc",
+        "onboardingRequired": true,
+        "verificationStatus": "pending",
+        "isVerified": false,
+        "driverDetails": {
+            "documents": {
+                "license": {
+                    "status": "pending"
+                },
+                "insurance": {
+                    "status": "pending"
+                },
+                "profilePhoto": {
+                    "status": "pending"
+                },
+                "vehicleRegistration": {
+                    "status": "pending"
+                }
+            },
+            "vehicleDetails": {},
+            "isVerified": false,
+            "verificationStatus": "pending",
+            "status": "pending_verification",
+            "termsAccepted": false,
+            "rejectionReason": null,
+            "verifiedAt": null,
+            "totalRides": 0,
+            "totalEarning": 0,
+            "rating": 5
+        },
+        "notificationMessage": "As soon as your account is verified, we will send you a notification."
+    }
+}

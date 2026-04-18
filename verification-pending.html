@@ -5,17 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verification Pending - RideLynk</title>
     <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
         font-family: "Inter", sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 20px;
+        position: relative;
+      }
+
+      /* Animated Gradient Background */
+      .animated-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          #44bfd2,
+          #6cd4e8,
+          #2e8b9e,
+          #44bfd2,
+          #6cd4e8
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        z-index: -2;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
       }
 
       .container {
@@ -56,8 +105,13 @@
       }
 
       @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
       }
 
       .icon {
@@ -246,6 +300,9 @@
     </style>
   </head>
   <body>
+    <div class="animated-gradient"></div>
+    <div class="overlay"></div>
+
     <div class="container">
       <div class="card">
         <div class="icon-container">
@@ -254,46 +311,66 @@
 
         <h1 class="title">Verification Pending</h1>
         <p class="subtitle">
-          Thank you for submitting your documents! Our team is currently reviewing your application.
+          Thank you for submitting your documents! Our team is currently
+          reviewing your application.
         </p>
 
         <div class="status-box">
           <h3>📋 Document Status</h3>
           <div class="status-item">
             <span class="status-label">Vehicle Details</span>
-            <span class="status-badge status-pending" id="vehicleStatus">Pending</span>
+            <span class="status-badge status-pending" id="vehicleStatus"
+              >Pending</span
+            >
           </div>
           <div class="status-item">
             <span class="status-label">Driver's License</span>
-            <span class="status-badge status-pending" id="licenseStatus">Pending</span>
+            <span class="status-badge status-pending" id="licenseStatus"
+              >Pending</span
+            >
           </div>
           <div class="status-item">
             <span class="status-label">Insurance</span>
-            <span class="status-badge status-pending" id="insuranceStatus">Pending</span>
+            <span class="status-badge status-pending" id="insuranceStatus"
+              >Pending</span
+            >
           </div>
           <div class="status-item">
             <span class="status-label">Profile Photo</span>
-            <span class="status-badge status-pending" id="photoStatus">Pending</span>
+            <span class="status-badge status-pending" id="photoStatus"
+              >Pending</span
+            >
           </div>
         </div>
 
         <div class="info-box">
           <h4>📧 What happens next?</h4>
           <ul>
-            <li>Our verification team will review your documents within <strong>24-48 hours</strong></li>
-            <li>You'll receive an <strong>email notification</strong> once your account is verified</li>
-            <li>If any documents need correction, we'll contact you via email</li>
+            <li>
+              Our verification team will review your documents within
+              <strong>24-48 hours</strong>
+            </li>
+            <li>
+              You'll receive an <strong>email notification</strong> once your
+              account is verified
+            </li>
+            <li>
+              If any documents need correction, we'll contact you via email
+            </li>
             <li>Once approved, you can start accepting rides immediately</li>
           </ul>
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-secondary" onclick="checkStatus()">🔄 Check Status</button>
+          <button class="btn btn-secondary" onclick="checkStatus()">
+            🔄 Check Status
+          </button>
           <button class="btn btn-primary" onclick="logout()">Logout</button>
         </div>
 
         <div class="contact-info">
-          Need help? Contact us at <a href="mailto:support@ridelynk.com">support@ridelynk.com</a>
+          Need help? Contact us at
+          <a href="mailto:support@ridelynk.com">support@ridelynk.com</a>
         </div>
       </div>
     </div>
@@ -305,10 +382,10 @@
     <script src="js/driver-service.js"></script>
 
     <script>
-      window.addEventListener('DOMContentLoaded', async () => {
+      window.addEventListener("DOMContentLoaded", async () => {
         // Check if user is authenticated
         if (!AuthService.isAuthenticated()) {
-          window.location.href = 'login.html';
+          window.location.href = "login.html";
           return;
         }
 
@@ -324,29 +401,35 @@
             const status = response.status;
 
             // Update status badges
-            updateStatusBadge('vehicleStatus', status.vehicleDetails);
-            updateStatusBadge('licenseStatus', status.license);
-            updateStatusBadge('insuranceStatus', status.insurance);
-            updateStatusBadge('photoStatus', status.profilePhoto);
+            updateStatusBadge("vehicleStatus", status.vehicleDetails);
+            updateStatusBadge("licenseStatus", status.license);
+            updateStatusBadge("insuranceStatus", status.insurance);
+            updateStatusBadge("photoStatus", status.profilePhoto);
 
             // If all verified, redirect to dashboard
-            if (status.overallStatus === 'verified' || status.overallStatus === 'approved') {
-              Utils.showToast('Your account has been verified!', 'success');
+            if (
+              status.overallStatus === "verified" ||
+              status.overallStatus === "approved"
+            ) {
+              Utils.showToast("Your account has been verified!", "success");
               setTimeout(() => {
-                window.location.href = 'driver-dashboard.html';
+                window.location.href = "driver-dashboard.html";
               }, 2000);
             }
 
             // If rejected, show message
-            if (status.overallStatus === 'rejected') {
-              document.querySelector('.title').textContent = 'Verification Failed';
-              document.querySelector('.subtitle').textContent = 'Unfortunately, your application was not approved. Please check your email for details.';
-              document.querySelector('.icon').textContent = '❌';
-              document.querySelector('.icon-container').style.background = 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)';
+            if (status.overallStatus === "rejected") {
+              document.querySelector(".title").textContent =
+                "Verification Failed";
+              document.querySelector(".subtitle").textContent =
+                "Unfortunately, your application was not approved. Please check your email for details.";
+              document.querySelector(".icon").textContent = "❌";
+              document.querySelector(".icon-container").style.background =
+                "linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)";
             }
           }
         } catch (error) {
-          console.error('Error loading verification status:', error);
+          console.error("Error loading verification status:", error);
         }
       }
 
@@ -354,30 +437,34 @@
         const element = document.getElementById(elementId);
         if (!element) return;
 
-        element.classList.remove('status-pending', 'status-verified', 'status-rejected');
+        element.classList.remove(
+          "status-pending",
+          "status-verified",
+          "status-rejected",
+        );
 
-        if (status === 'verified' || status === 'approved') {
-          element.textContent = 'Verified';
-          element.classList.add('status-verified');
-        } else if (status === 'rejected') {
-          element.textContent = 'Rejected';
-          element.classList.add('status-rejected');
+        if (status === "verified" || status === "approved") {
+          element.textContent = "Verified";
+          element.classList.add("status-verified");
+        } else if (status === "rejected") {
+          element.textContent = "Rejected";
+          element.classList.add("status-rejected");
         } else {
-          element.textContent = 'Pending';
-          element.classList.add('status-pending');
+          element.textContent = "Pending";
+          element.classList.add("status-pending");
         }
       }
 
       async function checkStatus() {
-        Utils.showLoader('Checking status...');
+        Utils.showLoader("Checking status...");
         await loadVerificationStatus();
         Utils.hideLoader();
-        Utils.showToast('Status updated', 'info');
+        Utils.showToast("Status updated", "info");
       }
 
       function logout() {
         AuthService.logout();
-        window.location.href = 'login.html';
+        window.location.href = "login.html";
       }
     </script>
   </body>

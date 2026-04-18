@@ -21,18 +21,36 @@
         position: relative;
       }
 
-      /* Full page background */
-      .background {
+      /* Animated Gradient Background */
+      .animated-gradient {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url("images/login_background_image.png");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        background: linear-gradient(
+          135deg,
+          #44bfd2,
+          #6cd4e8,
+          #2e8b9e,
+          #44bfd2,
+          #6cd4e8
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
         z-index: -2;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
       }
 
       /* Light overlay for readability */
@@ -639,7 +657,7 @@
   </head>
 
   <body>
-    <div class="background"></div>
+    <div class="animated-gradient"></div>
     <div class="overlay"></div>
 
     <div class="container">

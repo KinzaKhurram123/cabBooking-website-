@@ -18,8 +18,38 @@
 
       body {
         font-family: "Inter", sans-serif;
-        background: #f5f7fa;
+        background: #0a0a0a;
+        color: white;
         overflow-x: hidden;
+      }
+
+      /* Animated Gradient Background */
+      .animated-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8, #2e8b9e, #44bfd2, #6cd4e8);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        z-index: -2;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
       }
 
       /* Sidebar */
@@ -29,10 +59,12 @@
         top: 0;
         width: 280px;
         height: 100vh;
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(68, 191, 210, 0.2);
         padding: 30px 0;
         z-index: 1000;
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 4px 0 20px rgba(68, 191, 210, 0.1);
         display: flex;
         flex-direction: column;
       }
@@ -121,11 +153,11 @@
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: white;
+        background: #f8f9fa; border: 1px solid #e5e7eb;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #667eea;
+        color: #44bfd2;
         font-weight: 800;
         font-size: 1.3rem;
         flex-shrink: 0;
@@ -156,6 +188,8 @@
 
       /* Main Content */
       .main-content {
+        background: white;
+        min-height: 100vh;
         margin-left: 280px;
         padding: 40px;
         min-height: 100vh;
@@ -181,7 +215,7 @@
 
       /* Quick Booking Card */
       .booking-card {
-        background: white;
+        background: #f8f9fa; border: 1px solid #e5e7eb;
         border-radius: 25px;
         padding: 40px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
@@ -210,16 +244,17 @@
         cursor: pointer;
         transition: all 0.3s ease;
         text-align: center;
+        color: #1a1a2e;
       }
 
       .service-btn:hover {
-        border-color: #667eea;
+        border-color: #44bfd2;
         background: #f0f4ff;
       }
 
       .service-btn.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-color: #667eea;
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
+        border-color: #44bfd2;
         color: white;
       }
 
@@ -231,6 +266,7 @@
       .service-name {
         font-weight: 600;
         font-size: 0.95rem;
+        color: inherit;
       }
 
       .booking-form {
@@ -263,14 +299,14 @@
 
       .form-input:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #44bfd2;
         box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
       }
 
       .book-now-btn {
         width: 100%;
         padding: 18px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
         border: none;
         border-radius: 12px;
         color: white;
@@ -295,7 +331,7 @@
 
       /* Recent Rides */
       .recent-rides {
-        background: white;
+        background: #f8f9fa; border: 1px solid #e5e7eb;
         border-radius: 25px;
         padding: 35px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
@@ -320,7 +356,7 @@
       .ride-icon {
         width: 50px;
         height: 50px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -345,13 +381,13 @@
 
       .ride-price {
         font-weight: 700;
-        color: #667eea;
+        color: #44bfd2;
         font-size: 1.1rem;
       }
 
       /* Stats Cards */
       .stats-section {
-        background: white;
+        background: #f8f9fa; border: 1px solid #e5e7eb;
         border-radius: 25px;
         padding: 35px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
@@ -359,7 +395,7 @@
 
       .stat-item {
         padding: 25px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
         border-radius: 15px;
         margin-bottom: 20px;
         color: white;
@@ -378,7 +414,7 @@
 
       /* Saved Locations */
       .saved-locations {
-        background: white;
+        background: #f8f9fa; border: 1px solid #e5e7eb;
         border-radius: 25px;
         padding: 35px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
@@ -403,7 +439,7 @@
       .location-icon {
         width: 45px;
         height: 45px;
-        background: #667eea;
+        background: #44bfd2;
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -433,8 +469,66 @@
         }
       }
 
+      /* Mobile Menu Button */
+      .mobile-menu-btn {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1001;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(68, 191, 210, 0.4);
+        transition: all 0.3s ease;
+      }
+
+      .mobile-menu-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(68, 191, 210, 0.6);
+      }
+
+      .mobile-menu-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Sidebar Overlay */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+      }
+
       @media (max-width: 992px) {
+        .mobile-menu-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          z-index: 1000;
           transform: translateX(-100%);
           transition: transform 0.3s ease;
         }
@@ -444,8 +538,11 @@
         }
 
         .main-content {
+        background: white;
+        min-height: 100vh;
           margin-left: 0;
           padding: 30px 20px;
+          padding-top: 80px;
         }
 
         .booking-form {
@@ -499,6 +596,8 @@
 
       @media (max-width: 480px) {
         .main-content {
+        background: white;
+        min-height: 100vh;
           padding: 20px 15px;
         }
 
@@ -607,7 +706,7 @@
         align-items: center;
         gap: 10px;
         padding: 15px;
-        background: white;
+        background: #f8f9fa; border: 1px solid #e5e7eb;
         border: 2px solid #e5e7eb;
         border-radius: 12px;
         cursor: pointer;
@@ -615,7 +714,7 @@
       }
 
       .checkbox-group:hover {
-        border-color: #667eea;
+        border-color: #44bfd2;
         background: #f0f4ff;
       }
 
@@ -653,14 +752,14 @@
       }
 
       .cab-card:hover {
-        border-color: #667eea;
+        border-color: #44bfd2;
         background: #f0f4ff;
         transform: translateY(-5px);
         box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
       }
 
       .cab-card.selected {
-        border-color: #667eea;
+        border-color: #44bfd2;
         background: linear-gradient(
           135deg,
           rgba(102, 126, 234, 0.1) 0%,
@@ -672,7 +771,7 @@
       .cab-badge {
         display: inline-block;
         padding: 6px 15px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
         border-radius: 15px;
         font-size: 0.75rem;
         font-weight: 600;
@@ -725,7 +824,7 @@
 
       .cab-card-features li::before {
         content: "✓";
-        color: #667eea;
+        color: #44bfd2;
         font-weight: bold;
         font-size: 1.1rem;
       }
@@ -733,7 +832,7 @@
       .cab-card-price {
         font-size: 1.5rem;
         font-weight: 800;
-        color: #667eea;
+        color: #44bfd2;
         text-align: center;
         margin-bottom: 15px;
       }
@@ -747,7 +846,7 @@
       .select-cab-btn {
         width: 100%;
         padding: 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #44bfd2 0%, #6cd4e8 100%);
         border: none;
         border-radius: 10px;
         color: white;
@@ -774,8 +873,18 @@
     </style>
   </head>
   <body>
+    <!-- Animated Background -->
+    <div class="animated-gradient"></div>
+    <div class="overlay"></div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <div class="logo-section">
         <img src="images/white_logo.png" alt="RideLynk" />
         <div class="logo-title">RideLynk</div>
@@ -1922,6 +2031,36 @@
         if (confirm("Are you sure you want to logout?")) {
           AuthService.logout();
         }
+      });
+
+      // Mobile menu functionality
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const sidebar = document.getElementById("sidebar");
+      const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+      // Toggle sidebar on mobile menu button click
+      mobileMenuBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+        sidebarOverlay.classList.toggle("active");
+        mobileMenuBtn.textContent = sidebar.classList.contains("active") ? "✕" : "☰";
+      });
+
+      // Close sidebar when clicking overlay
+      sidebarOverlay.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        sidebarOverlay.classList.remove("active");
+        mobileMenuBtn.textContent = "☰";
+      });
+
+      // Close sidebar when clicking on nav items (mobile)
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          if (window.innerWidth <= 992) {
+            sidebar.classList.remove("active");
+            sidebarOverlay.classList.remove("active");
+            mobileMenuBtn.textContent = "☰";
+          }
+        });
       });
 
       window.initMap = initAutocomplete;
