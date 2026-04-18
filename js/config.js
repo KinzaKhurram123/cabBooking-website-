@@ -5,7 +5,7 @@
 
 const CONFIG = {
   // API Configuration
-  API_BASE_URL: "https://krystal-imaginable-hurtlingly.ngrok-free.dev/api",
+  API_BASE_URL: "https://backend.ridelynk.com/api",
 
   // Google Maps Configuration
   GOOGLE_MAPS_API_KEY: "AIzaSyAqNK7IfM16zi79N0u7qX4Ncm5QgGvBqmg",
