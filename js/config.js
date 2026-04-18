@@ -49,5 +49,5 @@ if (
   window.location.hostname !== "127.0.0.1"
 ) {
   // Production environment - update with your production API URL
-  CONFIG.API_BASE_URL = "https://your-production-api.com/api";
+  CONFIG.API_BASE_URL = "https://backend.ridelynk.com/api";
 }
