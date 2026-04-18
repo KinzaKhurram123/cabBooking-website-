@@ -555,6 +555,7 @@
     <script src="js/admin-service.js"></script>
     <script>
         let earningsTable;
+        let allEarnings = [];
 
         // Initialize DataTable
         $(document).ready(function() {
@@ -565,64 +566,106 @@
             });
 
             loadEarnings();
-            loadEarningsSummary();
         });
 
         // Load earnings
         async function loadEarnings() {
             try {
-                const earnings = await AdminService.getReferralEarnings();
-                
-                earningsTable.clear();
-                
-                earnings.forEach(earning => {
-                    let statusClass = 'status-pending';
-                    if (earning.status === 'paid') statusClass = 'status-paid';
-                    if (earning.status === 'failed') statusClass = 'status-failed';
+                showLoading();
+                const response = await AdminService.getReferralEarnings();
 
-                    earningsTable.row.add([
-                        earning.id,
-                        `<strong>${earning.referrer_name}</strong><br><small>${earning.referrer_email || ''}</small>`,
-                        `<strong>${earning.referred_name}</strong><br><small>${earning.referred_email || ''}</small>`,
-                        `$${earning.amount || '0.00'}`,
-                        earning.type || 'Referral',
-                        `<span class="status-badge ${statusClass}">${earning.status}</span>`,
-                        new Date(earning.created_at).toLocaleDateString(),
-                        `
-                        <div class="action-buttons">
-                            <button class="action-btn action-view" onclick="viewEarning(${earning.id})">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            ${earning.status === 'pending' ? `
-                            <button class="action-btn action-pay" onclick="payEarning(${earning.id})">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </button>
-                            ` : ''}
-                        </div>
-                        `
-                    ]);
-                });
+                let earnings = [];
+                if (response.success && response.data) {
+                    earnings = response.data;
+                } else if (response.earnings) {
+                    earnings = response.earnings;
+                } else if (Array.isArray(response)) {
+                    earnings = response;
+                } else {
+                    throw new Error('Failed to load earnings');
+                }
 
-                earningsTable.draw();
+                allEarnings = earnings;
+                displayEarnings(earnings);
+                updateSummary(earnings);
+                hideLoading();
             } catch (error) {
                 console.error('Error loading earnings:', error);
+                alert('Failed to load earnings: ' + error.message);
+                hideLoading();
             }
         }
 
-        // Load earnings summary
-        async function loadEarningsSummary() {
-            try {
-                const summary = await AdminService.getEarningsSummary();
-                
-                if (summary.success !== false) {
-                    document.getElementById('totalEarnings').textContent = `$${summary.total || '0.00'}`;
-                    document.getElementById('pendingPayouts').textContent = `$${summary.pending || '0.00'}`;
-                    document.getElementById('paidThisMonth').textContent = `$${summary.paid_this_month || '0.00'}`;
-                    document.getElementById('activeReferrers').textContent = summary.active_referrers || 0;
-                }
-            } catch (error) {
-                console.error('Error loading earnings summary:', error);
-            }
+        // Display earnings in table
+        function displayEarnings(earnings) {
+            earningsTable.clear();
+
+            earnings.forEach(earning => {
+                const earningId = earning._id || earning.id;
+                const referrerName = earning.referrer_name || earning.referrer?.name || 'N/A';
+                const referrerEmail = earning.referrer_email || earning.referrer?.email || '';
+                const referredName = earning.referred_name || earning.referred_user?.name || 'N/A';
+                const referredEmail = earning.referred_email || earning.referred_user?.email || '';
+                const amount = earning.amount || earning.earning_amount || 0;
+                const type = earning.type || earning.earning_type || 'Referral';
+                const status = earning.status || earning.payment_status || 'pending';
+                const createdAt = earning.created_at || earning.createdAt || new Date();
+
+                let statusClass = 'status-pending';
+                if (status === 'paid' || status === 'completed') statusClass = 'status-paid';
+                if (status === 'failed' || status === 'rejected') statusClass = 'status-failed';
+
+                earningsTable.row.add([
+                    earningId.substring ? earningId.substring(0, 8) + '...' : earningId,
+                    `<strong>${referrerName}</strong><br><small>${referrerEmail}</small>`,
+                    `<strong>${referredName}</strong><br><small>${referredEmail}</small>`,
+                    `$${parseFloat(amount).toFixed(2)}`,
+                    type,
+                    `<span class="status-badge ${statusClass}">${status}</span>`,
+                    new Date(createdAt).toLocaleDateString(),
+                    `
+                    <div class="action-buttons">
+                        <button class="action-btn action-view" onclick="viewEarning('${earningId}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${status === 'pending' ? `
+                        <button class="action-btn action-pay" onclick="payEarning('${earningId}')" title="Mark as Paid">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </button>
+                        ` : ''}
+                    </div>
+                    `
+                ]);
+            });
+
+            earningsTable.draw();
+        }
+
+        // Update summary stats
+        function updateSummary(earnings) {
+            const total = earnings.reduce((sum, e) => sum + parseFloat(e.amount || e.earning_amount || 0), 0);
+            const pending = earnings
+                .filter(e => (e.status || e.payment_status) === 'pending')
+                .reduce((sum, e) => sum + parseFloat(e.amount || e.earning_amount || 0), 0);
+
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const paidThisMonth = earnings
+                .filter(e => {
+                    const status = e.status || e.payment_status;
+                    const date = new Date(e.created_at || e.createdAt);
+                    return (status === 'paid' || status === 'completed') &&
+                           date.getMonth() === currentMonth &&
+                           date.getFullYear() === currentYear;
+                })
+                .reduce((sum, e) => sum + parseFloat(e.amount || e.earning_amount || 0), 0);
+
+            const uniqueReferrers = new Set(earnings.map(e => e.referrer_id || e.referrer?._id)).size;
+
+            document.getElementById('totalEarnings').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('pendingPayouts').textContent = `$${pending.toFixed(2)}`;
+            document.getElementById('paidThisMonth').textContent = `$${paidThisMonth.toFixed(2)}`;
+            document.getElementById('activeReferrers').textContent = uniqueReferrers;
         }
 
         // Search earnings
@@ -634,21 +677,21 @@
         // Filter earnings
         function filterEarnings() {
             const status = $('#statusFilter').val();
-            
+
             $.fn.dataTable.ext.search.push(
                 function(settings, data, dataIndex) {
                     const rowStatus = data[5].toLowerCase();
-                    
+
                     let statusMatch = true;
-                    
+
                     if (status) {
                         statusMatch = rowStatus.includes(status);
                     }
-                    
+
                     return statusMatch;
                 }
             );
-            
+
             earningsTable.draw();
             $.fn.dataTable.ext.search.pop();
         }
@@ -657,60 +700,134 @@
         function filterByDate() {
             const startDate = $('#startDate').val();
             const endDate = $('#endDate').val();
-            
+
             if (!startDate && !endDate) {
                 earningsTable.draw();
                 return;
             }
-            
+
             $.fn.dataTable.ext.search.push(
                 function(settings, data, dataIndex) {
                     const rowDate = new Date(data[6]);
                     const start = startDate ? new Date(startDate) : null;
                     const end = endDate ? new Date(endDate) : null;
-                    
+
                     let dateMatch = true;
-                    
+
                     if (start) {
                         dateMatch = dateMatch && rowDate >= start;
                     }
-                    
+
                     if (end) {
                         dateMatch = dateMatch && rowDate <= end;
                     }
-                    
+
                     return dateMatch;
                 }
             );
-            
+
             earningsTable.draw();
             $.fn.dataTable.ext.search.pop();
         }
 
         // View earning
         function viewEarning(earningId) {
-            alert(`View earning ${earningId} details`);
-            // window.location.href = `admin-earning-view.html?id=${earningId}`;
+            const earning = allEarnings.find(e => (e._id || e.id) === earningId);
+            if (earning) {
+                const details = `
+Earning Details:
+--------------
+Referrer: ${earning.referrer_name || earning.referrer?.name || 'N/A'}
+Referrer Email: ${earning.referrer_email || earning.referrer?.email || 'N/A'}
+Referred User: ${earning.referred_name || earning.referred_user?.name || 'N/A'}
+Referred Email: ${earning.referred_email || earning.referred_user?.email || 'N/A'}
+Amount: $${parseFloat(earning.amount || earning.earning_amount || 0).toFixed(2)}
+Type: ${earning.type || earning.earning_type || 'Referral'}
+Status: ${earning.status || earning.payment_status || 'pending'}
+Date: ${new Date(earning.created_at || earning.createdAt).toLocaleDateString()}
+                `;
+                alert(details);
+            }
         }
 
         // Pay earning
-        function payEarning(earningId) {
-            if (confirm('Are you sure you want to mark this earning as paid?')) {
-                alert(`Earning ${earningId} marked as paid`);
-                // Implement API call to mark as paid
-                loadEarnings();
-                loadEarningsSummary();
+        async function payEarning(earningId) {
+            if (!confirm('Are you sure you want to mark this earning as paid?')) {
+                return;
+            }
+
+            try {
+                showLoading();
+                const response = await AdminService.updateReferralEarning(earningId, { status: 'paid' });
+
+                if (response.success !== false) {
+                    alert('Earning marked as paid successfully');
+                    await loadEarnings();
+                } else {
+                    throw new Error(response.message || 'Failed to update earning');
+                }
+
+                hideLoading();
+            } catch (error) {
+                hideLoading();
+                console.error('Error paying earning:', error);
+                alert('Failed to mark earning as paid: ' + error.message);
             }
         }
 
         // Export earnings
         function exportEarnings() {
-            alert('Export earnings report functionality will be implemented');
-            // Implement export functionality
+            try {
+                let csv = 'ID,Referrer,Referrer Email,Referred User,Referred Email,Amount,Type,Status,Date\n';
+
+                allEarnings.forEach(earning => {
+                    const id = earning._id || earning.id;
+                    const referrerName = earning.referrer_name || earning.referrer?.name || 'N/A';
+                    const referrerEmail = earning.referrer_email || earning.referrer?.email || '';
+                    const referredName = earning.referred_name || earning.referred_user?.name || 'N/A';
+                    const referredEmail = earning.referred_email || earning.referred_user?.email || '';
+                    const amount = parseFloat(earning.amount || earning.earning_amount || 0).toFixed(2);
+                    const type = earning.type || earning.earning_type || 'Referral';
+                    const status = earning.status || earning.payment_status || 'pending';
+                    const date = new Date(earning.created_at || earning.createdAt).toLocaleDateString();
+
+                    csv += `${id},"${referrerName}","${referrerEmail}","${referredName}","${referredEmail}",${amount},"${type}","${status}","${date}"\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `referral-earnings-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                alert('Earnings report exported successfully');
+            } catch (error) {
+                console.error('Error exporting earnings:', error);
+                alert('Failed to export earnings report');
+            }
+        }
+
+        // Show loading
+        function showLoading() {
+            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #667eea; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
+        }
+
+        // Hide loading
+        function hideLoading() {
+            $('#loadingOverlay').remove();
         }
 
         // Logout
-        function logout() {
+        async function logout() {
+            try {
+                await AdminService.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
             localStorage.clear();
             window.location.href = 'admin-login.html';
         }
@@ -723,6 +840,17 @@
             if (!token || role !== 'admin') {
                 window.location.href = 'admin-login.html';
                 return;
+            }
+
+            // Load admin profile
+            const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
+            if (userData) {
+                try {
+                    const admin = JSON.parse(userData);
+                    document.getElementById('adminName').textContent = admin.name || 'Admin User';
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
             }
         });
     </script>

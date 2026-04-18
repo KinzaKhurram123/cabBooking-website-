@@ -602,6 +602,7 @@
     <script src="js/admin-service.js"></script>
     <script>
         let couponsTable;
+        let allCoupons = [];
 
         // Initialize DataTable
         $(document).ready(function() {
@@ -612,76 +613,118 @@
             });
 
             loadCoupons();
-            loadCouponStats();
         });
 
         // Load coupons
         async function loadCoupons() {
             try {
-                const coupons = await AdminService.getCoupons();
-                
-                couponsTable.clear();
-                
-                coupons.forEach(coupon => {
-                    let statusClass = 'status-active';
-                    if (coupon.status === 'inactive') statusClass = 'status-inactive';
-                    if (coupon.status === 'expired') statusClass = 'status-expired';
+                showLoading();
+                const response = await AdminService.getAllPromotions();
 
-                    let valueDisplay = '';
-                    if (coupon.type === 'percentage') {
-                        valueDisplay = `${coupon.value}%`;
-                    } else if (coupon.type === 'fixed') {
-                        valueDisplay = `$${coupon.value}`;
-                    } else {
-                        valueDisplay = coupon.value;
-                    }
+                if (response.success && response.data) {
+                    allCoupons = response.data;
+                    displayCoupons(allCoupons);
+                    updateStats(allCoupons);
+                } else if (response.promotions) {
+                    allCoupons = response.promotions;
+                    displayCoupons(allCoupons);
+                    updateStats(allCoupons);
+                } else if (Array.isArray(response)) {
+                    allCoupons = response;
+                    displayCoupons(allCoupons);
+                    updateStats(allCoupons);
+                } else {
+                    throw new Error('Failed to load coupons');
+                }
 
-                    couponsTable.row.add([
-                        coupon.id,
-                        `<div class="coupon-code">${coupon.code}</div>`,
-                        coupon.description || 'No description',
-                        coupon.type,
-                        valueDisplay,
-                        coupon.usage_limit || 'Unlimited',
-                        coupon.used_count || 0,
-                        `<span class="status-badge ${statusClass}">${coupon.status}</span>`,
-                        coupon.expiry_date ? new Date(coupon.expiry_date).toLocaleDateString() : 'Never',
-                        `
-                        <div class="action-buttons">
-                            <button class="action-btn action-view" onclick="viewCoupon(${coupon.id})">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn action-edit" onclick="editCoupon(${coupon.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn action-delete" onclick="deleteCoupon(${coupon.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        `
-                    ]);
-                });
-
-                couponsTable.draw();
+                hideLoading();
             } catch (error) {
                 console.error('Error loading coupons:', error);
+                alert('Failed to load coupons: ' + error.message);
+                hideLoading();
             }
         }
 
-        // Load coupon stats
-        async function loadCouponStats() {
-            try {
-                const stats = await AdminService.getCouponStats();
-                
-                if (stats.success !== false) {
-                    document.getElementById('totalCoupons').textContent = stats.total || 0;
-                    document.getElementById('activeCoupons').textContent = stats.active || 0;
-                    document.getElementById('totalUsage').textContent = stats.total_usage || 0;
-                    document.getElementById('totalDiscount').textContent = `$${stats.total_discount || '0.00'}`;
+        // Display coupons in table
+        function displayCoupons(coupons) {
+            couponsTable.clear();
+
+            coupons.forEach(coupon => {
+                const couponId = coupon._id || coupon.id;
+                const code = coupon.code || coupon.coupon_code || 'N/A';
+                const description = coupon.description || 'No description';
+                const type = coupon.type || coupon.discount_type || 'fixed';
+                const value = coupon.value || coupon.discount_value || 0;
+                const usageLimit = coupon.usage_limit || coupon.max_uses || 'Unlimited';
+                const usedCount = coupon.used_count || coupon.times_used || 0;
+                const status = coupon.status || coupon.is_active ? 'active' : 'inactive';
+                const expiryDate = coupon.expiry_date || coupon.valid_until || null;
+
+                let statusClass = 'status-active';
+                if (status === 'inactive' || !coupon.is_active) statusClass = 'status-inactive';
+                if (expiryDate && new Date(expiryDate) < new Date()) statusClass = 'status-expired';
+
+                let valueDisplay = '';
+                if (type === 'percentage') {
+                    valueDisplay = `${value}%`;
+                } else if (type === 'fixed') {
+                    valueDisplay = `$${value}`;
+                } else {
+                    valueDisplay = value;
                 }
-            } catch (error) {
-                console.error('Error loading coupon stats:', error);
-            }
+
+                const statusText = statusClass === 'status-expired' ? 'expired' : status;
+
+                couponsTable.row.add([
+                    couponId.substring ? couponId.substring(0, 8) + '...' : couponId,
+                    `<div class="coupon-code">${code}</div>`,
+                    description,
+                    type,
+                    valueDisplay,
+                    usageLimit,
+                    usedCount,
+                    `<span class="status-badge ${statusClass}">${statusText}</span>`,
+                    expiryDate ? new Date(expiryDate).toLocaleDateString() : 'Never',
+                    `
+                    <div class="action-buttons">
+                        <button class="action-btn action-view" onclick="viewCoupon('${couponId}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn action-edit" onclick="editCoupon('${couponId}')" title="Edit Coupon">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn action-delete" onclick="deleteCoupon('${couponId}')" title="Delete Coupon">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    `
+                ]);
+            });
+
+            couponsTable.draw();
+        }
+
+        // Update stats
+        function updateStats(coupons) {
+            const total = coupons.length;
+            const active = coupons.filter(c => {
+                const isActive = c.status === 'active' || c.is_active;
+                const notExpired = !c.expiry_date || new Date(c.expiry_date) >= new Date();
+                return isActive && notExpired;
+            }).length;
+
+            const totalUsage = coupons.reduce((sum, c) => sum + (c.used_count || c.times_used || 0), 0);
+
+            const totalDiscount = coupons.reduce((sum, c) => {
+                const value = c.value || c.discount_value || 0;
+                const used = c.used_count || c.times_used || 0;
+                return sum + (value * used);
+            }, 0);
+
+            document.getElementById('totalCoupons').textContent = total;
+            document.getElementById('activeCoupons').textContent = active;
+            document.getElementById('totalUsage').textContent = totalUsage;
+            document.getElementById('totalDiscount').textContent = `$${totalDiscount.toFixed(2)}`;
         }
 
         // Search coupons
@@ -694,61 +737,105 @@
         function filterCoupons() {
             const status = $('#statusFilter').val();
             const type = $('#typeFilter').val();
-            
+
             $.fn.dataTable.ext.search.push(
                 function(settings, data, dataIndex) {
                     const rowStatus = data[7].toLowerCase();
                     const rowType = data[3].toLowerCase();
-                    
+
                     let statusMatch = true;
                     let typeMatch = true;
-                    
+
                     if (status) {
                         statusMatch = rowStatus.includes(status);
                     }
-                    
+
                     if (type) {
                         typeMatch = rowType.includes(type);
                     }
-                    
+
                     return statusMatch && typeMatch;
                 }
             );
-            
+
             couponsTable.draw();
             $.fn.dataTable.ext.search.pop();
         }
 
         // Create coupon
         function createCoupon() {
-            alert('Create new coupon functionality will be implemented');
+            alert('Create new coupon functionality - Coming soon!\nThis will redirect to coupon creation page.');
             // window.location.href = 'admin-coupon-create.html';
         }
 
         // View coupon
         function viewCoupon(couponId) {
-            alert(`View coupon ${couponId} details`);
-            // window.location.href = `admin-coupon-view.html?id=${couponId}`;
+            const coupon = allCoupons.find(c => (c._id || c.id) === couponId);
+            if (coupon) {
+                const details = `
+Coupon Details:
+--------------
+Code: ${coupon.code || coupon.coupon_code}
+Description: ${coupon.description || 'N/A'}
+Type: ${coupon.type || coupon.discount_type}
+Value: ${coupon.value || coupon.discount_value}
+Usage Limit: ${coupon.usage_limit || coupon.max_uses || 'Unlimited'}
+Times Used: ${coupon.used_count || coupon.times_used || 0}
+Status: ${coupon.status || (coupon.is_active ? 'active' : 'inactive')}
+Expiry Date: ${coupon.expiry_date ? new Date(coupon.expiry_date).toLocaleDateString() : 'Never'}
+                `;
+                alert(details);
+            }
         }
 
         // Edit coupon
         function editCoupon(couponId) {
-            alert(`Edit coupon ${couponId}`);
+            alert('Edit coupon functionality - Coming soon!\nCoupon ID: ' + couponId);
             // window.location.href = `admin-coupon-edit.html?id=${couponId}`;
         }
 
         // Delete coupon
-        function deleteCoupon(couponId) {
-            if (confirm('Are you sure you want to delete this coupon?')) {
-                alert(`Coupon ${couponId} deleted`);
-                // Implement API call to delete coupon
-                loadCoupons();
-                loadCouponStats();
+        async function deleteCoupon(couponId) {
+            if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone!')) {
+                return;
+            }
+
+            try {
+                showLoading();
+                const response = await AdminService.deletePromotion(couponId);
+
+                if (response.success !== false) {
+                    alert('Coupon deleted successfully');
+                    await loadCoupons();
+                } else {
+                    throw new Error(response.message || 'Failed to delete coupon');
+                }
+
+                hideLoading();
+            } catch (error) {
+                hideLoading();
+                console.error('Error deleting coupon:', error);
+                alert('Failed to delete coupon: ' + error.message);
             }
         }
 
+        // Show loading
+        function showLoading() {
+            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #667eea; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
+        }
+
+        // Hide loading
+        function hideLoading() {
+            $('#loadingOverlay').remove();
+        }
+
         // Logout
-        function logout() {
+        async function logout() {
+            try {
+                await AdminService.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
             localStorage.clear();
             window.location.href = 'admin-login.html';
         }
@@ -761,6 +848,17 @@
             if (!token || role !== 'admin') {
                 window.location.href = 'admin-login.html';
                 return;
+            }
+
+            // Load admin profile
+            const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
+            if (userData) {
+                try {
+                    const admin = JSON.parse(userData);
+                    document.getElementById('adminName').textContent = admin.name || 'Admin User';
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
             }
         });
     </script>

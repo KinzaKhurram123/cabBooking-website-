@@ -714,25 +714,26 @@
 
       async function loadAdmins() {
         try {
-          // TODO: Replace with actual API call
-          // const response = await AdminService.getAllAdmins();
+          showLoading();
+          const response = await AdminService.getAllAdmins();
 
-          // Mock data
-          const response = {
-            success: true,
-            admins: [
-              { _id: '1', name: 'Super Admin', email: 'admin@ridelynk.com', role: 'super_admin', status: 'active' },
-              { _id: '2', name: 'John Admin', email: 'john@ridelynk.com', role: 'admin', status: 'active' },
-              { _id: '3', name: 'Jane Admin', email: 'jane@ridelynk.com', role: 'admin', status: 'inactive' }
-            ]
-          };
-
-          if (response.success !== false && response.admins) {
-            displayAdmins(response.admins);
+          let admins = [];
+          if (response.success && response.data) {
+            admins = response.data;
+          } else if (response.admins) {
+            admins = response.admins;
+          } else if (Array.isArray(response)) {
+            admins = response;
+          } else {
+            throw new Error('Failed to load admins');
           }
+
+          displayAdmins(admins);
+          hideLoading();
         } catch (error) {
           console.error('Error loading admins:', error);
-          Utils.showToast('Failed to load admins', 'error');
+          hideLoading();
+          Utils.showToast('Failed to load admins: ' + error.message, 'error');
         }
       }
 
@@ -774,14 +775,22 @@
 
         Utils.showLoader('Creating admin...');
         try {
-          // TODO: Replace with actual API call
-          // const response = await AdminService.createAdmin({ name, email, password, role });
+          const response = await AdminService.createAdmin({ name, email, password, role });
 
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          Utils.hideLoader();
-          Utils.showToast('Admin created successfully', 'success');
-          closeAddAdminModal();
-          await loadAdmins();
+          if (response.success !== false) {
+            Utils.hideLoader();
+            Utils.showToast('Admin created successfully', 'success');
+            closeAddAdminModal();
+
+            // Clear form
+            document.getElementById('adminName').value = '';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+
+            await loadAdmins();
+          } else {
+            throw new Error(response.message || 'Failed to create admin');
+          }
         } catch (error) {
           Utils.hideLoader();
           console.error('Error creating admin:', error);
@@ -800,13 +809,15 @@
 
         Utils.showLoader('Updating status...');
         try {
-          // TODO: Replace with actual API call
-          // const response = await AdminService.toggleAdminStatus(adminId);
+          const response = await AdminService.updateAdmin(adminId, { toggle_status: true });
 
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          Utils.hideLoader();
-          Utils.showToast('Admin status updated', 'success');
-          await loadAdmins();
+          if (response.success !== false) {
+            Utils.hideLoader();
+            Utils.showToast('Admin status updated', 'success');
+            await loadAdmins();
+          } else {
+            throw new Error(response.message || 'Failed to update status');
+          }
         } catch (error) {
           Utils.hideLoader();
           console.error('Error toggling admin status:', error);
@@ -821,13 +832,15 @@
 
         Utils.showLoader('Deleting admin...');
         try {
-          // TODO: Replace with actual API call
-          // const response = await AdminService.deleteAdmin(adminId);
+          const response = await AdminService.deleteAdmin(adminId);
 
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          Utils.hideLoader();
-          Utils.showToast('Admin deleted successfully', 'success');
-          await loadAdmins();
+          if (response.success !== false) {
+            Utils.hideLoader();
+            Utils.showToast('Admin deleted successfully', 'success');
+            await loadAdmins();
+          } else {
+            throw new Error(response.message || 'Failed to delete admin');
+          }
         } catch (error) {
           Utils.hideLoader();
           console.error('Error deleting admin:', error);
@@ -835,36 +848,118 @@
         }
       }
 
-      function saveGeneralSettings() {
+      async function saveGeneralSettings() {
+        const platformName = document.querySelector('#general input[type="text"]').value;
+        const supportEmail = document.querySelector('#general input[type="email"]').value;
+        const supportPhone = document.querySelector('#general input[type="tel"]').value;
+        const maintenanceMode = document.getElementById('maintenanceMode').checked;
+
         Utils.showLoader('Saving settings...');
-        setTimeout(() => {
+        try {
+          const response = await AdminService.updateSettings({
+            platform_name: platformName,
+            support_email: supportEmail,
+            support_phone: supportPhone,
+            maintenance_mode: maintenanceMode
+          });
+
+          if (response.success !== false) {
+            Utils.hideLoader();
+            Utils.showToast('Settings saved successfully', 'success');
+          } else {
+            throw new Error(response.message || 'Failed to save settings');
+          }
+        } catch (error) {
           Utils.hideLoader();
-          Utils.showToast('Settings saved successfully', 'success');
-        }, 1000);
+          console.error('Error saving settings:', error);
+          Utils.showToast(error.message || 'Failed to save settings', 'error');
+        }
       }
 
-      function saveNotificationSettings() {
+      async function saveNotificationSettings() {
+        const emailNotif = document.querySelector('#notifications .setting-item:nth-child(1) input').checked;
+        const smsNotif = document.querySelector('#notifications .setting-item:nth-child(2) input').checked;
+        const pushNotif = document.querySelector('#notifications .setting-item:nth-child(3) input').checked;
+        const adminAlerts = document.querySelector('#notifications .setting-item:nth-child(4) input').checked;
+
         Utils.showLoader('Saving settings...');
-        setTimeout(() => {
+        try {
+          const response = await AdminService.updateSettings({
+            email_notifications: emailNotif,
+            sms_notifications: smsNotif,
+            push_notifications: pushNotif,
+            admin_alerts: adminAlerts
+          });
+
+          if (response.success !== false) {
+            Utils.hideLoader();
+            Utils.showToast('Notification settings saved', 'success');
+          } else {
+            throw new Error(response.message || 'Failed to save settings');
+          }
+        } catch (error) {
           Utils.hideLoader();
-          Utils.showToast('Notification settings saved', 'success');
-        }, 1000);
+          console.error('Error saving notification settings:', error);
+          Utils.showToast(error.message || 'Failed to save notification settings', 'error');
+        }
       }
 
-      function savePricingSettings() {
+      async function savePricingSettings() {
+        const baseFare = document.querySelector('#pricing input:nth-of-type(1)').value;
+        const perKmRate = document.querySelector('#pricing input:nth-of-type(2)').value;
+        const perMinRate = document.querySelector('#pricing input:nth-of-type(3)').value;
+        const surgeMultiplier = document.querySelector('#pricing input:nth-of-type(4)').value;
+        const commissionRate = document.querySelector('#pricing input:nth-of-type(5)').value;
+
         Utils.showLoader('Saving settings...');
-        setTimeout(() => {
+        try {
+          const response = await AdminService.updateSettings({
+            base_fare: parseFloat(baseFare),
+            per_km_rate: parseFloat(perKmRate),
+            per_minute_rate: parseFloat(perMinRate),
+            surge_multiplier: parseFloat(surgeMultiplier),
+            commission_rate: parseFloat(commissionRate)
+          });
+
+          if (response.success !== false) {
+            Utils.hideLoader();
+            Utils.showToast('Pricing settings saved', 'success');
+          } else {
+            throw new Error(response.message || 'Failed to save settings');
+          }
+        } catch (error) {
           Utils.hideLoader();
-          Utils.showToast('Pricing settings saved', 'success');
-        }, 1000);
+          console.error('Error saving pricing settings:', error);
+          Utils.showToast(error.message || 'Failed to save pricing settings', 'error');
+        }
       }
 
-      function saveSecuritySettings() {
+      async function saveSecuritySettings() {
+        const twoFactor = document.querySelector('#security .setting-item:nth-child(1) input').checked;
+        const sessionTimeout = document.querySelector('#security .setting-item:nth-child(2) input').checked;
+        const timeoutDuration = document.querySelector('#security input[type="number"]:nth-of-type(1)').value;
+        const passwordMinLength = document.querySelector('#security input[type="number"]:nth-of-type(2)').value;
+
         Utils.showLoader('Saving settings...');
-        setTimeout(() => {
+        try {
+          const response = await AdminService.updateSettings({
+            two_factor_auth: twoFactor,
+            session_timeout_enabled: sessionTimeout,
+            session_timeout_duration: parseInt(timeoutDuration),
+            password_min_length: parseInt(passwordMinLength)
+          });
+
+          if (response.success !== false) {
+            Utils.hideLoader();
+            Utils.showToast('Security settings saved', 'success');
+          } else {
+            throw new Error(response.message || 'Failed to save settings');
+          }
+        } catch (error) {
           Utils.hideLoader();
-          Utils.showToast('Security settings saved', 'success');
-        }, 1000);
+          console.error('Error saving security settings:', error);
+          Utils.showToast(error.message || 'Failed to save security settings', 'error');
+        }
       }
 
       function clearCache() {
@@ -891,6 +986,14 @@
           Utils.hideLoader();
           Utils.showToast('Database reset complete', 'success');
         }, 2000);
+      }
+
+      function showLoading() {
+        Utils.showLoader('Loading...');
+      }
+
+      function hideLoading() {
+        Utils.hideLoader();
       }
 
       // Close modal when clicking outside
