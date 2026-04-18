@@ -102,6 +102,8 @@ const AuthService = {
           userRole.toLowerCase() === "admin")
       ) {
         userRole = "admin";
+      } else if (userRole === "driver") {
+        userRole = "driver";
       } else {
         userRole = "customer";
       }
@@ -111,21 +113,20 @@ const AuthService = {
       console.log("AuthService - Extracted role (normalized):", userRole);
 
       if (token) {
-        // Merge all data from API response
+        const user_data = response?.data?.driverDetails?.documents;
         const userData = {
           ...user,
-          ...(response.data?.riderDetails || {}),
-          vehicleDetails: response.data?.vehicleDetails || user?.vehicleDetails,
-          documents: response.data?.documents || user?.documents,
-          onboardingSteps:
-            response.data?.onboardingSteps || user?.onboardingSteps,
+          ...(response.data?.driverDetails || {}),
+          vehicleDetails: user_data?.vehicleDetails || user?.vehicleDetails,
+          documents:
+            response?.data?.driverDetails?.documents || user?.documents,
+          // onboardingSteps: user_data?.onboardingSteps || user?.onboardingSteps,
           onboardingRequired:
-            response.data?.onboardingRequired !== undefined
+            response?.data?.onboardingRequired !== undefined
               ? response.data.onboardingRequired
               : user?.onboardingRequired,
           verificationStatus:
-            response.data?.riderDetails?.verificationStatus ||
-            user?.verificationStatus,
+            response?.data?.verificationStatus || user?.verificationStatus,
         };
 
         console.log("AuthService - Merged userData:", userData);
