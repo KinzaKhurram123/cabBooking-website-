@@ -4,28 +4,28 @@
  */
 
 const AdminService = {
-  // ==================== AUTHENTICATION APIs ====================
-
-  /**
-   * Admin Login
-   * POST /api/admin/login
-   */
   async login(credentials) {
     try {
-      console.log('AdminService - Calling admin login API...');
-      const response = await ApiService.post('/admin/login', credentials, {
-        requiresAuth: false
+      console.log("AdminService - Calling admin login API...");
+      const response = await ApiService.post("/admin/login", credentials, {
+        requiresAuth: false,
       });
 
       if (response.success && response.data && response.data.token) {
-        localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(response.data.admin));
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, 'admin');
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.AUTH_TOKEN,
+          response.data.token,
+        );
+        localStorage.setItem(
+          CONFIG.STORAGE_KEYS.USER_DATA,
+          JSON.stringify(response.data.admin),
+        );
+        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, "admin");
       }
 
       return response;
     } catch (error) {
-      console.error('AdminService - Login error:', error);
+      console.error("AdminService - Login error:", error);
       throw error;
     }
   },
@@ -36,12 +36,12 @@ const AdminService = {
    */
   async register(adminData) {
     try {
-      const response = await ApiService.post('/admin/register', adminData, {
-        requiresAuth: false
+      const response = await ApiService.post("/admin/register", adminData, {
+        requiresAuth: false,
       });
       return response;
     } catch (error) {
-      console.error('Admin register error:', error);
+      console.error("Admin register error:", error);
       throw error;
     }
   },
@@ -52,11 +52,11 @@ const AdminService = {
    */
   async logout() {
     try {
-      const response = await ApiService.post('/admin/logout');
+      const response = await ApiService.post("/admin/logout");
       localStorage.clear();
       return response;
     } catch (error) {
-      console.error('Admin logout error:', error);
+      console.error("Admin logout error:", error);
       throw error;
     }
   },
@@ -67,12 +67,16 @@ const AdminService = {
    */
   async forgotPassword(email) {
     try {
-      const response = await ApiService.post('/admin/forgot-password', { email }, {
-        requiresAuth: false
-      });
+      const response = await ApiService.post(
+        "/admin/forgot-password",
+        { email },
+        {
+          requiresAuth: false,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('Forgot password error:', error);
+      console.error("Forgot password error:", error);
       throw error;
     }
   },
@@ -83,16 +87,20 @@ const AdminService = {
    */
   async resetPassword(email, otp, newPassword) {
     try {
-      const response = await ApiService.post('/admin/reset-password', {
-        email,
-        otp,
-        newPassword
-      }, {
-        requiresAuth: false
-      });
+      const response = await ApiService.post(
+        "/admin/reset-password",
+        {
+          email,
+          otp,
+          newPassword,
+        },
+        {
+          requiresAuth: false,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('Reset password error:', error);
+      console.error("Reset password error:", error);
       throw error;
     }
   },
@@ -103,12 +111,16 @@ const AdminService = {
    */
   async refreshToken(refreshToken) {
     try {
-      const response = await ApiService.post('/admin/refresh-token', { refreshToken }, {
-        requiresAuth: false
-      });
+      const response = await ApiService.post(
+        "/admin/refresh-token",
+        { refreshToken },
+        {
+          requiresAuth: false,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('Refresh token error:', error);
+      console.error("Refresh token error:", error);
       throw error;
     }
   },
@@ -121,10 +133,10 @@ const AdminService = {
    */
   async getDashboardStats() {
     try {
-      const response = await ApiService.get('/admin/dashboard/stats');
+      const response = await ApiService.get("/admin/dashboard/stats");
       return response;
     } catch (error) {
-      console.error('Get dashboard stats error:', error);
+      console.error("Get dashboard stats error:", error);
       throw error;
     }
   },
@@ -135,10 +147,10 @@ const AdminService = {
    */
   async getDashboardChartData() {
     try {
-      const response = await ApiService.get('/admin/dashboard/chart-data');
+      const response = await ApiService.get("/admin/dashboard/chart-data");
       return response;
     } catch (error) {
-      console.error('Get dashboard chart data error:', error);
+      console.error("Get dashboard chart data error:", error);
       throw error;
     }
   },
@@ -149,10 +161,10 @@ const AdminService = {
    */
   async getRideStatusStats() {
     try {
-      const response = await ApiService.get('/admin/dashboard/ride-status');
+      const response = await ApiService.get("/admin/dashboard/ride-status");
       return response;
     } catch (error) {
-      console.error('Get ride status stats error:', error);
+      console.error("Get ride status stats error:", error);
       throw error;
     }
   },
@@ -163,14 +175,17 @@ const AdminService = {
    * Get All Users
    * GET /api/admin/users?page=1&limit=10&search=john
    */
-  async getAllUsers(page = 1, limit = 10, search = '') {
+  async getAllUsers(page = 1, limit = 10, search = "") {
     try {
       const params = new URLSearchParams({ page, limit });
-      if (search) params.append('search', search);
-      const response = await ApiService.get(`/admin/users?${params.toString()}`);
+      if (search) params.append("search", search);
+      const response = await ApiService.get(
+        `/admin/users?${params.toString()}`,
+      );
+      console.log(response?.data, "response?.dataaaaaaaa");
       return response;
     } catch (error) {
-      console.error('Get all users error:', error);
+      console.error("Get all users error:", error);
       throw error;
     }
   },
@@ -184,7 +199,7 @@ const AdminService = {
       const response = await ApiService.get(`/admin/users/${userId}`);
       return response;
     } catch (error) {
-      console.error('Get user by ID error:', error);
+      console.error("Get user by ID error:", error);
       throw error;
     }
   },
@@ -198,7 +213,7 @@ const AdminService = {
       const response = await ApiService.put(`/admin/users/${userId}`, userData);
       return response;
     } catch (error) {
-      console.error('Update user error:', error);
+      console.error("Update user error:", error);
       throw error;
     }
   },
@@ -212,7 +227,7 @@ const AdminService = {
       const response = await ApiService.delete(`/admin/users/${userId}`);
       return response;
     } catch (error) {
-      console.error('Delete user error:', error);
+      console.error("Delete user error:", error);
       throw error;
     }
   },
@@ -226,7 +241,7 @@ const AdminService = {
       const response = await ApiService.post(`/admin/users/${userId}/block`);
       return response;
     } catch (error) {
-      console.error('Block user error:', error);
+      console.error("Block user error:", error);
       throw error;
     }
   },
@@ -240,7 +255,7 @@ const AdminService = {
       const response = await ApiService.post(`/admin/users/${userId}/unblock`);
       return response;
     } catch (error) {
-      console.error('Unblock user error:', error);
+      console.error("Unblock user error:", error);
       throw error;
     }
   },
@@ -251,14 +266,16 @@ const AdminService = {
    * Get All Drivers
    * GET /api/admin/drivers?page=1&limit=10&status=approved
    */
-  async getAllDrivers(page = 1, limit = 10, status = '') {
+  async getAllDrivers(page = 1, limit = 10, status = "") {
     try {
       const params = new URLSearchParams({ page, limit });
-      if (status) params.append('status', status);
-      const response = await ApiService.get(`/admin/drivers?${params.toString()}`);
+      if (status) params.append("status", status);
+      const response = await ApiService.get(
+        `/admin/drivers?${params.toString()}`,
+      );
       return response;
     } catch (error) {
-      console.error('Get all drivers error:', error);
+      console.error("Get all drivers error:", error);
       throw error;
     }
   },
@@ -269,10 +286,10 @@ const AdminService = {
    */
   async getPendingDrivers() {
     try {
-      const response = await ApiService.get('/admin/drivers/pending');
+      const response = await ApiService.get("/admin/drivers/pending");
       return response;
     } catch (error) {
-      console.error('Get pending drivers error:', error);
+      console.error("Get pending drivers error:", error);
       throw error;
     }
   },
@@ -286,7 +303,7 @@ const AdminService = {
       const response = await ApiService.get(`/admin/drivers/${driverId}`);
       return response;
     } catch (error) {
-      console.error('Get driver by ID error:', error);
+      console.error("Get driver by ID error:", error);
       throw error;
     }
   },
@@ -297,10 +314,13 @@ const AdminService = {
    */
   async updateDriver(driverId, driverData) {
     try {
-      const response = await ApiService.put(`/admin/drivers/${driverId}`, driverData);
+      const response = await ApiService.put(
+        `/admin/drivers/${driverId}`,
+        driverData,
+      );
       return response;
     } catch (error) {
-      console.error('Update driver error:', error);
+      console.error("Update driver error:", error);
       throw error;
     }
   },
@@ -314,7 +334,7 @@ const AdminService = {
       const response = await ApiService.delete(`/admin/drivers/${driverId}`);
       return response;
     } catch (error) {
-      console.error('Delete driver error:', error);
+      console.error("Delete driver error:", error);
       throw error;
     }
   },
@@ -325,10 +345,12 @@ const AdminService = {
    */
   async verifyDriver(driverId) {
     try {
-      const response = await ApiService.post(`/admin/drivers/${driverId}/verify`);
+      const response = await ApiService.post(
+        `/admin/drivers/${driverId}/verify`,
+      );
       return response;
     } catch (error) {
-      console.error('Verify driver error:', error);
+      console.error("Verify driver error:", error);
       throw error;
     }
   },
@@ -339,12 +361,15 @@ const AdminService = {
    */
   async rejectDriver(driverId, rejectionReason) {
     try {
-      const response = await ApiService.post(`/admin/drivers/${driverId}/reject`, {
-        rejectionReason
-      });
+      const response = await ApiService.post(
+        `/admin/drivers/${driverId}/reject`,
+        {
+          rejectionReason,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('Reject driver error:', error);
+      console.error("Reject driver error:", error);
       throw error;
     }
   },
@@ -357,10 +382,10 @@ const AdminService = {
    */
   async getAllRoles() {
     try {
-      const response = await ApiService.get('/admin/roles');
+      const response = await ApiService.get("/admin/roles");
       return response;
     } catch (error) {
-      console.error('Get all roles error:', error);
+      console.error("Get all roles error:", error);
       throw error;
     }
   },
@@ -371,10 +396,10 @@ const AdminService = {
    */
   async createRole(roleData) {
     try {
-      const response = await ApiService.post('/admin/roles', roleData);
+      const response = await ApiService.post("/admin/roles", roleData);
       return response;
     } catch (error) {
-      console.error('Create role error:', error);
+      console.error("Create role error:", error);
       throw error;
     }
   },
@@ -388,7 +413,7 @@ const AdminService = {
       const response = await ApiService.put(`/admin/roles/${roleId}`, roleData);
       return response;
     } catch (error) {
-      console.error('Update role error:', error);
+      console.error("Update role error:", error);
       throw error;
     }
   },
@@ -402,7 +427,7 @@ const AdminService = {
       const response = await ApiService.delete(`/admin/roles/${roleId}`);
       return response;
     } catch (error) {
-      console.error('Delete role error:', error);
+      console.error("Delete role error:", error);
       throw error;
     }
   },
@@ -415,10 +440,10 @@ const AdminService = {
    */
   async getAllPermissions() {
     try {
-      const response = await ApiService.get('/admin/permissions');
+      const response = await ApiService.get("/admin/permissions");
       return response;
     } catch (error) {
-      console.error('Get all permissions error:', error);
+      console.error("Get all permissions error:", error);
       throw error;
     }
   },
@@ -429,10 +454,13 @@ const AdminService = {
    */
   async createPermission(permissionData) {
     try {
-      const response = await ApiService.post('/admin/permissions', permissionData);
+      const response = await ApiService.post(
+        "/admin/permissions",
+        permissionData,
+      );
       return response;
     } catch (error) {
-      console.error('Create permission error:', error);
+      console.error("Create permission error:", error);
       throw error;
     }
   },
@@ -443,10 +471,13 @@ const AdminService = {
    */
   async updatePermission(permissionId, permissionData) {
     try {
-      const response = await ApiService.put(`/admin/permissions/${permissionId}`, permissionData);
+      const response = await ApiService.put(
+        `/admin/permissions/${permissionId}`,
+        permissionData,
+      );
       return response;
     } catch (error) {
-      console.error('Update permission error:', error);
+      console.error("Update permission error:", error);
       throw error;
     }
   },
@@ -457,10 +488,12 @@ const AdminService = {
    */
   async deletePermission(permissionId) {
     try {
-      const response = await ApiService.delete(`/admin/permissions/${permissionId}`);
+      const response = await ApiService.delete(
+        `/admin/permissions/${permissionId}`,
+      );
       return response;
     } catch (error) {
-      console.error('Delete permission error:', error);
+      console.error("Delete permission error:", error);
       throw error;
     }
   },
@@ -473,10 +506,10 @@ const AdminService = {
    */
   async getAllCabs() {
     try {
-      const response = await ApiService.get('/admin/cabs');
+      const response = await ApiService.get("/admin/cabs");
       return response;
     } catch (error) {
-      console.error('Get all cabs error:', error);
+      console.error("Get all cabs error:", error);
       throw error;
     }
   },
@@ -487,10 +520,10 @@ const AdminService = {
    */
   async addCab(cabData) {
     try {
-      const response = await ApiService.post('/admin/cabs', cabData);
+      const response = await ApiService.post("/admin/cabs", cabData);
       return response;
     } catch (error) {
-      console.error('Add cab error:', error);
+      console.error("Add cab error:", error);
       throw error;
     }
   },
@@ -504,7 +537,7 @@ const AdminService = {
       const response = await ApiService.put(`/admin/cabs/${cabId}`, cabData);
       return response;
     } catch (error) {
-      console.error('Update cab error:', error);
+      console.error("Update cab error:", error);
       throw error;
     }
   },
@@ -518,7 +551,7 @@ const AdminService = {
       const response = await ApiService.delete(`/admin/cabs/${cabId}`);
       return response;
     } catch (error) {
-      console.error('Delete cab error:', error);
+      console.error("Delete cab error:", error);
       throw error;
     }
   },
@@ -531,10 +564,10 @@ const AdminService = {
    */
   async getReferralEarnings() {
     try {
-      const response = await ApiService.get('/admin/referral/earnings');
+      const response = await ApiService.get("/admin/referral/earnings");
       return response;
     } catch (error) {
-      console.error('Get referral earnings error:', error);
+      console.error("Get referral earnings error:", error);
       throw error;
     }
   },
@@ -545,10 +578,12 @@ const AdminService = {
    */
   async getReferralEarningsByUser(userId) {
     try {
-      const response = await ApiService.get(`/admin/referral/earnings/${userId}`);
+      const response = await ApiService.get(
+        `/admin/referral/earnings/${userId}`,
+      );
       return response;
     } catch (error) {
-      console.error('Get referral earnings by user error:', error);
+      console.error("Get referral earnings by user error:", error);
       throw error;
     }
   },
@@ -559,10 +594,10 @@ const AdminService = {
    */
   async getAllReferrals() {
     try {
-      const response = await ApiService.get('/admin/referrals');
+      const response = await ApiService.get("/admin/referrals");
       return response;
     } catch (error) {
-      console.error('Get all referrals error:', error);
+      console.error("Get all referrals error:", error);
       throw error;
     }
   },
@@ -576,7 +611,7 @@ const AdminService = {
       const response = await ApiService.get(`/admin/referrals/${userId}`);
       return response;
     } catch (error) {
-      console.error('Get referrals by user error:', error);
+      console.error("Get referrals by user error:", error);
       throw error;
     }
   },
@@ -589,10 +624,10 @@ const AdminService = {
    */
   async getAllPromotions() {
     try {
-      const response = await ApiService.get('/admin/promotions');
+      const response = await ApiService.get("/admin/promotions");
       return response;
     } catch (error) {
-      console.error('Get all promotions error:', error);
+      console.error("Get all promotions error:", error);
       throw error;
     }
   },
@@ -603,10 +638,13 @@ const AdminService = {
    */
   async createPromotion(promotionData) {
     try {
-      const response = await ApiService.post('/admin/promotions', promotionData);
+      const response = await ApiService.post(
+        "/admin/promotions",
+        promotionData,
+      );
       return response;
     } catch (error) {
-      console.error('Create promotion error:', error);
+      console.error("Create promotion error:", error);
       throw error;
     }
   },
@@ -617,10 +655,13 @@ const AdminService = {
    */
   async updatePromotion(promotionId, promotionData) {
     try {
-      const response = await ApiService.put(`/admin/promotions/${promotionId}`, promotionData);
+      const response = await ApiService.put(
+        `/admin/promotions/${promotionId}`,
+        promotionData,
+      );
       return response;
     } catch (error) {
-      console.error('Update promotion error:', error);
+      console.error("Update promotion error:", error);
       throw error;
     }
   },
@@ -631,10 +672,12 @@ const AdminService = {
    */
   async deletePromotion(promotionId) {
     try {
-      const response = await ApiService.delete(`/admin/promotions/${promotionId}`);
+      const response = await ApiService.delete(
+        `/admin/promotions/${promotionId}`,
+      );
       return response;
     } catch (error) {
-      console.error('Delete promotion error:', error);
+      console.error("Delete promotion error:", error);
       throw error;
     }
   },
@@ -645,14 +688,16 @@ const AdminService = {
    * Get All Rides
    * GET /api/admin/rides?page=1&limit=10&status=completed
    */
-  async getAllRides(page = 1, limit = 10, status = '') {
+  async getAllRides(page = 1, limit = 10, status = "") {
     try {
       const params = new URLSearchParams({ page, limit });
-      if (status) params.append('status', status);
-      const response = await ApiService.get(`/admin/rides?${params.toString()}`);
+      if (status) params.append("status", status);
+      const response = await ApiService.get(
+        `/admin/rides?${params.toString()}`,
+      );
       return response;
     } catch (error) {
-      console.error('Get all rides error:', error);
+      console.error("Get all rides error:", error);
       throw error;
     }
   },
@@ -666,7 +711,7 @@ const AdminService = {
       const response = await ApiService.get(`/admin/rides/${rideId}`);
       return response;
     } catch (error) {
-      console.error('Get ride by ID error:', error);
+      console.error("Get ride by ID error:", error);
       throw error;
     }
   },
@@ -677,10 +722,12 @@ const AdminService = {
    */
   async updateRideStatus(rideId, status) {
     try {
-      const response = await ApiService.put(`/admin/rides/${rideId}/status`, { status });
+      const response = await ApiService.put(`/admin/rides/${rideId}/status`, {
+        status,
+      });
       return response;
     } catch (error) {
-      console.error('Update ride status error:', error);
+      console.error("Update ride status error:", error);
       throw error;
     }
   },
@@ -694,7 +741,7 @@ const AdminService = {
       const response = await ApiService.delete(`/admin/rides/${rideId}`);
       return response;
     } catch (error) {
-      console.error('Delete ride error:', error);
+      console.error("Delete ride error:", error);
       throw error;
     }
   },
@@ -707,10 +754,10 @@ const AdminService = {
    */
   async getDriverVerifications() {
     try {
-      const response = await ApiService.get('/admin/driver-verifications');
+      const response = await ApiService.get("/admin/driver-verifications");
       return response;
     } catch (error) {
-      console.error('Get driver verifications error:', error);
+      console.error("Get driver verifications error:", error);
       throw error;
     }
   },
@@ -721,10 +768,12 @@ const AdminService = {
    */
   async getPendingVerifications() {
     try {
-      const response = await ApiService.get('/admin/driver-verifications/pending');
+      const response = await ApiService.get(
+        "/admin/driver-verifications/pending",
+      );
       return response;
     } catch (error) {
-      console.error('Get pending verifications error:', error);
+      console.error("Get pending verifications error:", error);
       throw error;
     }
   },
@@ -735,10 +784,12 @@ const AdminService = {
    */
   async getVerificationById(verificationId) {
     try {
-      const response = await ApiService.get(`/admin/driver-verifications/${verificationId}`);
+      const response = await ApiService.get(
+        `/admin/driver-verifications/${verificationId}`,
+      );
       return response;
     } catch (error) {
-      console.error('Get verification by ID error:', error);
+      console.error("Get verification by ID error:", error);
       throw error;
     }
   },
@@ -749,10 +800,12 @@ const AdminService = {
    */
   async approveVerification(verificationId) {
     try {
-      const response = await ApiService.post(`/admin/driver-verifications/${verificationId}/approve`);
+      const response = await ApiService.post(
+        `/admin/driver-verifications/${verificationId}/approve`,
+      );
       return response;
     } catch (error) {
-      console.error('Approve verification error:', error);
+      console.error("Approve verification error:", error);
       throw error;
     }
   },
@@ -763,13 +816,16 @@ const AdminService = {
    */
   async rejectVerification(verificationId, rejectionReason, rejectedDocument) {
     try {
-      const response = await ApiService.post(`/admin/driver-verifications/${verificationId}/reject`, {
-        rejectionReason,
-        rejectedDocument
-      });
+      const response = await ApiService.post(
+        `/admin/driver-verifications/${verificationId}/reject`,
+        {
+          rejectionReason,
+          rejectedDocument,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('Reject verification error:', error);
+      console.error("Reject verification error:", error);
       throw error;
     }
   },
@@ -782,10 +838,10 @@ const AdminService = {
    */
   async getRecentActivities() {
     try {
-      const response = await ApiService.get('/admin/recent-activities');
+      const response = await ApiService.get("/admin/recent-activities");
       return response;
     } catch (error) {
-      console.error('Get recent activities error:', error);
+      console.error("Get recent activities error:", error);
       throw error;
     }
   },
@@ -798,10 +854,10 @@ const AdminService = {
    */
   async getAnalyticsOverview() {
     try {
-      const response = await ApiService.get('/admin/analytics/overview');
+      const response = await ApiService.get("/admin/analytics/overview");
       return response;
     } catch (error) {
-      console.error('Get analytics overview error:', error);
+      console.error("Get analytics overview error:", error);
       throw error;
     }
   },
@@ -810,12 +866,14 @@ const AdminService = {
    * Get Revenue Analytics
    * GET /api/admin/analytics/revenue?period=monthly
    */
-  async getRevenueAnalytics(period = 'monthly') {
+  async getRevenueAnalytics(period = "monthly") {
     try {
-      const response = await ApiService.get(`/admin/analytics/revenue?period=${period}`);
+      const response = await ApiService.get(
+        `/admin/analytics/revenue?period=${period}`,
+      );
       return response;
     } catch (error) {
-      console.error('Get revenue analytics error:', error);
+      console.error("Get revenue analytics error:", error);
       throw error;
     }
   },
@@ -826,10 +884,10 @@ const AdminService = {
    */
   async getRideAnalytics() {
     try {
-      const response = await ApiService.get('/admin/analytics/rides');
+      const response = await ApiService.get("/admin/analytics/rides");
       return response;
     } catch (error) {
-      console.error('Get ride analytics error:', error);
+      console.error("Get ride analytics error:", error);
       throw error;
     }
   },
@@ -842,10 +900,10 @@ const AdminService = {
    */
   async getSettings() {
     try {
-      const response = await ApiService.get('/admin/settings');
+      const response = await ApiService.get("/admin/settings");
       return response;
     } catch (error) {
-      console.error('Get settings error:', error);
+      console.error("Get settings error:", error);
       throw error;
     }
   },
@@ -856,10 +914,10 @@ const AdminService = {
    */
   async updateSettings(settingsData) {
     try {
-      const response = await ApiService.put('/admin/settings', settingsData);
+      const response = await ApiService.put("/admin/settings", settingsData);
       return response;
     } catch (error) {
-      console.error('Update settings error:', error);
+      console.error("Update settings error:", error);
       throw error;
     }
   },
@@ -872,10 +930,10 @@ const AdminService = {
    */
   async getProfile() {
     try {
-      const response = await ApiService.get('/admin/profile');
+      const response = await ApiService.get("/admin/profile");
       return response;
     } catch (error) {
-      console.error('Get admin profile error:', error);
+      console.error("Get admin profile error:", error);
       throw error;
     }
   },
@@ -886,10 +944,10 @@ const AdminService = {
    */
   async updateProfile(profileData) {
     try {
-      const response = await ApiService.put('/admin/profile', profileData);
+      const response = await ApiService.put("/admin/profile", profileData);
       return response;
     } catch (error) {
-      console.error('Update admin profile error:', error);
+      console.error("Update admin profile error:", error);
       throw error;
     }
   },
@@ -900,13 +958,13 @@ const AdminService = {
    */
   async changePassword(currentPassword, newPassword) {
     try {
-      const response = await ApiService.post('/admin/change-password', {
+      const response = await ApiService.post("/admin/change-password", {
         currentPassword,
-        newPassword
+        newPassword,
       });
       return response;
     } catch (error) {
-      console.error('Change password error:', error);
+      console.error("Change password error:", error);
       throw error;
     }
   },
@@ -919,10 +977,10 @@ const AdminService = {
    */
   async getAllAdmins() {
     try {
-      const response = await ApiService.get('/admin/admins');
+      const response = await ApiService.get("/admin/admins");
       return response;
     } catch (error) {
-      console.error('Get all admins error:', error);
+      console.error("Get all admins error:", error);
       throw error;
     }
   },
@@ -936,7 +994,7 @@ const AdminService = {
       const response = await ApiService.get(`/admin/admins/${adminId}`);
       return response;
     } catch (error) {
-      console.error('Get admin by ID error:', error);
+      console.error("Get admin by ID error:", error);
       throw error;
     }
   },
@@ -947,10 +1005,10 @@ const AdminService = {
    */
   async createAdmin(adminData) {
     try {
-      const response = await ApiService.post('/admin/admins', adminData);
+      const response = await ApiService.post("/admin/admins", adminData);
       return response;
     } catch (error) {
-      console.error('Create admin error:', error);
+      console.error("Create admin error:", error);
       throw error;
     }
   },
@@ -961,10 +1019,13 @@ const AdminService = {
    */
   async updateAdmin(adminId, adminData) {
     try {
-      const response = await ApiService.put(`/admin/admins/${adminId}`, adminData);
+      const response = await ApiService.put(
+        `/admin/admins/${adminId}`,
+        adminData,
+      );
       return response;
     } catch (error) {
-      console.error('Update admin error:', error);
+      console.error("Update admin error:", error);
       throw error;
     }
   },
@@ -978,7 +1039,7 @@ const AdminService = {
       const response = await ApiService.delete(`/admin/admins/${adminId}`);
       return response;
     } catch (error) {
-      console.error('Delete admin error:', error);
+      console.error("Delete admin error:", error);
       throw error;
     }
   },
@@ -989,10 +1050,12 @@ const AdminService = {
    */
   async toggleAdminStatus(adminId) {
     try {
-      const response = await ApiService.post(`/admin/admins/${adminId}/toggle-status`);
+      const response = await ApiService.post(
+        `/admin/admins/${adminId}/toggle-status`,
+      );
       return response;
     } catch (error) {
-      console.error('Toggle admin status error:', error);
+      console.error("Toggle admin status error:", error);
       throw error;
     }
   },
@@ -1003,13 +1066,16 @@ const AdminService = {
    */
   async updateAdminPermissions(adminId, permissions) {
     try {
-      const response = await ApiService.put(`/admin/admins/${adminId}/permissions`, {
-        permissions
-      });
+      const response = await ApiService.put(
+        `/admin/admins/${adminId}/permissions`,
+        {
+          permissions,
+        },
+      );
       return response;
     } catch (error) {
-      console.error('Update admin permissions error:', error);
+      console.error("Update admin permissions error:", error);
       throw error;
     }
-  }
+  },
 };

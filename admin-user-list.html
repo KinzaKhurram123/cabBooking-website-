@@ -1,555 +1,594 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User List - RideLynk Admin</title>
-    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000000;
-            color: #e5e7eb;
-            overflow-x: hidden;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #000000;
+        color: #e5e7eb;
+        overflow-x: hidden;
+      }
 
-        /* Sidebar */
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 260px;
+        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        border-right: 1px solid rgba(0, 173, 239, 0.2);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar-header {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .sidebar-header h2 {
+        color: white;
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .sidebar-header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 12px;
+        margin-top: 5px;
+      }
+
+      .menu-section {
+        margin-bottom: 20px;
+      }
+
+      .menu-section-title {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0 20px;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+
+      .menu-item {
+        padding: 12px 20px;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .menu-item:hover {
+        background: rgba(0, 173, 239, 0.15);
+        padding-left: 25px;
+      }
+
+      .menu-item.active {
+        background: rgba(0, 173, 239, 0.2);
+        border-left: 3px solid #00adef;
+      }
+
+      .menu-item i {
+        width: 20px;
+        margin-right: 12px;
+        font-size: 16px;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 260px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      /* Top Bar */
+      .top-bar {
+        background: #0a0a0a;
+        padding: 20px 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .top-bar h1 {
+        color: #00adef;
+        font-size: 28px;
+      }
+
+      .top-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .admin-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+
+      .admin-profile img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      /* Content */
+      .content-card {
+        background: #0a0a0a;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        margin-bottom: 30px;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .content-header h2 {
+        color: #00adef;
+        font-size: 22px;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        background: #00adef;
+        color: #000000;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background: #00e5ff;
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
+      }
+
+      .btn-secondary {
+        background: #95a5a6;
+      }
+
+      .btn-secondary:hover {
+        background: #7f8c8d;
+      }
+
+      /* Table */
+      .dataTables_wrapper {
+        margin-top: 20px;
+      }
+
+      table.dataTable {
+        width: 100% !important;
+        border-collapse: collapse;
+      }
+
+      table.dataTable thead th {
+        background: rgba(0, 173, 239, 0.1);
+        color: #00adef;
+        font-weight: 600;
+        padding: 15px;
+        border-bottom: 2px solid rgba(0, 173, 239, 0.2);
+      }
+
+      table.dataTable tbody td {
+        padding: 15px;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+        color: #9ca3af;
+      }
+
+      .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .status-active {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid #10b981;
+      }
+
+      .status-inactive {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+      }
+
+      .status-pending {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+        border: 1px solid #f59e0b;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      .action-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .action-edit {
+        background: #00adef;
+        color: #000000;
+      }
+
+      .action-edit:hover {
+        background: #00e5ff;
+      }
+
+      .action-delete {
+        background: rgba(239, 68, 68, 0.8);
+        color: white;
+      }
+
+      .action-delete:hover {
+        background: #ef4444;
+      }
+
+      .action-view {
+        background: rgba(16, 185, 129, 0.8);
+        color: white;
+      }
+
+      .action-view:hover {
+        background: #10b981;
+      }
+
+      /* Search and Filter */
+      .search-filter {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 6px;
+        font-size: 14px;
+        background: #000000;
+        color: #e5e7eb;
+      }
+
+      .search-box input:focus {
+        outline: none;
+        border-color: #00adef;
+        box-shadow: 0 0 10px rgba(0, 173, 239, 0.2);
+      }
+
+      .filter-select {
+        padding: 12px 15px;
+        border: 2px solid rgba(0, 173, 239, 0.3);
+        border-radius: 6px;
+        background: #000000;
+        color: #e5e7eb;
+        min-width: 150px;
+      }
+
+      .filter-select:focus {
+        outline: none;
+        border-color: #00adef;
+      }
+
+      /* Pagination */
+      .dataTables_paginate {
+        margin-top: 20px;
+      }
+
+      .dataTables_paginate .paginate_button {
+        padding: 8px 12px;
+        margin: 0 2px;
+        border: 1px solid rgba(0, 173, 239, 0.3);
+        border-radius: 4px;
+        cursor: pointer;
+        background: transparent;
+        color: #9ca3af;
+      }
+
+      .dataTables_paginate .paginate_button:hover {
+        background: rgba(0, 173, 239, 0.1);
+        color: #00adef;
+        border-color: #00adef;
+      }
+
+      .dataTables_paginate .paginate_button.current {
+        background: #00adef;
+        color: #000000;
+        border-color: #00adef;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100vh;
-            width: 260px;
-            background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
-            border-right: 1px solid rgba(0, 173, 239, 0.2);
-            padding: 20px 0;
-            overflow-y: auto;
-            z-index: 1000;
-            transition: all 0.3s ease;
+          transform: translateX(-100%);
         }
 
-        .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .sidebar-header h2 {
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .sidebar-header p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .menu-section {
-            margin-bottom: 20px;
-        }
-
-        .menu-section-title {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0 20px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .menu-item {
-            padding: 12px 20px;
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .menu-item:hover {
-            background: rgba(0, 173, 239, 0.15);
-            padding-left: 25px;
-        }
-
-        .menu-item.active {
-            background: rgba(0, 173, 239, 0.2);
-            border-left: 3px solid #00ADEF;
-        }
-
-        .menu-item i {
-            width: 20px;
-            margin-right: 12px;
-            font-size: 16px;
-        }
-
-        /* Main Content */
         .main-content {
-            margin-left: 260px;
-            padding: 20px;
-            min-height: 100vh;
+          margin-left: 0;
         }
 
-        /* Top Bar */
-        .top-bar {
-            background: #0a0a0a;
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 173, 239, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .top-bar h1 {
-            color: #00ADEF;
-            font-size: 28px;
-        }
-
-        .top-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
-
-        .admin-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* Content */
-        .content-card {
-            background: #0a0a0a;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 173, 239, 0.2);
-            margin-bottom: 30px;
-        }
-
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .content-header h2 {
-            color: #00ADEF;
-            font-size: 22px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            background: #00ADEF;
-            color: #000000;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background: #00e5ff;
-            box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
-        }
-
-        .btn-secondary {
-            background: #95a5a6;
-        }
-
-        .btn-secondary:hover {
-            background: #7f8c8d;
-        }
-
-        /* Table */
-        .dataTables_wrapper {
-            margin-top: 20px;
-        }
-
-        table.dataTable {
-            width: 100% !important;
-            border-collapse: collapse;
-        }
-
-        table.dataTable thead th {
-            background: rgba(0, 173, 239, 0.1);
-            color: #00ADEF;
-            font-weight: 600;
-            padding: 15px;
-            border-bottom: 2px solid rgba(0, 173, 239, 0.2);
-        }
-
-        table.dataTable tbody td {
-            padding: 15px;
-            border-bottom: 1px solid rgba(0, 173, 239, 0.1);
-            color: #9ca3af;
-        }
-
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-active {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            border: 1px solid #10b981;
-        }
-
-        .status-inactive {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-
-        .status-pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border: 1px solid #f59e0b;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .action-edit {
-            background: #00ADEF;
-            color: #000000;
-        }
-
-        .action-edit:hover {
-            background: #00e5ff;
-        }
-
-        .action-delete {
-            background: rgba(239, 68, 68, 0.8);
-            color: white;
-        }
-
-        .action-delete:hover {
-            background: #ef4444;
-        }
-
-        .action-view {
-            background: rgba(16, 185, 129, 0.8);
-            color: white;
-        }
-
-        .action-view:hover {
-            background: #10b981;
-        }
-
-        /* Search and Filter */
         .search-filter {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+          flex-direction: column;
         }
 
         .search-box {
-            flex: 1;
-            min-width: 300px;
+          min-width: 100%;
         }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid rgba(0, 173, 239, 0.3);
-            border-radius: 6px;
-            font-size: 14px;
-            background: #000000;
-            color: #e5e7eb;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #00ADEF;
-            box-shadow: 0 0 10px rgba(0, 173, 239, 0.2);
-        }
-
-        .filter-select {
-            padding: 12px 15px;
-            border: 2px solid rgba(0, 173, 239, 0.3);
-            border-radius: 6px;
-            background: #000000;
-            color: #e5e7eb;
-            min-width: 150px;
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: #00ADEF;
-        }
-
-        /* Pagination */
-        .dataTables_paginate {
-            margin-top: 20px;
-        }
-
-        .dataTables_paginate .paginate_button {
-            padding: 8px 12px;
-            margin: 0 2px;
-            border: 1px solid rgba(0, 173, 239, 0.3);
-            border-radius: 4px;
-            cursor: pointer;
-            background: transparent;
-            color: #9ca3af;
-        }
-
-        .dataTables_paginate .paginate_button:hover {
-            background: rgba(0, 173, 239, 0.1);
-            color: #00ADEF;
-            border-color: #00ADEF;
-        }
-
-        .dataTables_paginate .paginate_button.current {
-            background: #00ADEF;
-            color: #000000;
-            border-color: #00ADEF;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .search-filter {
-                flex-direction: column;
-            }
-
-            .search-box {
-                min-width: 100%;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>RideLynk Admin</h2>
-            <p>Management Portal</p>
-        </div>
+      <div class="sidebar-header">
+        <h2>RideLynk Admin</h2>
+        <p>Management Portal</p>
+      </div>
 
-        <div class="menu-section">
-            <div class="menu-section-title">Main</div>
-            <a href="admin-dashboard.html" class="menu-item">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
-            </a>
-        </div>
+      <div class="menu-section">
+        <div class="menu-section-title">Main</div>
+        <a href="admin-dashboard.html" class="menu-item">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+      </div>
 
-        <div class="menu-section">
-            <div class="menu-section-title">User Management</div>
-            <a href="admin-user-list.html" class="menu-item active">
-                <i class="fas fa-users"></i>
-                <span>User List</span>
-            </a>
-            <a href="admin-driver-list.html" class="menu-item">
-                <i class="fas fa-car"></i>
-                <span>Driver List</span>
-            </a>
-        </div>
+      <div class="menu-section">
+        <div class="menu-section-title">User Management</div>
+        <a href="admin-user-list.html" class="menu-item active">
+          <i class="fas fa-users"></i>
+          <span>User List</span>
+        </a>
+        <a href="admin-driver-list.html" class="menu-item">
+          <i class="fas fa-car"></i>
+          <span>Driver List</span>
+        </a>
+      </div>
 
-        <div class="menu-section">
-            <div class="menu-section-title">Access Control</div>
-            <a href="admin-role-list.html" class="menu-item">
-                <i class="fas fa-user-shield"></i>
-                <span>Role List</span>
-            </a>
-            <a href="admin-role-create.html" class="menu-item">
-                <i class="fas fa-plus-circle"></i>
-                <span>Create Role</span>
-            </a>
-            <a href="admin-permission-list.html" class="menu-item">
-                <i class="fas fa-key"></i>
-                <span>Permission List</span>
-            </a>
-            <a href="admin-permission-create.html" class="menu-item">
-                <i class="fas fa-plus-circle"></i>
-                <span>Create Permission</span>
-            </a>
-        </div>
+      <div class="menu-section">
+        <div class="menu-section-title">Access Control</div>
+        <a href="admin-role-list.html" class="menu-item">
+          <i class="fas fa-user-shield"></i>
+          <span>Role List</span>
+        </a>
+        <a href="admin-role-create.html" class="menu-item">
+          <i class="fas fa-plus-circle"></i>
+          <span>Create Role</span>
+        </a>
+        <a href="admin-permission-list.html" class="menu-item">
+          <i class="fas fa-key"></i>
+          <span>Permission List</span>
+        </a>
+        <a href="admin-permission-create.html" class="menu-item">
+          <i class="fas fa-plus-circle"></i>
+          <span>Create Permission</span>
+        </a>
+      </div>
 
-        <div class="menu-section">
-            <div class="menu-section-title">Cab Management</div>
-            <a href="admin-categories.html" class="menu-item">
-                <i class="fas fa-list"></i>
-                <span>Categories</span>
-            </a>
-            <a href="admin-cab-masters.html" class="menu-item">
-                <i class="fas fa-car"></i>
-                <span>Cab Masters</span>
-            </a>
-            <a href="admin-pricing.html" class="menu-item">
-                <i class="fas fa-tag"></i>
-                <span>Pricing</span>
-            </a>
-            <a href="admin-surcharge.html" class="menu-item">
-                <i class="fas fa-percentage"></i>
-                <span>Surcharge</span>
-            </a>
-        </div>
+      <div class="menu-section">
+        <div class="menu-section-title">Cab Management</div>
+        <a href="admin-categories.html" class="menu-item">
+          <i class="fas fa-list"></i>
+          <span>Categories</span>
+        </a>
+        <a href="admin-cab-masters.html" class="menu-item">
+          <i class="fas fa-car"></i>
+          <span>Cab Masters</span>
+        </a>
+        <a href="admin-pricing.html" class="menu-item">
+          <i class="fas fa-tag"></i>
+          <span>Pricing</span>
+        </a>
+        <a href="admin-surcharge.html" class="menu-item">
+          <i class="fas fa-percentage"></i>
+          <span>Surcharge</span>
+        </a>
+      </div>
 
-        <div class="menu-section">
-            <div class="menu-section-title">Referral & Earnings</div>
-            <a href="admin-referral-earnings.html" class="menu-item">
-                <i class="fas fa-dollar-sign"></i>
-                <span>Referral Earnings</span>
-            </a>
-            <a href="admin-my-referrals.html" class="menu-item">
-                <i class="fas fa-user-plus"></i>
-                <span>My Referrals</span>
-            </a>
-            <a href="admin-my-earnings.html" class="menu-item">
-                <i class="fas fa-wallet"></i>
-                <span>My Earnings</span>
-            </a>
-        </div>
+      <div class="menu-section">
+        <div class="menu-section-title">Referral & Earnings</div>
+        <a href="admin-referral-earnings.html" class="menu-item">
+          <i class="fas fa-dollar-sign"></i>
+          <span>Referral Earnings</span>
+        </a>
+        <a href="admin-my-referrals.html" class="menu-item">
+          <i class="fas fa-user-plus"></i>
+          <span>My Referrals</span>
+        </a>
+        <a href="admin-my-earnings.html" class="menu-item">
+          <i class="fas fa-wallet"></i>
+          <span>My Earnings</span>
+        </a>
+      </div>
 
-        <div class="menu-section">
-            <div class="menu-section-title">Promotions</div>
-            <a href="admin-coupons.html" class="menu-item">
-                <i class="fas fa-ticket-alt"></i>
-                <span>Coupons</span>
-            </a>
-        </div>
+      <div class="menu-section">
+        <div class="menu-section-title">Promotions</div>
+        <a href="admin-coupons.html" class="menu-item">
+          <i class="fas fa-ticket-alt"></i>
+          <span>Coupons</span>
+        </a>
+      </div>
 
-        <div class="menu-section">
-            <div class="menu-section-title">Ride Management</div>
-            <a href="admin-all-rides.html" class="menu-item">
-                <i class="fas fa-route"></i>
-                <span>All Rides</span>
-            </a>
-            <a href="admin-new-requests.html" class="menu-item">
-                <i class="fas fa-plus-circle"></i>
-                <span>New Requests</span>
-            </a>
-            <a href="admin-ride-history.html" class="menu-item">
-                <i class="fas fa-history"></i>
-                <span>Ride History</span>
-            </a>
-        </div>
+      <div class="menu-section">
+        <div class="menu-section-title">Ride Management</div>
+        <a href="admin-all-rides.html" class="menu-item">
+          <i class="fas fa-route"></i>
+          <span>All Rides</span>
+        </a>
+        <a href="admin-new-requests.html" class="menu-item">
+          <i class="fas fa-plus-circle"></i>
+          <span>New Requests</span>
+        </a>
+        <a href="admin-ride-history.html" class="menu-item">
+          <i class="fas fa-history"></i>
+          <span>Ride History</span>
+        </a>
+      </div>
 
-        <div class="menu-section">
-            <div class="menu-section-title">Settings</div>
-            <a href="admin-settings.html" class="menu-item">
-                <i class="fas fa-cog"></i>
-                <span>Settings</span>
-            </a>
-        </div>
+      <div class="menu-section">
+        <div class="menu-section-title">Settings</div>
+        <a href="admin-settings.html" class="menu-item">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </a>
+      </div>
 
-        <button class="logout-btn" onclick="logout()" style="margin: 20px; padding: 12px 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: calc(100% - 40px);">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-        </button>
+      <button
+        class="logout-btn"
+        onclick="logout()"
+        style="
+          margin: 20px;
+          padding: 12px 20px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: white;
+          border-radius: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          width: calc(100% - 40px);
+        "
+      >
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </button>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <h1>User Management</h1>
-            <div class="top-bar-right">
-                <div class="admin-profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=00ADEF&color=000" alt="Admin">
-                    <div class="admin-profile-info">
-                        <h4 id="adminName" style="color: #e5e7eb;">Admin User</h4>
-                        <p style="color: #9ca3af;">Administrator</p>
-                    </div>
-                </div>
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <h1>User Management</h1>
+        <div class="top-bar-right">
+          <div class="admin-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Admin&background=00ADEF&color=000"
+              alt="Admin"
+            />
+            <div class="admin-profile-info">
+              <h4 id="adminName" style="color: #e5e7eb">Admin User</h4>
+              <p style="color: #9ca3af">Administrator</p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="content-card">
+        <div class="content-header">
+          <h2>User List</h2>
+          <button class="btn" onclick="addNewUser()">
+            <i class="fas fa-plus"></i> Add New User
+          </button>
         </div>
 
-        <!-- Content -->
-        <div class="content-card">
-            <div class="content-header">
-                <h2>User List</h2>
-                <button class="btn" onclick="addNewUser()">
-                    <i class="fas fa-plus"></i> Add New User
-                </button>
-            </div>
-
-            <!-- Search and Filter -->
-            <div class="search-filter">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search by name, email, or phone..." onkeyup="searchUsers()">
-                </div>
-                <select class="filter-select" id="statusFilter" onchange="filterUsers()">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="pending">Pending</option>
-                </select>
-                <select class="filter-select" id="roleFilter" onchange="filterUsers()">
-                    <option value="">All Roles</option>
-                    <option value="user">User</option>
-                    <option value="driver">Driver</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-
-            <!-- Users Table -->
-            <table id="usersTable" class="display">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Joined Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <!-- Data will be loaded here -->
-                </tbody>
-            </table>
+        <!-- Search and Filter -->
+        <div class="search-filter">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search by name, email, or phone..."
+              onkeyup="searchUsers()"
+            />
+          </div>
+          <select
+            class="filter-select"
+            id="statusFilter"
+            onchange="filterUsers()"
+          >
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="pending">Pending</option>
+          </select>
+          <select
+            class="filter-select"
+            id="roleFilter"
+            onchange="filterUsers()"
+          >
+            <option value="">All Roles</option>
+            <option value="user">User</option>
+            <option value="driver">Driver</option>
+            <option value="admin">Admin</option>
+          </select>
         </div>
+
+        <!-- Users Table -->
+        <table id="usersTable" class="display">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Joined Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <!-- Data will be loaded here -->
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Scripts -->
@@ -559,86 +598,90 @@
     <script src="js/api-service.js"></script>
     <script src="js/admin-service.js"></script>
     <script>
-        let usersTable;
-        let allUsers = [];
-        let currentPage = 1;
-        let totalPages = 1;
-        let searchTimeout;
+      let usersTable;
+      let allUsers = [];
+      let currentPage = 1;
+      let totalPages = 1;
+      let searchTimeout;
 
-        // Initialize DataTable
-        $(document).ready(function() {
-            usersTable = $('#usersTable').DataTable({
-                pageLength: 10,
-                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-                order: [[0, 'desc']],
-                searching: false, // Disable built-in search, use API search
-                serverSide: false // Client-side for now
-            });
-
-            loadUsers();
+      // Initialize DataTable
+      $(document).ready(function () {
+        usersTable = $("#usersTable").DataTable({
+          pageLength: 10,
+          lengthMenu: [
+            [10, 25, 50, 100],
+            [10, 25, 50, 100],
+          ],
+          order: [[0, "desc"]],
+          searching: false, // Disable built-in search, use API search
+          serverSide: false, // Client-side for now
         });
 
-        // Load users from API
-        async function loadUsers(page = 1, limit = 100, search = '') {
-            try {
-                showLoading();
+        loadUsers();
+      });
 
-                const response = await AdminService.getAllUsers(page, limit, search);
+      // Load users from API
+      async function loadUsers(page = 1, limit = 100, search = "") {
+        try {
+          showLoading();
 
-                if (response.success && response.data) {
-                    allUsers = response.data;
-                    totalPages = response.pages || 1;
-                    currentPage = response.page || 1;
+          const response = await AdminService.getAllUsers(page, limit, search);
 
-                    displayUsers(allUsers);
-                } else {
-                    console.error('Failed to load users:', response);
-                    alert('Failed to load users. Please try again.');
-                }
+          if (response.success && response.data) {
+            allUsers = response.data;
+            totalPages = response.pages || 1;
+            currentPage = response.page || 1;
 
-                hideLoading();
-            } catch (error) {
-                console.error('Error loading users:', error);
-                alert('Error loading users: ' + error.message);
-                hideLoading();
-            }
+            displayUsers(allUsers);
+          } else {
+            console.error("Failed to load users:", response);
+            alert("Failed to load users. Please try again.");
+          }
+
+          hideLoading();
+        } catch (error) {
+          console.error("Error loading users:", error);
+          alert("Error loading users: " + error.message);
+          hideLoading();
         }
+      }
 
-        // Display users in table
-        function displayUsers(users) {
-            usersTable.clear();
+      // Display users in table
+      function displayUsers(users) {
+        usersTable.clear();
 
-            users.forEach(user => {
-                const isBlocked = user.isBlocked || user.status === 'blocked';
-                let statusClass = isBlocked ? 'status-inactive' : 'status-active';
-                let statusText = isBlocked ? 'Blocked' : 'Active';
+        users.forEach((user) => {
+          const isBlocked = user.isBlocked || user.status === "blocked";
+          let statusClass = isBlocked ? "status-inactive" : "status-active";
+          let statusText = isBlocked ? "Blocked" : "Active";
 
-                if (user.status === 'pending') {
-                    statusClass = 'status-pending';
-                    statusText = 'Pending';
-                }
+          if (user.status === "pending") {
+            statusClass = "status-pending";
+            statusText = "Pending";
+          }
 
-                const userId = user._id || user.id;
-                const createdDate = user.createdAt || user.created_at;
+          const userId = user._id || user.id;
+          const createdDate = user.createdAt || user.created_at;
 
-                usersTable.row.add([
-                    userId.substring(0, 8) + '...',
-                    user.name || 'N/A',
-                    user.email || 'N/A',
-                    user.phoneNumber || user.phone || 'N/A',
-                    user.role || 'user',
-                    `<span class="status-badge ${statusClass}">${statusText}</span>`,
-                    createdDate ? new Date(createdDate).toLocaleDateString() : 'N/A',
-                    `
+          usersTable.row.add([
+            userId.substring(0, 8) + "...",
+            user.name || "N/A",
+            user.email || "N/A",
+            user.phoneNumber || user.phone || "N/A",
+            user.role || "user",
+            `<span class="status-badge ${statusClass}">${statusText}</span>`,
+            createdDate ? new Date(createdDate).toLocaleDateString() : "N/A",
+            `
                     <div class="action-buttons">
                         <button class="action-btn action-view" onclick="viewUser('${userId}')" title="View Details">
                             <i class="fas fa-eye"></i>
                         </button>
-                        ${isBlocked ?
-                            `<button class="action-btn action-edit" onclick="unblockUser('${userId}')" title="Unblock User" style="background: #10b981;">
+                        ${
+                          isBlocked
+                            ? `<button class="action-btn action-edit" onclick="unblockUser('${userId}')" title="Unblock User" style="background: #10b981;">
                                 <i class="fas fa-unlock"></i>
-                            </button>` :
-                            `<button class="action-btn action-delete" onclick="blockUser('${userId}')" title="Block User" style="background: #f59e0b;">
+                            </button>`
+                            : `<button class="action-btn action-delete" onclick="blockUser('${userId}')" title="Block User" style="background: #f59e0b;">
                                 <i class="fas fa-ban"></i>
                             </button>`
                         }
@@ -646,188 +689,199 @@
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
-                    `
-                ]);
-            });
-
-            usersTable.draw();
-        }
-
-        // Search users with debounce
-        function searchUsers() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const searchValue = $('#searchInput').val().trim();
-                loadUsers(1, 100, searchValue);
-            }, 500);
-        }
-
-        // Filter users (client-side for now)
-        function filterUsers() {
-            const status = $('#statusFilter').val();
-            const role = $('#roleFilter').val();
-
-            let filtered = allUsers;
-
-            if (status) {
-                filtered = filtered.filter(user => {
-                    if (status === 'active') return !user.isBlocked && user.status !== 'blocked';
-                    if (status === 'inactive') return user.isBlocked || user.status === 'blocked';
-                    if (status === 'pending') return user.status === 'pending';
-                    return true;
-                });
-            }
-
-            if (role) {
-                filtered = filtered.filter(user => user.role === role);
-            }
-
-            displayUsers(filtered);
-        }
-
-        // Block user
-        async function blockUser(userId) {
-            if (!confirm('Are you sure you want to block this user?')) {
-                return;
-            }
-
-            try {
-                showLoading();
-                const response = await AdminService.blockUser(userId);
-
-                if (response.success !== false) {
-                    alert('User blocked successfully');
-                    await loadUsers(currentPage);
-                } else {
-                    throw new Error(response.message || 'Failed to block user');
-                }
-
-                hideLoading();
-            } catch (error) {
-                console.error('Error blocking user:', error);
-                alert('Error blocking user: ' + error.message);
-                hideLoading();
-            }
-        }
-
-        // Unblock user
-        async function unblockUser(userId) {
-            if (!confirm('Are you sure you want to unblock this user?')) {
-                return;
-            }
-
-            try {
-                showLoading();
-                const response = await AdminService.unblockUser(userId);
-
-                if (response.success !== false) {
-                    alert('User unblocked successfully');
-                    await loadUsers(currentPage);
-                } else {
-                    throw new Error(response.message || 'Failed to unblock user');
-                }
-
-                hideLoading();
-            } catch (error) {
-                console.error('Error unblocking user:', error);
-                alert('Error unblocking user: ' + error.message);
-                hideLoading();
-            }
-        }
-
-        // Delete user
-        async function deleteUser(userId) {
-            if (!confirm('Are you sure you want to DELETE this user? This action cannot be undone!')) {
-                return;
-            }
-
-            try {
-                showLoading();
-                const response = await AdminService.deleteUser(userId);
-
-                if (response.success !== false) {
-                    alert('User deleted successfully');
-                    await loadUsers(currentPage);
-                } else {
-                    throw new Error(response.message || 'Failed to delete user');
-                }
-
-                hideLoading();
-            } catch (error) {
-                console.error('Error deleting user:', error);
-                alert('Error deleting user: ' + error.message);
-                hideLoading();
-            }
-        }
-
-        // View user details
-        async function viewUser(userId) {
-            try {
-                showLoading();
-                const response = await AdminService.getUserById(userId);
-
-                if (response.success && response.data) {
-                    const user = response.data;
-                    alert(`User Details:\n\nName: ${user.name}\nEmail: ${user.email}\nPhone: ${user.phoneNumber || 'N/A'}\nRole: ${user.role}\nCity: ${user.city || 'N/A'}\nCountry: ${user.country || 'N/A'}`);
-                } else {
-                    throw new Error('Failed to load user details');
-                }
-
-                hideLoading();
-            } catch (error) {
-                console.error('Error loading user details:', error);
-                alert('Error loading user details: ' + error.message);
-                hideLoading();
-            }
-        }
-
-        // Add new user
-        function addNewUser() {
-            alert('Add new user functionality - Coming soon!');
-        }
-
-        // Show loading
-        function showLoading() {
-            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #00ADEF; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
-        }
-
-        // Hide loading
-        function hideLoading() {
-            $('#loadingOverlay').remove();
-        }
-
-        // Logout
-        async function logout() {
-            try {
-                await AdminService.logout();
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-            localStorage.clear();
-            window.location.href = 'admin-login.html';
-        }
-
-        // Check authentication
-        window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-            const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
-
-            if (!token || role !== 'admin') {
-                window.location.href = 'admin-login.html';
-                return;
-            }
-
-            // Load admin profile
-            const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
-            if (userData) {
-                try {
-                    const admin = JSON.parse(userData);
-                    document.getElementById('adminName').textContent = admin.name || 'Admin User';
-                } catch (e) {
-                    console.error('Error parsing user data:', e);
-                }
-            }
+                    `,
+          ]);
         });
+
+        usersTable.draw();
+      }
+
+      // Search users with debounce
+      function searchUsers() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const searchValue = $("#searchInput").val().trim();
+          loadUsers(1, 100, searchValue);
+        }, 500);
+      }
+
+      // Filter users (client-side for now)
+      function filterUsers() {
+        const status = $("#statusFilter").val();
+        const role = $("#roleFilter").val();
+
+        let filtered = allUsers;
+
+        if (status) {
+          filtered = filtered.filter((user) => {
+            if (status === "active")
+              return !user.isBlocked && user.status !== "blocked";
+            if (status === "inactive")
+              return user.isBlocked || user.status === "blocked";
+            if (status === "pending") return user.status === "pending";
+            return true;
+          });
+        }
+
+        if (role) {
+          filtered = filtered.filter((user) => user.role === role);
+        }
+
+        displayUsers(filtered);
+      }
+
+      // Block user
+      async function blockUser(userId) {
+        if (!confirm("Are you sure you want to block this user?")) {
+          return;
+        }
+
+        try {
+          showLoading();
+          const response = await AdminService.blockUser(userId);
+
+          if (response.success !== false) {
+            alert("User blocked successfully");
+            await loadUsers(currentPage);
+          } else {
+            throw new Error(response.message || "Failed to block user");
+          }
+
+          hideLoading();
+        } catch (error) {
+          console.error("Error blocking user:", error);
+          alert("Error blocking user: " + error.message);
+          hideLoading();
+        }
+      }
+
+      // Unblock user
+      async function unblockUser(userId) {
+        if (!confirm("Are you sure you want to unblock this user?")) {
+          return;
+        }
+
+        try {
+          showLoading();
+          const response = await AdminService.unblockUser(userId);
+
+          if (response.success !== false) {
+            alert("User unblocked successfully");
+            await loadUsers(currentPage);
+          } else {
+            throw new Error(response.message || "Failed to unblock user");
+          }
+
+          hideLoading();
+        } catch (error) {
+          console.error("Error unblocking user:", error);
+          alert("Error unblocking user: " + error.message);
+          hideLoading();
+        }
+      }
+
+      // Delete user
+      async function deleteUser(userId) {
+        if (
+          !confirm(
+            "Are you sure you want to DELETE this user? This action cannot be undone!",
+          )
+        ) {
+          return;
+        }
+
+        try {
+          showLoading();
+          const response = await AdminService.deleteUser(userId);
+
+          if (response.success !== false) {
+            alert("User deleted successfully");
+            await loadUsers(currentPage);
+          } else {
+            throw new Error(response.message || "Failed to delete user");
+          }
+
+          hideLoading();
+        } catch (error) {
+          console.error("Error deleting user:", error);
+          alert("Error deleting user: " + error.message);
+          hideLoading();
+        }
+      }
+
+      // View user details
+      async function viewUser(userId) {
+        try {
+          showLoading();
+          const response = await AdminService.getUserById(userId);
+
+          if (response.success && response.data) {
+            const user = response.data;
+            alert(
+              `User Details:\n\nName: ${user.name}\nEmail: ${user.email}\nPhone: ${user.phoneNumber || "N/A"}\nRole: ${user.role}\nCity: ${user.city || "N/A"}\nCountry: ${user.country || "N/A"}`,
+            );
+          } else {
+            throw new Error("Failed to load user details");
+          }
+
+          hideLoading();
+        } catch (error) {
+          console.error("Error loading user details:", error);
+          alert("Error loading user details: " + error.message);
+          hideLoading();
+        }
+      }
+
+      // Add new user
+      function addNewUser() {
+        alert("Add new user functionality - Coming soon!");
+      }
+
+      // Show loading
+      function showLoading() {
+        $("body").append(
+          '<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #00ADEF; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>',
+        );
+      }
+
+      // Hide loading
+      function hideLoading() {
+        $("#loadingOverlay").remove();
+      }
+
+      // Logout
+      async function logout() {
+        try {
+          await AdminService.logout();
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+        localStorage.clear();
+        window.location.href = "admin-login.html";
+      }
+
+      // Check authentication
+      window.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+        const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+
+        if (!token || role !== "admin") {
+          window.location.href = "admin-login.html";
+          return;
+        }
+
+        // Load admin profile
+        const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
+        if (userData) {
+          try {
+            const admin = JSON.parse(userData);
+            document.getElementById("adminName").textContent =
+              admin.name || "Admin User";
+          } catch (e) {
+            console.error("Error parsing user data:", e);
+          }
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
