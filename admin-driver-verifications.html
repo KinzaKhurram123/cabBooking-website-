@@ -543,7 +543,16 @@
         try {
           const response = await AdminService.getPendingVerifications();
 
-          if (response.success !== false && response.riders) {
+          if (response.success && response.data) {
+            allDrivers = response.data;
+            filteredDrivers = allDrivers;
+            updateStats(allDrivers);
+            displayDrivers(filteredDrivers);
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('contentArea').style.display = 'block';
+          } else if (response.riders) {
+            // Fallback for old API response format
             allDrivers = response.riders;
             filteredDrivers = allDrivers;
             updateStats(allDrivers);
@@ -738,7 +747,15 @@
 
         Utils.showLoader('Approving driver...');
         try {
-          const response = await AdminService.approveRider(driverId);
+          // Try new verification API first
+          let response;
+          try {
+            response = await AdminService.approveVerification(driverId);
+          } catch (err) {
+            // Fallback to old API if new one doesn't exist
+            response = await AdminService.approveRider(driverId);
+          }
+
           Utils.hideLoader();
 
           if (response.success !== false) {
@@ -775,7 +792,15 @@
 
         Utils.showLoader('Rejecting application...');
         try {
-          const response = await AdminService.rejectRider(rejectingDriverId, reason);
+          // Try new verification API first
+          let response;
+          try {
+            response = await AdminService.rejectVerification(rejectingDriverId, reason, 'general');
+          } catch (err) {
+            // Fallback to old API if new one doesn't exist
+            response = await AdminService.rejectRider(rejectingDriverId, reason);
+          }
+
           Utils.hideLoader();
 
           if (response.success !== false) {

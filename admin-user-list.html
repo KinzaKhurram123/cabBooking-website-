@@ -560,123 +560,249 @@
     <script src="js/admin-service.js"></script>
     <script>
         let usersTable;
+        let allUsers = [];
+        let currentPage = 1;
+        let totalPages = 1;
+        let searchTimeout;
 
         // Initialize DataTable
         $(document).ready(function() {
             usersTable = $('#usersTable').DataTable({
                 pageLength: 10,
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                order: [[0, 'desc']]
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                order: [[0, 'desc']],
+                searching: false, // Disable built-in search, use API search
+                serverSide: false // Client-side for now
             });
 
             loadUsers();
         });
 
-        // Load users
-        async function loadUsers() {
+        // Load users from API
+        async function loadUsers(page = 1, limit = 100, search = '') {
             try {
-                const users = await AdminService.getUsers();
-                
-                usersTable.clear();
-                
-                users.forEach(user => {
-                    let statusClass = 'status-active';
-                    if (user.status === 'inactive') statusClass = 'status-inactive';
-                    if (user.status === 'pending') statusClass = 'status-pending';
+                showLoading();
 
-                    usersTable.row.add([
-                        user.id,
-                        user.name,
-                        user.email,
-                        user.phone,
-                        user.role,
-                        `<span class="status-badge ${statusClass}">${user.status}</span>`,
-                        new Date(user.created_at).toLocaleDateString(),
-                        `
-                        <div class="action-buttons">
-                            <button class="action-btn action-view" onclick="viewUser(${user.id})">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn action-edit" onclick="editUser(${user.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn action-delete" onclick="deleteUser(${user.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        `
-                    ]);
-                });
+                const response = await AdminService.getAllUsers(page, limit, search);
 
-                usersTable.draw();
+                if (response.success && response.data) {
+                    allUsers = response.data;
+                    totalPages = response.pages || 1;
+                    currentPage = response.page || 1;
+
+                    displayUsers(allUsers);
+                } else {
+                    console.error('Failed to load users:', response);
+                    alert('Failed to load users. Please try again.');
+                }
+
+                hideLoading();
             } catch (error) {
                 console.error('Error loading users:', error);
+                alert('Error loading users: ' + error.message);
+                hideLoading();
             }
         }
 
-        // Search users
-        function searchUsers() {
-            const searchValue = $('#searchInput').val();
-            usersTable.search(searchValue).draw();
+        // Display users in table
+        function displayUsers(users) {
+            usersTable.clear();
+
+            users.forEach(user => {
+                const isBlocked = user.isBlocked || user.status === 'blocked';
+                let statusClass = isBlocked ? 'status-inactive' : 'status-active';
+                let statusText = isBlocked ? 'Blocked' : 'Active';
+
+                if (user.status === 'pending') {
+                    statusClass = 'status-pending';
+                    statusText = 'Pending';
+                }
+
+                const userId = user._id || user.id;
+                const createdDate = user.createdAt || user.created_at;
+
+                usersTable.row.add([
+                    userId.substring(0, 8) + '...',
+                    user.name || 'N/A',
+                    user.email || 'N/A',
+                    user.phoneNumber || user.phone || 'N/A',
+                    user.role || 'user',
+                    `<span class="status-badge ${statusClass}">${statusText}</span>`,
+                    createdDate ? new Date(createdDate).toLocaleDateString() : 'N/A',
+                    `
+                    <div class="action-buttons">
+                        <button class="action-btn action-view" onclick="viewUser('${userId}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${isBlocked ?
+                            `<button class="action-btn action-edit" onclick="unblockUser('${userId}')" title="Unblock User" style="background: #10b981;">
+                                <i class="fas fa-unlock"></i>
+                            </button>` :
+                            `<button class="action-btn action-delete" onclick="blockUser('${userId}')" title="Block User" style="background: #f59e0b;">
+                                <i class="fas fa-ban"></i>
+                            </button>`
+                        }
+                        <button class="action-btn action-delete" onclick="deleteUser('${userId}')" title="Delete User">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    `
+                ]);
+            });
+
+            usersTable.draw();
         }
 
-        // Filter users
+        // Search users with debounce
+        function searchUsers() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchValue = $('#searchInput').val().trim();
+                loadUsers(1, 100, searchValue);
+            }, 500);
+        }
+
+        // Filter users (client-side for now)
         function filterUsers() {
             const status = $('#statusFilter').val();
             const role = $('#roleFilter').val();
-            
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    const rowStatus = data[5].toLowerCase();
-                    const rowRole = data[4].toLowerCase();
-                    
-                    let statusMatch = true;
-                    let roleMatch = true;
-                    
-                    if (status) {
-                        statusMatch = rowStatus.includes(status);
-                    }
-                    
-                    if (role) {
-                        roleMatch = rowRole.includes(role);
-                    }
-                    
-                    return statusMatch && roleMatch;
+
+            let filtered = allUsers;
+
+            if (status) {
+                filtered = filtered.filter(user => {
+                    if (status === 'active') return !user.isBlocked && user.status !== 'blocked';
+                    if (status === 'inactive') return user.isBlocked || user.status === 'blocked';
+                    if (status === 'pending') return user.status === 'pending';
+                    return true;
+                });
+            }
+
+            if (role) {
+                filtered = filtered.filter(user => user.role === role);
+            }
+
+            displayUsers(filtered);
+        }
+
+        // Block user
+        async function blockUser(userId) {
+            if (!confirm('Are you sure you want to block this user?')) {
+                return;
+            }
+
+            try {
+                showLoading();
+                const response = await AdminService.blockUser(userId);
+
+                if (response.success !== false) {
+                    alert('User blocked successfully');
+                    await loadUsers(currentPage);
+                } else {
+                    throw new Error(response.message || 'Failed to block user');
                 }
-            );
-            
-            usersTable.draw();
-            $.fn.dataTable.ext.search.pop();
+
+                hideLoading();
+            } catch (error) {
+                console.error('Error blocking user:', error);
+                alert('Error blocking user: ' + error.message);
+                hideLoading();
+            }
+        }
+
+        // Unblock user
+        async function unblockUser(userId) {
+            if (!confirm('Are you sure you want to unblock this user?')) {
+                return;
+            }
+
+            try {
+                showLoading();
+                const response = await AdminService.unblockUser(userId);
+
+                if (response.success !== false) {
+                    alert('User unblocked successfully');
+                    await loadUsers(currentPage);
+                } else {
+                    throw new Error(response.message || 'Failed to unblock user');
+                }
+
+                hideLoading();
+            } catch (error) {
+                console.error('Error unblocking user:', error);
+                alert('Error unblocking user: ' + error.message);
+                hideLoading();
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to DELETE this user? This action cannot be undone!')) {
+                return;
+            }
+
+            try {
+                showLoading();
+                const response = await AdminService.deleteUser(userId);
+
+                if (response.success !== false) {
+                    alert('User deleted successfully');
+                    await loadUsers(currentPage);
+                } else {
+                    throw new Error(response.message || 'Failed to delete user');
+                }
+
+                hideLoading();
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('Error deleting user: ' + error.message);
+                hideLoading();
+            }
+        }
+
+        // View user details
+        async function viewUser(userId) {
+            try {
+                showLoading();
+                const response = await AdminService.getUserById(userId);
+
+                if (response.success && response.data) {
+                    const user = response.data;
+                    alert(`User Details:\n\nName: ${user.name}\nEmail: ${user.email}\nPhone: ${user.phoneNumber || 'N/A'}\nRole: ${user.role}\nCity: ${user.city || 'N/A'}\nCountry: ${user.country || 'N/A'}`);
+                } else {
+                    throw new Error('Failed to load user details');
+                }
+
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading user details:', error);
+                alert('Error loading user details: ' + error.message);
+                hideLoading();
+            }
         }
 
         // Add new user
         function addNewUser() {
-            alert('Add new user functionality will be implemented');
-            // window.location.href = 'admin-user-create.html';
+            alert('Add new user functionality - Coming soon!');
         }
 
-        // View user
-        function viewUser(userId) {
-            alert(`View user ${userId} details`);
-            // window.location.href = `admin-user-view.html?id=${userId}`;
+        // Show loading
+        function showLoading() {
+            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #00ADEF; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
         }
 
-        // Edit user
-        function editUser(userId) {
-            alert(`Edit user ${userId}`);
-            // window.location.href = `admin-user-edit.html?id=${userId}`;
-        }
-
-        // Delete user
-        function deleteUser(userId) {
-            if (confirm('Are you sure you want to delete this user?')) {
-                alert(`User ${userId} deleted`);
-                // Implement API call to delete user
-            }
+        // Hide loading
+        function hideLoading() {
+            $('#loadingOverlay').remove();
         }
 
         // Logout
-        function logout() {
+        async function logout() {
+            try {
+                await AdminService.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
             localStorage.clear();
             window.location.href = 'admin-login.html';
         }
@@ -689,6 +815,17 @@
             if (!token || role !== 'admin') {
                 window.location.href = 'admin-login.html';
                 return;
+            }
+
+            // Load admin profile
+            const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
+            if (userData) {
+                try {
+                    const admin = JSON.parse(userData);
+                    document.getElementById('adminName').textContent = admin.name || 'Admin User';
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
             }
         });
     </script>

@@ -558,151 +558,266 @@
     <script src="js/admin-service.js"></script>
     <script>
         let driversTable;
+        let allDrivers = [];
+        let currentPage = 1;
+        let searchTimeout;
 
         // Initialize DataTable
         $(document).ready(function() {
             driversTable = $('#driversTable').DataTable({
                 pageLength: 10,
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                order: [[0, 'desc']]
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                order: [[0, 'desc']],
+                searching: false
             });
 
             loadDrivers();
-            loadDriverStats();
         });
 
-        // Load drivers
-        async function loadDrivers() {
+        // Load drivers from API
+        async function loadDrivers(page = 1, limit = 100, status = '') {
             try {
-                const drivers = await AdminService.getDrivers();
-                
-                driversTable.clear();
-                
-                drivers.forEach(driver => {
-                    let statusClass = 'status-pending';
-                    if (driver.verification_status === 'verified') statusClass = 'status-verified';
-                    if (driver.verification_status === 'rejected') statusClass = 'status-rejected';
+                showLoading();
 
-                    let availabilityClass = 'status-inactive';
-                    if (driver.availability === 'active') availabilityClass = 'status-active';
-                    if (driver.availability === 'on-ride') availabilityClass = 'status-active';
+                const response = await AdminService.getAllDrivers(page, limit, status);
 
-                    driversTable.row.add([
-                        driver.id,
-                        driver.name,
-                        driver.license_number,
-                        `${driver.vehicle_make} ${driver.vehicle_model}`,
-                        driver.phone,
-                        `<span class="status-badge ${statusClass}">${driver.verification_status}</span>`,
-                        `<span class="status-badge ${availabilityClass}">${driver.availability}</span>`,
-                        driver.rating ? `${driver.rating}/5` : 'N/A',
-                        `
-                        <div class="action-buttons">
-                            <button class="action-btn action-view" onclick="viewDriver(${driver.id})">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            ${driver.verification_status === 'pending' ? `
-                            <button class="action-btn action-verify" onclick="verifyDriver(${driver.id})">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="action-btn action-reject" onclick="rejectDriver(${driver.id})">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            ` : ''}
-                            <button class="action-btn action-edit" onclick="editDriver(${driver.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </div>
-                        `
-                    ]);
-                });
+                if (response.success && response.data) {
+                    allDrivers = response.data;
+                    displayDrivers(allDrivers);
+                    updateStats(allDrivers);
+                } else if (response.drivers) {
+                    // Fallback for different response format
+                    allDrivers = response.drivers;
+                    displayDrivers(allDrivers);
+                    updateStats(allDrivers);
+                } else {
+                    console.error('Failed to load drivers:', response);
+                    alert('Failed to load drivers. Please try again.');
+                }
 
-                driversTable.draw();
+                hideLoading();
             } catch (error) {
                 console.error('Error loading drivers:', error);
+                alert('Error loading drivers: ' + error.message);
+                hideLoading();
             }
         }
 
-        // Load driver stats
-        async function loadDriverStats() {
-            try {
-                const stats = await AdminService.getDriverStats();
-                
-                if (stats.success !== false) {
-                    document.getElementById('totalDrivers').textContent = stats.total || 0;
-                    document.getElementById('verifiedDrivers').textContent = stats.verified || 0;
-                    document.getElementById('pendingDrivers').textContent = stats.pending || 0;
-                    document.getElementById('activeDrivers').textContent = stats.active || 0;
-                }
-            } catch (error) {
-                console.error('Error loading driver stats:', error);
-            }
+        // Display drivers in table
+        function displayDrivers(drivers) {
+            driversTable.clear();
+
+            drivers.forEach(driver => {
+                const driverId = driver._id || driver.id;
+                const verificationStatus = driver.verificationStatus || driver.verification_status || 'pending';
+                const availability = driver.availability || driver.status || 'inactive';
+
+                let statusClass = 'status-pending';
+                if (verificationStatus === 'verified' || verificationStatus === 'approved') statusClass = 'status-verified';
+                if (verificationStatus === 'rejected') statusClass = 'status-rejected';
+
+                let availabilityClass = 'status-inactive';
+                if (availability === 'active') availabilityClass = 'status-active';
+                if (availability === 'on-ride' || availability === 'online') availabilityClass = 'status-active';
+
+                const vehicleInfo = driver.vehicleDetails
+                    ? `${driver.vehicleDetails.make || ''} ${driver.vehicleDetails.model || ''}`.trim() || 'N/A'
+                    : `${driver.vehicle_make || ''} ${driver.vehicle_model || ''}`.trim() || 'N/A';
+
+                const licenseNumber = driver.license?.licenseNumber || driver.license_number || 'N/A';
+                const rating = driver.rating || driver.averageRating || 0;
+
+                driversTable.row.add([
+                    driverId.substring(0, 8) + '...',
+                    driver.name || 'N/A',
+                    licenseNumber,
+                    vehicleInfo,
+                    driver.phoneNumber || driver.phone || 'N/A',
+                    `<span class="status-badge ${statusClass}">${verificationStatus}</span>`,
+                    `<span class="status-badge ${availabilityClass}">${availability}</span>`,
+                    rating ? `${rating.toFixed(1)}/5` : 'N/A',
+                    `
+                    <div class="action-buttons">
+                        <button class="action-btn action-view" onclick="viewDriver('${driverId}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${verificationStatus === 'pending' || verificationStatus === 'in_review' ? `
+                        <button class="action-btn action-verify" onclick="verifyDriver('${driverId}')" title="Verify Driver">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="action-btn action-reject" onclick="rejectDriver('${driverId}')" title="Reject Driver">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        ` : ''}
+                        <button class="action-btn action-edit" onclick="editDriver('${driverId}')" title="Edit Driver">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    `
+                ]);
+            });
+
+            driversTable.draw();
         }
 
-        // Search drivers
+        // Update stats
+        function updateStats(drivers) {
+            const total = drivers.length;
+            const verified = drivers.filter(d =>
+                d.verificationStatus === 'verified' ||
+                d.verificationStatus === 'approved' ||
+                d.verification_status === 'verified' ||
+                d.verification_status === 'approved'
+            ).length;
+            const pending = drivers.filter(d =>
+                d.verificationStatus === 'pending' ||
+                d.verificationStatus === 'in_review' ||
+                d.verification_status === 'pending' ||
+                d.verification_status === 'in_review'
+            ).length;
+            const active = drivers.filter(d =>
+                d.availability === 'active' ||
+                d.availability === 'online' ||
+                d.status === 'active' ||
+                d.status === 'online'
+            ).length;
+
+            document.getElementById('totalDrivers').textContent = total;
+            document.getElementById('verifiedDrivers').textContent = verified;
+            document.getElementById('pendingDrivers').textContent = pending;
+            document.getElementById('activeDrivers').textContent = active;
+        }
+
+        // Search drivers with debounce
         function searchDrivers() {
-            const searchValue = $('#searchInput').val();
-            driversTable.search(searchValue).draw();
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchValue = $('#searchInput').val().toLowerCase();
+
+                if (!searchValue) {
+                    displayDrivers(allDrivers);
+                    return;
+                }
+
+                const filtered = allDrivers.filter(driver => {
+                    const name = (driver.name || '').toLowerCase();
+                    const license = (driver.license?.licenseNumber || driver.license_number || '').toLowerCase();
+                    const vehicle = `${driver.vehicleDetails?.make || driver.vehicle_make || ''} ${driver.vehicleDetails?.model || driver.vehicle_model || ''}`.toLowerCase();
+
+                    return name.includes(searchValue) ||
+                           license.includes(searchValue) ||
+                           vehicle.includes(searchValue);
+                });
+
+                displayDrivers(filtered);
+            }, 500);
         }
 
         // Filter drivers
         function filterDrivers() {
             const status = $('#statusFilter').val();
             const availability = $('#availabilityFilter').val();
-            
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    const rowStatus = data[5].toLowerCase();
-                    const rowAvailability = data[6].toLowerCase();
-                    
-                    let statusMatch = true;
-                    let availabilityMatch = true;
-                    
-                    if (status) {
-                        statusMatch = rowStatus.includes(status);
-                    }
-                    
-                    if (availability) {
-                        availabilityMatch = rowAvailability.includes(availability);
-                    }
-                    
-                    return statusMatch && availabilityMatch;
-                }
-            );
-            
-            driversTable.draw();
-            $.fn.dataTable.ext.search.pop();
+
+            let filtered = allDrivers;
+
+            if (status) {
+                filtered = filtered.filter(driver => {
+                    const driverStatus = driver.verificationStatus || driver.verification_status || '';
+                    return driverStatus === status;
+                });
+            }
+
+            if (availability) {
+                filtered = filtered.filter(driver => {
+                    const driverAvailability = driver.availability || driver.status || '';
+                    return driverAvailability === availability;
+                });
+            }
+
+            displayDrivers(filtered);
         }
 
-        // View driver
-        function viewDriver(driverId) {
-            alert(`View driver ${driverId} details`);
-            // window.location.href = `admin-driver-view.html?id=${driverId}`;
+        // View driver details
+        async function viewDriver(driverId) {
+            try {
+                showLoading();
+                const response = await AdminService.getDriverById(driverId);
+
+                if (response.success && response.data) {
+                    const driver = response.data;
+                    const vehicleInfo = driver.vehicleDetails
+                        ? `${driver.vehicleDetails.make || ''} ${driver.vehicleDetails.model || ''} (${driver.vehicleDetails.year || 'N/A'})`
+                        : 'N/A';
+
+                    alert(`Driver Details:\n\nName: ${driver.name}\nEmail: ${driver.email}\nPhone: ${driver.phoneNumber || 'N/A'}\nLicense: ${driver.license?.licenseNumber || 'N/A'}\nVehicle: ${vehicleInfo}\nStatus: ${driver.verificationStatus || 'N/A'}\nRating: ${driver.rating || 'N/A'}/5`);
+                } else {
+                    throw new Error('Failed to load driver details');
+                }
+
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading driver details:', error);
+                alert('Error loading driver details: ' + error.message);
+                hideLoading();
+            }
         }
 
         // Verify driver
-        function verifyDriver(driverId) {
-            if (confirm('Are you sure you want to verify this driver?')) {
-                alert(`Driver ${driverId} verified`);
-                // Implement API call to verify driver
-                loadDrivers();
-                loadDriverStats();
+        async function verifyDriver(driverId) {
+            if (!confirm('Are you sure you want to verify this driver?')) {
+                return;
+            }
+
+            try {
+                showLoading();
+                const response = await AdminService.verifyDriver(driverId);
+
+                if (response.success !== false) {
+                    alert('Driver verified successfully');
+                    await loadDrivers(currentPage);
+                } else {
+                    throw new Error(response.message || 'Failed to verify driver');
+                }
+
+                hideLoading();
+            } catch (error) {
+                console.error('Error verifying driver:', error);
+                alert('Error verifying driver: ' + error.message);
+                hideLoading();
             }
         }
 
         // Reject driver
-        function rejectDriver(driverId) {
-            if (confirm('Are you sure you want to reject this driver?')) {
-                alert(`Driver ${driverId} rejected`);
-                // Implement API call to reject driver
-                loadDrivers();
-                loadDriverStats();
+        async function rejectDriver(driverId) {
+            const reason = prompt('Please provide a reason for rejection:');
+
+            if (!reason || !reason.trim()) {
+                alert('Rejection reason is required');
+                return;
+            }
+
+            try {
+                showLoading();
+                const response = await AdminService.rejectDriver(driverId, reason.trim());
+
+                if (response.success !== false) {
+                    alert('Driver rejected successfully');
+                    await loadDrivers(currentPage);
+                } else {
+                    throw new Error(response.message || 'Failed to reject driver');
+                }
+
+                hideLoading();
+            } catch (error) {
+                console.error('Error rejecting driver:', error);
+                alert('Error rejecting driver: ' + error.message);
+                hideLoading();
             }
         }
 
         // Edit driver
         function editDriver(driverId) {
-            alert(`Edit driver ${driverId}`);
+            alert('Edit driver functionality - Coming soon!');
             // window.location.href = `admin-driver-edit.html?id=${driverId}`;
         }
 
@@ -711,8 +826,23 @@
             window.location.href = 'admin-driver-verifications.html';
         }
 
+        // Show loading
+        function showLoading() {
+            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #667eea; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
+        }
+
+        // Hide loading
+        function hideLoading() {
+            $('#loadingOverlay').remove();
+        }
+
         // Logout
-        function logout() {
+        async function logout() {
+            try {
+                await AdminService.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
             localStorage.clear();
             window.location.href = 'admin-login.html';
         }
@@ -725,6 +855,17 @@
             if (!token || role !== 'admin') {
                 window.location.href = 'admin-login.html';
                 return;
+            }
+
+            // Load admin profile
+            const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
+            if (userData) {
+                try {
+                    const admin = JSON.parse(userData);
+                    document.getElementById('adminName').textContent = admin.name || 'Admin User';
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
             }
         });
     </script>

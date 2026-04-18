@@ -420,7 +420,7 @@
     <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/auth-service.js"></script>
-    <script src="js/ride-service.js"></script>
+    <script src="js/admin-service.js"></script>
 
     <script>
       let allRides = [];
@@ -435,7 +435,7 @@
         const role = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
 
         if (!token || role !== 'admin') {
-          window.location.href = 'login.html';
+          window.location.href = 'admin-login.html';
           return;
         }
 
@@ -446,9 +446,19 @@
 
       async function loadAllRides() {
         try {
-          const response = await RideService.getAllRides();
+          // Use AdminService to get all rides with pagination
+          const response = await AdminService.getAllRides(1, 1000, currentFilter !== 'all' ? currentFilter : '');
 
-          if (response.success !== false && response.rides) {
+          if (response.success && response.data) {
+            allRides = response.data;
+            filteredRides = allRides;
+            updateStats(allRides);
+            displayRides();
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('contentArea').style.display = 'block';
+          } else if (response.rides) {
+            // Fallback for different response format
             allRides = response.rides;
             filteredRides = allRides;
             updateStats(allRides);
@@ -464,6 +474,7 @@
           document.getElementById('loadingState').style.display = 'none';
           document.getElementById('contentArea').style.display = 'block';
           document.getElementById('emptyState').style.display = 'block';
+          Utils.showToast('Failed to load rides: ' + error.message, 'error');
         }
       }
 
@@ -476,7 +487,7 @@
         const cancelled = rides.filter(r => r.status === 'cancelled').length;
         const revenue = rides
           .filter(r => r.status === 'completed')
-          .reduce((sum, r) => sum + (r.fare || 0), 0);
+          .reduce((sum, r) => sum + (r.fare || r.totalFare || 0), 0);
 
         document.getElementById('totalRides').textContent = rides.length;
         document.getElementById('activeRides').textContent = active;
@@ -501,10 +512,15 @@
 
       function setupSearch() {
         const searchInput = document.getElementById('searchInput');
+        let searchTimeout;
+
         searchInput.addEventListener('input', (e) => {
-          searchQuery = e.target.value.toLowerCase();
-          currentPage = 1;
-          applyFilters();
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            searchQuery = e.target.value.toLowerCase();
+            currentPage = 1;
+            applyFilters();
+          }, 300);
         });
       }
 
@@ -517,11 +533,11 @@
 
         if (searchQuery) {
           filtered = filtered.filter(r => {
-            const bookingId = r._id.toLowerCase();
-            const userName = (r.user?.name || '').toLowerCase();
-            const driverName = (r.driver?.name || '').toLowerCase();
-            const pickup = (r.pickupLocationName || '').toLowerCase();
-            const dropoff = (r.dropoffLocationName || '').toLowerCase();
+            const bookingId = (r._id || r.id || '').toLowerCase();
+            const userName = (r.user?.name || r.userName || '').toLowerCase();
+            const driverName = (r.driver?.name || r.driverName || '').toLowerCase();
+            const pickup = (r.pickupLocationName || r.pickupLocation?.name || '').toLowerCase();
+            const dropoff = (r.dropoffLocationName || r.dropoffLocation?.name || '').toLowerCase();
 
             return bookingId.includes(searchQuery) ||
                    userName.includes(searchQuery) ||
@@ -554,24 +570,35 @@
         const endIndex = startIndex + ridesPerPage;
         const paginatedRides = filteredRides.slice(startIndex, endIndex);
 
-        tbody.innerHTML = paginatedRides.map(ride => `
-          <tr onclick="viewRideDetails('${ride._id}')">
-            <td><strong style="color: #00ADEF;">#${ride._id.slice(-8).toUpperCase()}</strong></td>
-            <td>${ride.user?.name || 'N/A'}</td>
-            <td>${ride.driver?.name || 'Unassigned'}</td>
-            <td>${truncate(ride.pickupLocationName || 'N/A', 30)}</td>
-            <td>${truncate(ride.dropoffLocationName || 'N/A', 30)}</td>
-            <td><strong style="color: #00ADEF;">$${(ride.fare || 0).toFixed(2)}</strong></td>
-            <td><span class="status-badge status-${ride.status}">${formatStatus(ride.status)}</span></td>
-            <td>${new Date(ride.createdAt).toLocaleDateString()}</td>
-            <td onclick="event.stopPropagation()">
-              <button class="action-btn btn-view" onclick="viewRideDetails('${ride._id}')">View</button>
-              ${ride.status !== 'completed' && ride.status !== 'cancelled' ? `
-                <button class="action-btn btn-cancel" onclick="cancelRide('${ride._id}')">Cancel</button>
-              ` : ''}
-            </td>
-          </tr>
-        `).join('');
+        tbody.innerHTML = paginatedRides.map(ride => {
+          const rideId = ride._id || ride.id;
+          const bookingId = rideId.slice(-8).toUpperCase();
+          const userName = ride.user?.name || ride.userName || 'N/A';
+          const driverName = ride.driver?.name || ride.driverName || 'Unassigned';
+          const pickup = ride.pickupLocationName || ride.pickupLocation?.name || 'N/A';
+          const dropoff = ride.dropoffLocationName || ride.dropoffLocation?.name || 'N/A';
+          const fare = ride.fare || ride.totalFare || 0;
+          const createdAt = ride.createdAt || ride.created_at || new Date();
+
+          return `
+            <tr onclick="viewRideDetails('${rideId}')">
+              <td><strong style="color: #00ADEF;">#${bookingId}</strong></td>
+              <td>${userName}</td>
+              <td>${driverName}</td>
+              <td>${truncate(pickup, 30)}</td>
+              <td>${truncate(dropoff, 30)}</td>
+              <td><strong style="color: #00ADEF;">$${fare.toFixed(2)}</strong></td>
+              <td><span class="status-badge status-${ride.status}">${formatStatus(ride.status)}</span></td>
+              <td>${new Date(createdAt).toLocaleDateString()}</td>
+              <td onclick="event.stopPropagation()">
+                <button class="action-btn btn-view" onclick="viewRideDetails('${rideId}')">View</button>
+                ${ride.status !== 'completed' && ride.status !== 'cancelled' ? `
+                  <button class="action-btn btn-cancel" onclick="cancelRide('${rideId}')">Cancel</button>
+                ` : ''}
+              </td>
+            </tr>
+          `;
+        }).join('');
 
         renderPagination();
       }
@@ -618,8 +645,43 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      function viewRideDetails(rideId) {
-        alert('Ride details page coming soon!\nBooking ID: ' + rideId);
+      async function viewRideDetails(rideId) {
+        try {
+          Utils.showLoader('Loading ride details...');
+          const response = await AdminService.getRideById(rideId);
+
+          if (response.success && response.data) {
+            const ride = response.data;
+            const details = `
+Ride Details:
+
+Booking ID: #${(ride._id || ride.id).slice(-8).toUpperCase()}
+Status: ${formatStatus(ride.status)}
+
+User: ${ride.user?.name || ride.userName || 'N/A'}
+Driver: ${ride.driver?.name || ride.driverName || 'Unassigned'}
+
+Pickup: ${ride.pickupLocationName || ride.pickupLocation?.name || 'N/A'}
+Dropoff: ${ride.dropoffLocationName || ride.dropoffLocation?.name || 'N/A'}
+
+Fare: $${(ride.fare || ride.totalFare || 0).toFixed(2)}
+Distance: ${ride.distance || 'N/A'} km
+Duration: ${ride.duration || 'N/A'} mins
+
+Created: ${new Date(ride.createdAt || ride.created_at).toLocaleString()}
+            `.trim();
+
+            alert(details);
+          } else {
+            throw new Error('Failed to load ride details');
+          }
+
+          Utils.hideLoader();
+        } catch (error) {
+          Utils.hideLoader();
+          console.error('Error loading ride details:', error);
+          alert('Failed to load ride details: ' + error.message);
+        }
       }
 
       async function cancelRide(rideId) {
@@ -627,21 +689,23 @@
           return;
         }
 
-        const reason = prompt('Cancellation reason:');
-        if (!reason) return;
+        const reason = prompt('Cancellation reason (optional):');
 
         try {
-          const response = await RideService.adminCancelRide(rideId, reason);
+          Utils.showLoader('Cancelling ride...');
+          const response = await AdminService.updateRideStatus(rideId, 'cancelled');
 
           if (response.success !== false) {
-            alert('Ride cancelled successfully');
+            Utils.hideLoader();
+            Utils.showToast('Ride cancelled successfully', 'success');
             await loadAllRides();
           } else {
             throw new Error(response.message || 'Failed to cancel ride');
           }
         } catch (error) {
+          Utils.hideLoader();
           console.error('Error cancelling ride:', error);
-          alert('Failed to cancel ride: ' + error.message);
+          Utils.showToast('Failed to cancel ride: ' + error.message, 'error');
         }
       }
 

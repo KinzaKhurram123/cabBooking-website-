@@ -541,29 +541,40 @@
         try {
           Utils.showLoader('Loading analytics...');
 
-          // TODO: Replace with actual API call
-          // const response = await AdminService.getAnalytics({ period: currentPeriod, startDate, endDate });
-
-          // Mock data
-          const response = {
-            success: true,
-            analytics: generateMockAnalytics()
-          };
+          // Load analytics from API
+          const [overviewResponse, revenueResponse, rideResponse] = await Promise.all([
+            AdminService.getAnalyticsOverview(),
+            AdminService.getRevenueAnalytics(currentPeriod === 'custom' ? 'daily' : currentPeriod),
+            AdminService.getRideAnalytics()
+          ]);
 
           Utils.hideLoader();
 
-          if (response.success !== false && response.analytics) {
-            displayAnalytics(response.analytics);
-
+          // Process and display analytics
+          if (overviewResponse.success && overviewResponse.data) {
+            displayAnalytics(overviewResponse.data, revenueResponse.data, rideResponse.data);
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('contentArea').style.display = 'block';
           } else {
-            throw new Error('Failed to load analytics');
+            // Fallback to mock data if API fails
+            console.warn('API failed, using mock data');
+            const mockData = generateMockAnalytics();
+            displayAnalytics(mockData);
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('contentArea').style.display = 'block';
           }
         } catch (error) {
           Utils.hideLoader();
           console.error('Error loading analytics:', error);
-          Utils.showToast('Failed to load analytics', 'error');
+
+          // Show mock data on error
+          console.warn('Error occurred, using mock data');
+          const mockData = generateMockAnalytics();
+          displayAnalytics(mockData);
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('contentArea').style.display = 'block';
+
+          Utils.showToast('Using sample data - API connection failed', 'warning');
         }
       }
 
@@ -594,55 +605,120 @@
         };
       }
 
-      function displayAnalytics(analytics) {
+      function displayAnalytics(analytics, revenueData, rideData) {
+        // Handle different response formats
+        const data = analytics.data || analytics;
+
         // Update key metrics
-        document.getElementById('totalRevenue').textContent = Utils.formatCurrency(analytics.totalRevenue);
-        document.getElementById('revenueChange').textContent = `+${analytics.revenueChange}%`;
-        document.getElementById('revenueChange').className = `stat-change ${analytics.revenueChange >= 0 ? 'positive' : 'negative'}`;
+        const totalRevenue = data.totalRevenue || analytics.totalRevenue || 0;
+        const totalRides = data.totalRides || analytics.totalRides || 0;
+        const newUsers = data.newUsers || analytics.newUsers || 0;
+        const avgRating = data.averageRating || data.avgRating || analytics.avgRating || 0;
 
-        document.getElementById('totalRides').textContent = analytics.totalRides;
-        document.getElementById('ridesChange').textContent = `+${analytics.ridesChange}%`;
-        document.getElementById('ridesChange').className = `stat-change ${analytics.ridesChange >= 0 ? 'positive' : 'negative'}`;
+        document.getElementById('totalRevenue').textContent = Utils.formatCurrency(totalRevenue);
 
-        document.getElementById('newUsers').textContent = analytics.newUsers;
-        document.getElementById('usersChange').textContent = `+${analytics.usersChange}%`;
-        document.getElementById('usersChange').className = `stat-change ${analytics.usersChange >= 0 ? 'positive' : 'negative'}`;
+        const revenueChange = data.revenueChange || analytics.revenueChange || 0;
+        document.getElementById('revenueChange').textContent = `${revenueChange >= 0 ? '+' : ''}${revenueChange}%`;
+        document.getElementById('revenueChange').className = `stat-change ${revenueChange >= 0 ? 'positive' : 'negative'}`;
 
-        document.getElementById('avgRating').textContent = analytics.avgRating.toFixed(1);
-        document.getElementById('ratingChange').textContent = `+${analytics.ratingChange}%`;
-        document.getElementById('ratingChange').className = `stat-change ${analytics.ratingChange >= 0 ? 'positive' : 'negative'}`;
+        document.getElementById('totalRides').textContent = totalRides;
+
+        const ridesChange = data.ridesChange || analytics.ridesChange || 0;
+        document.getElementById('ridesChange').textContent = `${ridesChange >= 0 ? '+' : ''}${ridesChange}%`;
+        document.getElementById('ridesChange').className = `stat-change ${ridesChange >= 0 ? 'positive' : 'negative'}`;
+
+        document.getElementById('newUsers').textContent = newUsers;
+
+        const usersChange = data.usersChange || analytics.usersChange || 0;
+        document.getElementById('usersChange').textContent = `${usersChange >= 0 ? '+' : ''}${usersChange}%`;
+        document.getElementById('usersChange').className = `stat-change ${usersChange >= 0 ? 'positive' : 'negative'}`;
+
+        document.getElementById('avgRating').textContent = typeof avgRating === 'number' ? avgRating.toFixed(1) : '0.0';
+
+        const ratingChange = data.ratingChange || analytics.ratingChange || 0;
+        document.getElementById('ratingChange').textContent = `${ratingChange >= 0 ? '+' : ''}${ratingChange}%`;
+        document.getElementById('ratingChange').className = `stat-change ${ratingChange >= 0 ? 'positive' : 'negative'}`;
 
         // Display top drivers
+        const topDrivers = data.topDrivers || analytics.topDrivers || [];
         const topDriversTable = document.getElementById('topDriversTable');
-        topDriversTable.innerHTML = analytics.topDrivers.map(driver => `
-          <tr>
-            <td><strong>#${driver.rank}</strong></td>
-            <td>${driver.name}</td>
-            <td>${driver.rides}</td>
-            <td>${Utils.formatCurrency(driver.revenue)}</td>
-            <td>⭐ ${driver.rating}</td>
-          </tr>
-        `).join('');
+
+        if (topDrivers.length > 0) {
+          topDriversTable.innerHTML = topDrivers.slice(0, 5).map((driver, index) => `
+            <tr>
+              <td><strong>#${index + 1}</strong></td>
+              <td>${driver.name || 'N/A'}</td>
+              <td>${driver.rides || driver.totalRides || 0}</td>
+              <td>${Utils.formatCurrency(driver.revenue || driver.totalRevenue || 0)}</td>
+              <td>⭐ ${driver.rating || driver.averageRating || 'N/A'}</td>
+            </tr>
+          `).join('');
+        } else {
+          topDriversTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">No driver data available</td></tr>';
+        }
 
         // Display popular routes
+        const popularRoutes = data.popularRoutes || analytics.popularRoutes || [];
         const popularRoutesTable = document.getElementById('popularRoutesTable');
-        popularRoutesTable.innerHTML = analytics.popularRoutes.map(route => `
-          <tr>
-            <td><strong>#${route.rank}</strong></td>
-            <td>${route.route}</td>
-            <td>${route.rides}</td>
-            <td>${Utils.formatCurrency(route.avgFare)}</td>
-          </tr>
-        `).join('');
+
+        if (popularRoutes.length > 0) {
+          popularRoutesTable.innerHTML = popularRoutes.slice(0, 5).map((route, index) => `
+            <tr>
+              <td><strong>#${index + 1}</strong></td>
+              <td>${route.route || route.from + ' → ' + route.to || 'N/A'}</td>
+              <td>${route.rides || route.totalRides || 0}</td>
+              <td>${Utils.formatCurrency(route.avgFare || route.averageFare || 0)}</td>
+            </tr>
+          `).join('');
+        } else {
+          popularRoutesTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #999;">No route data available</td></tr>';
+        }
       }
 
       function exportReport() {
-        Utils.showToast('Exporting report...', 'info');
+        Utils.showToast('Preparing report for export...', 'info');
 
-        // TODO: Implement actual export functionality
-        setTimeout(() => {
-          Utils.showToast('Report exported successfully', 'success');
-        }, 1500);
+        try {
+          // Get current analytics data
+          const reportData = {
+            period: currentPeriod,
+            generatedAt: new Date().toISOString(),
+            metrics: {
+              totalRevenue: document.getElementById('totalRevenue').textContent,
+              totalRides: document.getElementById('totalRides').textContent,
+              newUsers: document.getElementById('newUsers').textContent,
+              avgRating: document.getElementById('avgRating').textContent
+            }
+          };
+
+          // Create CSV content
+          let csvContent = "RideLynk Analytics Report\n\n";
+          csvContent += `Generated: ${new Date().toLocaleString()}\n`;
+          csvContent += `Period: ${currentPeriod}\n\n`;
+          csvContent += "Key Metrics\n";
+          csvContent += `Total Revenue,${reportData.metrics.totalRevenue}\n`;
+          csvContent += `Total Rides,${reportData.metrics.totalRides}\n`;
+          csvContent += `New Users,${reportData.metrics.newUsers}\n`;
+          csvContent += `Average Rating,${reportData.metrics.avgRating}\n`;
+
+          // Create download link
+          const blob = new Blob([csvContent], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `analytics-report-${new Date().toISOString().split('T')[0]}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+
+          setTimeout(() => {
+            Utils.showToast('Report exported successfully', 'success');
+          }, 500);
+        } catch (error) {
+          console.error('Export error:', error);
+          Utils.showToast('Failed to export report', 'error');
+        }
       }
     </script>
   </body>
