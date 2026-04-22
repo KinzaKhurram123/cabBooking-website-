@@ -189,5 +189,19 @@ const DriverService = {
       console.error('Update rider status error:', error);
       throw error;
     }
+  },
+
+  /**
+   * Get all bookings for the logged in driver
+   * GET /rider/booking-history
+   */
+  async getBookingHistory() {
+    try {
+      const response = await ApiService.get('/rider/booking-history');
+      return response;
+    } catch (error) {
+      console.error('Get booking history error:', error);
+      throw error;
+    }
   }
 };

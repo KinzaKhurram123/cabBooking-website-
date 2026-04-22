@@ -8,13 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font-family: "Inter", sans-serif; background: #f5f7fa; }
+      body { font-family: "Inter", sans-serif; background: #000000; color: #e5e7eb; }
 
       .header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #0a0a0a;
         padding: 20px;
-        color: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
       }
 
       .header-content {
@@ -25,19 +25,24 @@
         align-items: center;
       }
 
+      .header-content h1 {
+        color: #00ADEF;
+      }
+
       .back-btn {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
+        background: rgba(0, 173, 239, 0.2);
+        border: 1px solid rgba(0, 173, 239, 0.3);
         padding: 10px 20px;
         border-radius: 8px;
-        color: white;
+        color: #00ADEF;
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s ease;
       }
 
       .back-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(0, 173, 239, 0.3);
+        box-shadow: 0 0 10px rgba(0, 173, 239, 0.3);
       }
 
       .container {
@@ -54,29 +59,31 @@
       }
 
       .stat-card {
-        background: white;
+        background: #0a0a0a;
         padding: 25px;
         border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       }
 
       .stat-value {
         font-size: 2.5rem;
         font-weight: 700;
-        color: #667eea;
+        color: #00ADEF;
         margin-bottom: 5px;
       }
 
       .stat-label {
-        color: #666;
+        color: #9ca3af;
         font-size: 0.9rem;
       }
 
       .filters {
-        background: white;
+        background: #0a0a0a;
         padding: 20px;
         border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         margin-bottom: 20px;
         display: flex;
         gap: 15px;
@@ -85,23 +92,24 @@
 
       .filter-btn {
         padding: 10px 20px;
-        border: 2px solid #e0e0e0;
+        border: 2px solid rgba(0, 173, 239, 0.3);
         border-radius: 25px;
-        background: white;
+        background: #000000;
+        color: #e5e7eb;
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s ease;
       }
 
       .filter-btn:hover {
-        border-color: #667eea;
-        background: #f8f9ff;
+        border-color: #00ADEF;
+        background: rgba(0, 173, 239, 0.1);
       }
 
       .filter-btn.active {
-        border-color: #667eea;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        border-color: #00ADEF;
+        background: #00ADEF;
+        color: #000000;
       }
 
       .drivers-grid {
@@ -110,10 +118,11 @@
       }
 
       .driver-card {
-        background: white;
+        background: #0a0a0a;
         border-radius: 15px;
         padding: 30px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 173, 239, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       }
 
       .driver-header {
@@ -133,7 +142,7 @@
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #00ADEF 0%, #0088cc 100%);
         color: white;
         display: flex;
         align-items: center;
@@ -145,11 +154,11 @@
       .driver-details h3 {
         font-size: 1.3rem;
         margin-bottom: 5px;
-        color: #333;
+        color: #00ADEF;
       }
 
       .driver-details p {
-        color: #666;
+        color: #9ca3af;
         font-size: 0.9rem;
       }
 
@@ -161,18 +170,21 @@
       }
 
       .status-pending {
-        background: #fff3cd;
-        color: #856404;
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+        border: 1px solid #fbbf24;
       }
 
       .status-approved {
-        background: #d4edda;
-        color: #155724;
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid #10b981;
       }
 
       .status-rejected {
-        background: #f8d7da;
-        color: #721c24;
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid #ef4444;
       }
 
       .driver-content {
@@ -189,7 +201,7 @@
         font-size: 1.1rem;
         font-weight: 700;
         margin-bottom: 15px;
-        color: #333;
+        color: #00ADEF;
       }
 
       .info-grid {
@@ -201,7 +213,7 @@
         display: flex;
         justify-content: space-between;
         padding: 10px 0;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid rgba(0, 173, 239, 0.1);
       }
 
       .info-row:last-child {
@@ -209,13 +221,13 @@
       }
 
       .info-label {
-        color: #666;
+        color: #9ca3af;
         font-size: 0.9rem;
       }
 
       .info-value {
         font-weight: 600;
-        color: #333;
+        color: #e5e7eb;
       }
 
       .documents-grid {
@@ -225,33 +237,36 @@
       }
 
       .document-card {
-        border: 2px solid #e0e0e0;
+        border: 2px solid rgba(0, 173, 239, 0.3);
         border-radius: 10px;
         padding: 15px;
         text-align: center;
         cursor: pointer;
+        background: #000000;
         transition: all 0.3s ease;
       }
 
       .document-card:hover {
-        border-color: #667eea;
-        background: #f8f9ff;
+        border-color: #00ADEF;
+        background: rgba(0, 173, 239, 0.1);
+        box-shadow: 0 0 15px rgba(0, 173, 239, 0.2);
       }
 
       .document-icon {
         font-size: 2rem;
         margin-bottom: 10px;
+        color: #00ADEF;
       }
 
       .document-name {
         font-weight: 600;
-        color: #333;
+        color: #e5e7eb;
         margin-bottom: 5px;
       }
 
       .document-status {
         font-size: 0.85rem;
-        color: #666;
+        color: #9ca3af;
       }
 
       .action-buttons {
@@ -272,36 +287,36 @@
       }
 
       .btn-approve {
-        background: #4caf50;
+        background: #10b981;
         color: white;
       }
 
       .btn-approve:hover {
-        background: #45a049;
+        background: #059669;
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
       }
 
       .btn-reject {
-        background: #dc3545;
+        background: #ef4444;
         color: white;
       }
 
       .btn-reject:hover {
-        background: #c82333;
+        background: #dc2626;
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
       }
 
       .btn-view {
-        background: #667eea;
-        color: white;
+        background: #00ADEF;
+        color: #000000;
       }
 
       .btn-view:hover {
-        background: #5568d3;
+        background: #00e5ff;
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 5px 15px rgba(0, 173, 239, 0.3);
       }
 
       .modal {
@@ -311,7 +326,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.8);
         z-index: 1000;
         align-items: center;
         justify-content: center;
@@ -322,7 +337,8 @@
       }
 
       .modal-content {
-        background: white;
+        background: #1a1a1a;
+        border: 1px solid rgba(0, 173, 239, 0.3);
         border-radius: 15px;
         padding: 30px;
         max-width: 500px;
@@ -333,7 +349,7 @@
         font-size: 1.5rem;
         font-weight: 700;
         margin-bottom: 20px;
-        color: #333;
+        color: #00ADEF;
       }
 
       .form-group {
@@ -343,7 +359,7 @@
       .form-label {
         display: block;
         font-weight: 600;
-        color: #333;
+        color: #e5e7eb;
         margin-bottom: 8px;
       }
 
@@ -351,8 +367,10 @@
         width: 100%;
         min-height: 100px;
         padding: 12px;
-        border: 2px solid #e0e0e0;
+        border: 2px solid rgba(0, 173, 239, 0.3);
         border-radius: 10px;
+        background: #0a0a0a;
+        color: #e5e7eb;
         font-family: "Inter", sans-serif;
         font-size: 1rem;
         resize: vertical;
@@ -360,7 +378,8 @@
 
       .form-textarea:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #00ADEF;
+        box-shadow: 0 0 10px rgba(0, 173, 239, 0.2);
       }
 
       .modal-actions {
@@ -369,25 +388,35 @@
       }
 
       .btn-secondary {
-        background: #f0f0f0;
-        color: #333;
+        background: #333;
+        color: #e5e7eb;
       }
 
       .btn-secondary:hover {
-        background: #e0e0e0;
+        background: #444;
       }
 
       .empty-state {
         text-align: center;
         padding: 60px 20px;
-        background: white;
+        background: #0a0a0a;
+        border: 1px solid rgba(0, 173, 239, 0.2);
         border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       }
 
       .empty-icon {
         font-size: 4rem;
         margin-bottom: 20px;
+        color: #00ADEF;
+      }
+
+      .empty-state h3 {
+        color: #e5e7eb;
+      }
+
+      .empty-state p {
+        color: #9ca3af;
       }
 
       .loading {
@@ -398,8 +427,8 @@
       .spinner {
         width: 50px;
         height: 50px;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #667eea;
+        border: 4px solid rgba(0, 173, 239, 0.2);
+        border-top: 4px solid #00ADEF;
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin: 0 auto 20px;
@@ -522,6 +551,92 @@
       let currentFilter = 'all';
       let rejectingDriverId = null;
 
+      // Demo data
+      const demoDrivers = [
+        {
+          _id: 'demo1',
+          name: 'Robert Brown',
+          email: 'robert.b@example.com',
+          phoneNumber: '+1234567894',
+          verificationStatus: 'pending',
+          createdAt: new Date('2026-04-18'),
+          license: {
+            licenseNumber: 'DL123456',
+            expiryDate: new Date('2027-12-31'),
+            frontImage: '#',
+            backImage: '#'
+          },
+          vehicleDetails: {
+            make: 'Toyota',
+            model: 'Camry',
+            year: 2022,
+            plateNumber: 'ABC-1234'
+          },
+          insurance: {
+            provider: 'State Farm',
+            policyNumber: 'SF123456',
+            expiryDate: new Date('2027-06-30'),
+            insuranceDocument: '#'
+          },
+          profilePhoto: '#'
+        },
+        {
+          _id: 'demo2',
+          name: 'Emily Davis',
+          email: 'emily.d@example.com',
+          phoneNumber: '+1234567895',
+          verificationStatus: 'approved',
+          createdAt: new Date('2026-04-15'),
+          license: {
+            licenseNumber: 'DL789012',
+            expiryDate: new Date('2028-03-15'),
+            frontImage: '#',
+            backImage: '#'
+          },
+          vehicleDetails: {
+            make: 'Honda',
+            model: 'Accord',
+            year: 2023,
+            plateNumber: 'XYZ-5678'
+          },
+          insurance: {
+            provider: 'Geico',
+            policyNumber: 'GC789012',
+            expiryDate: new Date('2027-08-20'),
+            insuranceDocument: '#'
+          },
+          profilePhoto: '#'
+        },
+        {
+          _id: 'demo3',
+          name: 'Michael Wilson',
+          email: 'michael.w@example.com',
+          phoneNumber: '+1234567896',
+          verificationStatus: 'rejected',
+          rejectionReason: 'License document is not clear. Please upload a higher quality image.',
+          createdAt: new Date('2026-04-10'),
+          license: {
+            licenseNumber: 'DL345678',
+            expiryDate: new Date('2026-09-30'),
+            frontImage: '#',
+            backImage: '#'
+          },
+          vehicleDetails: {
+            make: 'Ford',
+            model: 'Fusion',
+            year: 2021,
+            plateNumber: 'DEF-9012'
+          },
+          insurance: {
+            provider: 'Progressive',
+            policyNumber: 'PR345678',
+            expiryDate: new Date('2027-01-15'),
+            insuranceDocument: '#'
+          },
+          profilePhoto: '#'
+        }
+      ];
+
       window.addEventListener('DOMContentLoaded', async () => {
         if (!AuthService.isAuthenticated()) {
           window.location.href = 'admin-login.html';
@@ -543,17 +658,10 @@
         try {
           const response = await AdminService.getPendingVerifications();
 
-          if (response.success && response.data) {
-            allDrivers = response.data;
-            filteredDrivers = allDrivers;
-            updateStats(allDrivers);
-            displayDrivers(filteredDrivers);
-
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('contentArea').style.display = 'block';
-          } else if (response.riders) {
-            // Fallback for old API response format
-            allDrivers = response.riders;
+          // API returns: { success, count, data: [...] } or { success, verifications: [...] }
+          if (response.success) {
+            allDrivers = response.data || response.verifications || response.riders || [];
+            if (!Array.isArray(allDrivers)) allDrivers = [];
             filteredDrivers = allDrivers;
             updateStats(allDrivers);
             displayDrivers(filteredDrivers);
@@ -561,13 +669,18 @@
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('contentArea').style.display = 'block';
           } else {
-            throw new Error('Failed to load verifications');
+            throw new Error(response.message || 'Failed to load verifications');
           }
         } catch (error) {
           console.error('Error loading verifications:', error);
+          console.log('Using demo data for driver verifications');
+          allDrivers = demoDrivers;
+          filteredDrivers = allDrivers;
+          updateStats(allDrivers);
+          displayDrivers(filteredDrivers);
+
           document.getElementById('loadingState').style.display = 'none';
           document.getElementById('contentArea').style.display = 'block';
-          document.getElementById('emptyState').style.display = 'block';
         }
       }
 

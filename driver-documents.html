@@ -702,8 +702,10 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/auth-service.js"></script>
+    <script src="js/driver-service.js"></script>
 
     <script>
       window.addEventListener('DOMContentLoaded', async () => {
@@ -720,10 +722,10 @@
 
       async function loadDocuments() {
         try {
-          const response = await ApiService.get('/driver/documents');
+          const response = await DriverService.getOnboardingStatus();
 
-          if (response.success !== false && response.documents) {
-            displayDocuments(response.documents);
+          if (response.success !== false && response.status) {
+            displayDocuments(response.status);
           }
 
           document.getElementById('loadingState').style.display = 'none';

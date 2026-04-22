@@ -509,6 +509,10 @@
                 <i class="fas fa-wallet"></i>
                 <span>My Earnings</span>
             </a>
+            <a href="admin-stripe-connect.html" class="menu-item">
+                <i class="fab fa-stripe"></i>
+                <span>Stripe Connect</span>
+            </a>
         </div>
 
         <div class="menu-section">
@@ -635,10 +639,298 @@
         </div>
     </div>
 
+    <!-- Add/Edit Cab Modal -->
+    <div id="cabModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Cab</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="cabForm" onsubmit="saveCab(event)">
+                <input type="hidden" id="cabId">
+
+                <div class="form-section">
+                    <h3>Vehicle Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cabMake">Make *</label>
+                            <input type="text" id="cabMake" required placeholder="e.g., Toyota">
+                        </div>
+                        <div class="form-group">
+                            <label for="cabModel">Model *</label>
+                            <input type="text" id="cabModel" required placeholder="e.g., Camry">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cabYear">Year *</label>
+                            <input type="number" id="cabYear" required placeholder="2024" min="2000" max="2030">
+                        </div>
+                        <div class="form-group">
+                            <label for="cabColor">Color *</label>
+                            <input type="text" id="cabColor" required placeholder="e.g., Black">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="plateNumber">Plate Number *</label>
+                            <input type="text" id="plateNumber" required placeholder="ABC-1234">
+                        </div>
+                        <div class="form-group">
+                            <label for="cabCategory">Category *</label>
+                            <select id="cabCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="economy">Economy</option>
+                                <option value="comfort">Comfort</option>
+                                <option value="premium">Premium</option>
+                                <option value="luxury">Luxury</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Driver Assignment</h3>
+                    <div class="form-group">
+                        <label for="driverAssignment">Assigned Driver</label>
+                        <select id="driverAssignment">
+                            <option value="">Unassigned</option>
+                            <option value="1">John Doe</option>
+                            <option value="2">Jane Smith</option>
+                            <option value="3">Mike Johnson</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Status & Maintenance</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cabStatus">Status *</label>
+                            <select id="cabStatus" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastService">Last Service Date</label>
+                            <input type="date" id="lastService">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cabNotes">Notes</label>
+                        <textarea id="cabNotes" rows="3" placeholder="Additional notes about the vehicle"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">
+                        <i class="fas fa-save"></i> Save Cab
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this cab?</p>
+                <p class="text-danger"><strong>This action cannot be undone.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #0a0a0a;
+            border: 1px solid rgba(0, 173, 239, 0.3);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideDown 0.3s;
+        }
+
+        .modal-large {
+            max-width: 800px;
+        }
+
+        .modal-small {
+            max-width: 400px;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 173, 239, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: #00ADEF;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .close {
+            color: #9ca3af;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #00ADEF;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(0, 173, 239, 0.2);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-section {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .form-section h3 {
+            color: #00ADEF;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 173, 239, 0.3);
+            border-radius: 8px;
+            color: #e5e7eb;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #00ADEF;
+            background: rgba(0, 173, 239, 0.1);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .text-danger {
+            color: #ef4444;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/admin-service.js"></script>
     <script>
@@ -659,28 +951,232 @@
         // Load cabs
         async function loadCabs() {
             try {
-                const cabs = await AdminService.getCabs();
-                
-                cabsTable.clear();
-                
-                cabs.forEach(cab => {
-                    let statusClass = 'status-active';
-                    if (cab.status === 'inactive') statusClass = 'status-inactive';
-                    if (cab.status === 'maintenance') statusClass = 'status-maintenance';
+                console.log('🚗 Loading cabs...');
+                const response = await AdminService.getAllCabs();
+                console.log('🚗 Cabs response:', response);
 
-                    cabsTable.row.add([
-                        cab.id,
-                        `<strong>${cab.make} ${cab.model}</strong><br><small>${cab.year || ''}</small>`,
-                        cab.plate_number,
-                        cab.category || 'Economy',
-                        cab.driver_name || 'Unassigned',
-                        `<span class="status-badge ${statusClass}">${cab.status}</span>`,
-                        cab.last_service ? new Date(cab.last_service).toLocaleDateString() : 'Never',
-                        `
-                        <div class="action-buttons">
-                            <button class="action-btn action-view" onclick="viewCab(${cab.id})">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                cabsTable.clear();
+
+                const cabs = response.data || response;
+
+                if (Array.isArray(cabs) && cabs.length > 0) {
+                    cabs.forEach(cab => {
+                        let statusClass = 'status-active';
+                        if (cab.status === 'inactive') statusClass = 'status-inactive';
+                        if (cab.status === 'maintenance') statusClass = 'status-maintenance';
+
+                        cabsTable.row.add([
+                            cab.id,
+                            `<strong>${cab.make} ${cab.model}</strong><br><small>${cab.year || ''}</small>`,
+                            cab.plate_number,
+                            cab.category || 'Economy',
+                            cab.driver_name || '<span style="color: #9ca3af;">Unassigned</span>',
+                            `<span class="status-badge ${statusClass}">${cab.status}</span>`,
+                            cab.last_service ? new Date(cab.last_service).toLocaleDateString() : 'Never',
+                            `
+                            <div class="action-buttons">
+                                <button class="action-btn action-edit" onclick="editCab(${cab.id})" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn action-delete" onclick="deleteCab(${cab.id})" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            `
+                        ]);
+                    });
+                    console.log('✅ Loaded', cabs.length, 'cabs');
+                } else {
+                    console.log('⚠️ No cabs found');
+                }
+
+                cabsTable.draw();
+            } catch (error) {
+                console.error('❌ Error loading cabs:', error);
+                Utils.showToast('Failed to load cabs. Using demo data.', 'warning');
+                loadDemoCabs();
+            }
+        }
+
+        // Load demo cabs (fallback)
+        function loadDemoCabs() {
+            const demoCabs = [
+                { id: 1, make: 'Toyota', model: 'Camry', year: 2023, plate_number: 'ABC-1234', category: 'economy', driver_name: 'John Doe', status: 'active', last_service: '2024-01-15' },
+                { id: 2, make: 'Honda', model: 'Accord', year: 2022, plate_number: 'XYZ-5678', category: 'comfort', driver_name: 'Jane Smith', status: 'active', last_service: '2024-01-10' },
+                { id: 3, make: 'BMW', model: '5 Series', year: 2024, plate_number: 'LUX-9999', category: 'luxury', driver_name: null, status: 'maintenance', last_service: '2024-01-20' }
+            ];
+
+            cabsTable.clear();
+            demoCabs.forEach(cab => {
+                let statusClass = cab.status === 'active' ? 'status-active' : cab.status === 'maintenance' ? 'status-maintenance' : 'status-inactive';
+                cabsTable.row.add([
+                    cab.id,
+                    `<strong>${cab.make} ${cab.model}</strong><br><small>${cab.year}</small>`,
+                    cab.plate_number,
+                    cab.category,
+                    cab.driver_name || '<span style="color: #9ca3af;">Unassigned</span>',
+                    `<span class="status-badge ${statusClass}">${cab.status}</span>`,
+                    new Date(cab.last_service).toLocaleDateString(),
+                    `<div class="action-buttons">
+                        <button class="action-btn action-edit" onclick="editCab(${cab.id})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn action-delete" onclick="deleteCab(${cab.id})"><i class="fas fa-trash"></i></button>
+                    </div>`
+                ]);
+            });
+            cabsTable.draw();
+            updateCabStats(demoCabs);
+        }
+
+        // Load cab statistics
+        async function loadCabStats() {
+            try {
+                const response = await AdminService.getAllCabs();
+                const cabs = response.data || response;
+                updateCabStats(cabs);
+            } catch (error) {
+                console.error('Error loading cab stats:', error);
+            }
+        }
+
+        function updateCabStats(cabs) {
+            if (!Array.isArray(cabs)) return;
+
+            const total = cabs.length;
+            const active = cabs.filter(c => c.status === 'active').length;
+            const maintenance = cabs.filter(c => c.status === 'maintenance').length;
+            const available = cabs.filter(c => c.status === 'active' && !c.driver_name).length;
+
+            document.getElementById('totalCabs').textContent = total;
+            document.getElementById('activeCabs').textContent = active;
+            document.getElementById('maintenanceCabs').textContent = maintenance;
+            document.getElementById('availableCabs').textContent = available;
+        }
+
+        // Create cab
+        function createCab() {
+            document.getElementById('modalTitle').textContent = 'Add New Cab';
+            document.getElementById('cabForm').reset();
+            document.getElementById('cabId').value = '';
+            document.getElementById('cabModal').classList.add('show');
+        }
+
+        // Edit cab
+        async function editCab(cabId) {
+            try {
+                console.log('📝 Loading cab', cabId);
+                const response = await AdminService.getCabById(cabId);
+                const cab = response.data || response;
+
+                document.getElementById('modalTitle').textContent = 'Edit Cab';
+                document.getElementById('cabId').value = cab.id;
+                document.getElementById('cabMake').value = cab.make;
+                document.getElementById('cabModel').value = cab.model;
+                document.getElementById('cabYear').value = cab.year;
+                document.getElementById('cabColor').value = cab.color || '';
+                document.getElementById('plateNumber').value = cab.plate_number;
+                document.getElementById('cabCategory').value = cab.category || '';
+                document.getElementById('driverAssignment').value = cab.driver_id || '';
+                document.getElementById('cabStatus').value = cab.status || 'active';
+                document.getElementById('lastService').value = cab.last_service || '';
+                document.getElementById('cabNotes').value = cab.notes || '';
+
+                document.getElementById('cabModal').classList.add('show');
+            } catch (error) {
+                console.error('❌ Error loading cab:', error);
+                Utils.showToast('Failed to load cab details', 'error');
+            }
+        }
+
+        // Save cab (create or update)
+        async function saveCab(event) {
+            event.preventDefault();
+
+            const cabId = document.getElementById('cabId').value;
+            const cabData = {
+                make: document.getElementById('cabMake').value,
+                model: document.getElementById('cabModel').value,
+                year: parseInt(document.getElementById('cabYear').value),
+                color: document.getElementById('cabColor').value,
+                plate_number: document.getElementById('plateNumber').value,
+                category: document.getElementById('cabCategory').value,
+                driver_id: document.getElementById('driverAssignment').value || null,
+                status: document.getElementById('cabStatus').value,
+                last_service: document.getElementById('lastService').value || null,
+                notes: document.getElementById('cabNotes').value
+            };
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            try {
+                let response;
+                if (cabId) {
+                    console.log('📝 Updating cab', cabId);
+                    response = await AdminService.updateCab(cabId, cabData);
+                    Utils.showToast('Cab updated successfully!', 'success');
+                } else {
+                    console.log('➕ Creating new cab');
+                    response = await AdminService.addCab(cabData);
+                    Utils.showToast('Cab created successfully!', 'success');
+                }
+
+                closeModal();
+                loadCabs();
+                loadCabStats();
+            } catch (error) {
+                console.error('❌ Error saving cab:', error);
+                Utils.showToast(error.message || 'Failed to save cab', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Cab';
+            }
+        }
+
+        // Delete cab
+        let deleteId = null;
+        function deleteCab(cabId) {
+            deleteId = cabId;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        async function confirmDelete() {
+            if (!deleteId) return;
+
+            try {
+                console.log('🗑️ Deleting cab', deleteId);
+                await AdminService.deleteCab(deleteId);
+                Utils.showToast('Cab deleted successfully!', 'success');
+                closeDeleteModal();
+                loadCabs();
+                loadCabStats();
+            } catch (error) {
+                console.error('❌ Error deleting cab:', error);
+                Utils.showToast(error.message || 'Failed to delete cab', 'error');
+            }
+        }
+
+        // Close modals
+        function closeModal() {
+            document.getElementById('cabModal').classList.remove('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+            deleteId = null;
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const cabModal = document.getElementById('cabModal');
+            const deleteModal = document.getElementById('deleteModal');
+            if (event.target === cabModal) {
+                closeModal();
+            }
+            if (event.target === deleteModal) {
+                closeDeleteModal();
+            }
+        }
                             <button class="action-btn action-edit" onclick="editCab(${cab.id})">
                                 <i class="fas fa-edit"></i>
                             </button>

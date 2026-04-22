@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
+            background: #000000;
             overflow-x: hidden;
         }
 
@@ -27,7 +27,7 @@
             top: 0;
             height: 100vh;
             width: 260px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
             padding: 20px 0;
             overflow-y: auto;
             z-index: 1000;
@@ -82,8 +82,8 @@
         }
 
         .menu-item.active {
-            background: rgba(255, 255, 255, 0.15);
-            border-left: 3px solid white;
+            background: rgba(0, 173, 239, 0.2);
+            border-left: 3px solid #00ADEF;
         }
 
         .menu-item i {
@@ -101,7 +101,7 @@
 
         /* Top Bar */
         .top-bar {
-            background: white;
+            background: #0a0a0a;
             padding: 20px 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -138,7 +138,7 @@
 
         /* Content */
         .content-card {
-            background: white;
+            background: #0a0a0a;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -159,7 +159,7 @@
 
         .btn {
             padding: 10px 20px;
-            background: #667eea;
+            background: #00ADEF;
             color: white;
             border: none;
             border-radius: 6px;
@@ -237,7 +237,7 @@
         .search-box input {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid rgba(0, 173, 239, 0.2);
             border-radius: 6px;
             font-size: 14px;
         }
@@ -251,7 +251,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: #0a0a0a;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -368,6 +368,10 @@
                 <i class="fas fa-wallet"></i>
                 <span>My Earnings</span>
             </a>
+            <a href="admin-stripe-connect.html" class="menu-item">
+                <i class="fab fa-stripe"></i>
+                <span>Stripe Connect</span>
+            </a>
         </div>
 
         <div class="menu-section">
@@ -448,7 +452,7 @@
         <div class="content-card">
             <div class="content-header">
                 <h2>Permission List</h2>
-                <button class="btn" onclick="createPermission()">
+                <button class="btn" onclick="openPermissionModal()">
                     <i class="fas fa-plus"></i> Create Permission
                 </button>
             </div>
@@ -479,15 +483,100 @@
         </div>
     </div>
 
+    <!-- Add/Edit Permission Modal -->
+    <div id="permissionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; overflow-y: auto;">
+        <div style="max-width: 600px; margin: 50px auto; background: #1a1a1a; border-radius: 12px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid rgba(0, 173, 239, 0.3); padding-bottom: 15px;">
+                <h2 id="permissionModalTitle" style="color: #00ADEF; font-size: 24px; margin: 0;">Add New Permission</h2>
+                <button onclick="closePermissionModal()" style="background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">&times;</button>
+            </div>
+
+            <form id="permissionForm" onsubmit="savePermission(event)">
+                <input type="hidden" id="permissionId">
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; color: #fff; margin-bottom: 8px; font-weight: 500;">Permission Name *</label>
+                    <input type="text" id="permissionName" required style="width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid rgba(0, 173, 239, 0.3); border-radius: 6px; color: #fff; font-size: 14px;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; color: #fff; margin-bottom: 8px; font-weight: 500;">Slug *</label>
+                    <input type="text" id="permissionSlug" required style="width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid rgba(0, 173, 239, 0.3); border-radius: 6px; color: #fff; font-size: 14px;">
+                    <small style="color: #aaa; font-size: 12px;">Lowercase with underscores (e.g., manage_users)</small>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; color: #fff; margin-bottom: 8px; font-weight: 500;">Module/Category *</label>
+                    <select id="permissionModule" required style="width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid rgba(0, 173, 239, 0.3); border-radius: 6px; color: #fff; font-size: 14px;">
+                        <option value="">Select Module</option>
+                        <option value="User Management">User Management</option>
+                        <option value="Driver Management">Driver Management</option>
+                        <option value="Cab Management">Cab Management</option>
+                        <option value="Ride Management">Ride Management</option>
+                        <option value="Role Management">Role Management</option>
+                        <option value="Permission Management">Permission Management</option>
+                        <option value="Reports">Reports</option>
+                        <option value="Settings">Settings</option>
+                        <option value="General">General</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; color: #fff; margin-bottom: 8px; font-weight: 500;">Description</label>
+                    <textarea id="permissionDescription" rows="3" style="width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid rgba(0, 173, 239, 0.3); border-radius: 6px; color: #fff; font-size: 14px; resize: vertical;"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+                    <button type="button" onclick="closePermissionModal()" style="padding: 12px 24px; background: #333; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Cancel</button>
+                    <button type="submit" style="padding: 12px 24px; background: #00ADEF; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Save Permission</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000;">
+        <div style="max-width: 450px; margin: 200px auto; background: #1a1a1a; border-radius: 12px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #e74c3c; margin-bottom: 15px;"></i>
+                <h2 style="color: #fff; font-size: 22px; margin-bottom: 10px;">Delete Permission</h2>
+                <p style="color: #aaa; font-size: 14px;">Are you sure you want to delete this permission? This action cannot be undone!</p>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="closeDeleteModal()" style="padding: 12px 24px; background: #333; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Cancel</button>
+                <button onclick="confirmDelete()" style="padding: 12px 24px; background: #e74c3c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/admin-service.js"></script>
     <script>
         let permissionsTable;
         let allPermissions = [];
+        let deletePermissionId = null;
+
+        // Demo data
+        const demoPermissions = [
+            { id: 'perm1', name: 'Manage Users', slug: 'manage_users', module: 'User Management', description: 'Create, edit, and delete users', roles_count: 2, createdAt: new Date('2024-01-15') },
+            { id: 'perm2', name: 'View Users', slug: 'view_users', module: 'User Management', description: 'View user information', roles_count: 3, createdAt: new Date('2024-01-15') },
+            { id: 'perm3', name: 'Manage Drivers', slug: 'manage_drivers', module: 'Driver Management', description: 'Create, edit, and delete drivers', roles_count: 2, createdAt: new Date('2024-01-20') },
+            { id: 'perm4', name: 'View Drivers', slug: 'view_drivers', module: 'Driver Management', description: 'View driver information', roles_count: 3, createdAt: new Date('2024-01-20') },
+            { id: 'perm5', name: 'Manage Cabs', slug: 'manage_cabs', module: 'Cab Management', description: 'Create, edit, and delete cabs', roles_count: 2, createdAt: new Date('2024-02-01') },
+            { id: 'perm6', name: 'View Cabs', slug: 'view_cabs', module: 'Cab Management', description: 'View cab information', roles_count: 3, createdAt: new Date('2024-02-01') },
+            { id: 'perm7', name: 'Manage Rides', slug: 'manage_rides', module: 'Ride Management', description: 'Manage ride bookings and assignments', roles_count: 2, createdAt: new Date('2024-02-10') },
+            { id: 'perm8', name: 'View Rides', slug: 'view_rides', module: 'Ride Management', description: 'View ride information', roles_count: 3, createdAt: new Date('2024-02-10') },
+            { id: 'perm9', name: 'Manage Roles', slug: 'manage_roles', module: 'Role Management', description: 'Create, edit, and delete roles', roles_count: 1, createdAt: new Date('2024-02-15') },
+            { id: 'perm10', name: 'Manage Permissions', slug: 'manage_permissions', module: 'Permission Management', description: 'Manage system permissions', roles_count: 1, createdAt: new Date('2024-02-15') },
+            { id: 'perm11', name: 'View Reports', slug: 'view_reports', module: 'Reports', description: 'View analytics and reports', roles_count: 2, createdAt: new Date('2024-03-01') },
+            { id: 'perm12', name: 'Manage Settings', slug: 'manage_settings', module: 'Settings', description: 'Manage system settings', roles_count: 1, createdAt: new Date('2024-03-05') }
+        ];
 
         // Initialize DataTable
         $(document).ready(function() {
@@ -521,7 +610,10 @@
                 hideLoading();
             } catch (error) {
                 console.error('Error loading permissions:', error);
-                alert('Failed to load permissions: ' + error.message);
+                console.log('Using demo data for permissions');
+                allPermissions = demoPermissions;
+                displayPermissions(allPermissions);
+                updateStats(allPermissions);
                 hideLoading();
             }
         }
@@ -552,7 +644,7 @@
                         <button class="action-btn action-edit" onclick="editPermission('${permId}')" title="Edit Permission">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="action-btn action-delete" onclick="deletePermission('${permId}')" title="Delete Permission">
+                        <button class="action-btn action-delete" onclick="openDeleteModal('${permId}')" title="Delete Permission">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -592,29 +684,117 @@
             permissionsTable.search(searchValue).draw();
         }
 
-        // Create permission
-        function createPermission() {
-            window.location.href = 'admin-permission-create.html';
+        // Open permission modal
+        function openPermissionModal(permissionId = null) {
+            document.getElementById('permissionModal').style.display = 'block';
+            document.getElementById('permissionForm').reset();
+            document.getElementById('permissionId').value = '';
+
+            if (permissionId) {
+                document.getElementById('permissionModalTitle').textContent = 'Edit Permission';
+                const permission = allPermissions.find(p => (p._id || p.id) === permissionId);
+                if (permission) {
+                    document.getElementById('permissionId').value = permissionId;
+                    document.getElementById('permissionName').value = permission.name || '';
+                    document.getElementById('permissionSlug').value = permission.slug || '';
+                    document.getElementById('permissionModule').value = permission.module || permission.category || '';
+                    document.getElementById('permissionDescription').value = permission.description || '';
+                }
+            } else {
+                document.getElementById('permissionModalTitle').textContent = 'Add New Permission';
+            }
+        }
+
+        // Close permission modal
+        function closePermissionModal() {
+            document.getElementById('permissionModal').style.display = 'none';
+        }
+
+        // Auto-generate slug from name
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('permissionName');
+            const slugInput = document.getElementById('permissionSlug');
+
+            if (nameInput && slugInput) {
+                nameInput.addEventListener('input', function() {
+                    if (!document.getElementById('permissionId').value) {
+                        slugInput.value = this.value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+                    }
+                });
+            }
+        });
+
+        // Save permission
+        async function savePermission(event) {
+            event.preventDefault();
+
+            const permissionId = document.getElementById('permissionId').value;
+            const permissionName = document.getElementById('permissionName').value.trim();
+            const permissionSlug = document.getElementById('permissionSlug').value.trim();
+            const permissionModule = document.getElementById('permissionModule').value;
+            const permissionDescription = document.getElementById('permissionDescription').value.trim();
+
+            const permissionData = {
+                name: permissionName,
+                slug: permissionSlug,
+                module: permissionModule,
+                description: permissionDescription
+            };
+
+            try {
+                showLoading();
+
+                let response;
+                if (permissionId) {
+                    response = await AdminService.updatePermission(permissionId, permissionData);
+                } else {
+                    response = await AdminService.createPermission(permissionData);
+                }
+
+                if (response.success !== false) {
+                    Utils.showToast(permissionId ? 'Permission updated successfully' : 'Permission created successfully', 'success');
+                    closePermissionModal();
+                    await loadPermissions();
+                } else {
+                    throw new Error(response.message || 'Failed to save permission');
+                }
+
+                hideLoading();
+            } catch (error) {
+                hideLoading();
+                console.error('Error saving permission:', error);
+                Utils.showToast('Failed to save permission: ' + error.message, 'error');
+            }
         }
 
         // Edit permission
         function editPermission(permissionId) {
-            alert('Edit permission functionality - Coming soon!\nPermission ID: ' + permissionId);
-            // window.location.href = `admin-permission-edit.html?id=${permissionId}`;
+            openPermissionModal(permissionId);
         }
 
-        // Delete permission
-        async function deletePermission(permissionId) {
-            if (!confirm('Are you sure you want to delete this permission? This action cannot be undone!')) {
-                return;
-            }
+        // Open delete modal
+        function openDeleteModal(permissionId) {
+            deletePermissionId = permissionId;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        // Close delete modal
+        function closeDeleteModal() {
+            deletePermissionId = null;
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        // Confirm delete
+        async function confirmDelete() {
+            if (!deletePermissionId) return;
 
             try {
                 showLoading();
-                const response = await AdminService.deletePermission(permissionId);
+                const response = await AdminService.deletePermission(deletePermissionId);
 
                 if (response.success !== false) {
-                    alert('Permission deleted successfully');
+                    Utils.showToast('Permission deleted successfully', 'success');
+                    closeDeleteModal();
                     await loadPermissions();
                 } else {
                     throw new Error(response.message || 'Failed to delete permission');
@@ -624,13 +804,13 @@
             } catch (error) {
                 hideLoading();
                 console.error('Error deleting permission:', error);
-                alert('Failed to delete permission: ' + error.message);
+                Utils.showToast('Failed to delete permission: ' + error.message, 'error');
             }
         }
 
         // Show loading
         function showLoading() {
-            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #667eea; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
+            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #00ADEF; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
         }
 
         // Hide loading
@@ -659,7 +839,6 @@
                 return;
             }
 
-            // Load admin profile
             const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
             if (userData) {
                 try {

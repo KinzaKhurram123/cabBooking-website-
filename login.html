@@ -966,8 +966,14 @@
               setTimeout(() => {
                 window.location.href = "admin-dashboard.html";
               }, 1000);
-            } else if (userRole === "driver" || userRole === "rider") {
-              // First, fetch latest onboarding status from API
+            } else if (userRole === "rider" || userRole === "user") {
+              // Riders/Users go directly to dashboard - no onboarding needed
+              console.log("Redirecting rider/user to dashboard...");
+              setTimeout(() => {
+                window.location.href = "dashboard-new.html";
+              }, 1000);
+            } else if (userRole === "driver") {
+              // Drivers need onboarding - fetch latest onboarding status from API
               try {
                 console.log(
                   "Login - Fetching latest onboarding status from API...",
@@ -1197,7 +1203,11 @@
           // User is already logged in, redirect based on role
           if (userRole === "admin") {
             window.location.href = "admin-dashboard.html";
-          } else if (userRole === "driver" || userRole === "rider") {
+          } else if (userRole === "rider" || userRole === "user") {
+            // Riders/Users go directly to dashboard - no onboarding needed
+            console.log("DOMContentLoaded - Redirecting rider/user to dashboard...");
+            window.location.href = "dashboard-new.html";
+          } else if (userRole === "driver") {
             try {
               console.log(
                 "DOMContentLoaded - Fetching latest onboarding status from API...",

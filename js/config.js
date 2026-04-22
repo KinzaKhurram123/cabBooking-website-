@@ -18,6 +18,9 @@ const CONFIG = {
   STRIPE_PUBLIC_KEY:
     "pk_test_51RjPdjRwYBV7klBlvjEBIXIPmNc4OBdvDtNVbjsZGzry1Ijq8E7waraDg3CXFpVXpJS1kJtuaPcRg7jvbnU76IPw0005YhkwjH",
 
+  // Stripe Connect Configuration (Driver Payouts)
+  STRIPE_CONNECT_CLIENT_ID: "ca_YOUR_CLIENT_ID_HERE", // Get from Stripe Dashboard → Connect → Settings
+
   // LocalStorage Keys
   STORAGE_KEYS: {
     AUTH_TOKEN: "authToken",

@@ -142,13 +142,56 @@ const RideService = {
   /**
    * Accept ride (Driver)
    * POST /rides/accept/:bookingId
+   * Validates Stripe Connect status before accepting
    */
   async acceptRide(bookingId) {
     try {
+      // Check if StripeConnectService is available
+      if (typeof StripeConnectService !== 'undefined') {
+        try {
+          // Validate Connect account status
+          const connectStatus = await StripeConnectService.getAccountStatus();
+
+          if (connectStatus.status === 'not_started') {
+            const error = new Error('Please set up your payment account before accepting rides.');
+            error.requiresConnectSetup = true;
+            throw error;
+          }
+
+          if (connectStatus.status !== 'enabled') {
+            const accountStatus = connectStatus.accountStatus;
+            if (accountStatus && accountStatus.requirementsCurrentlyDue && accountStatus.requirementsCurrentlyDue.length > 0) {
+              const error = new Error('Please complete your payment account verification before accepting rides.');
+              error.requiresConnectCompletion = true;
+              throw error;
+            } else {
+              const error = new Error('Your payment account is being verified. Please try again later.');
+              error.connectPending = true;
+              throw error;
+            }
+          }
+        } catch (connectError) {
+          // If it's our custom error with Connect flags, re-throw it
+          if (connectError.requiresConnectSetup || connectError.requiresConnectCompletion || connectError.connectPending) {
+            throw connectError;
+          }
+          // Otherwise, log and continue (don't block ride acceptance if Connect check fails due to network issues)
+          console.warn('Could not verify Connect status:', connectError);
+        }
+      }
+
       const response = await ApiService.post(`/rides/accept/${bookingId}`);
       return response;
     } catch (error) {
       console.error('Accept ride error:', error);
+
+      // Show user-friendly error message
+      if (error.requiresConnectSetup || error.requiresConnectCompletion) {
+        if (typeof StripeConnectService !== 'undefined') {
+          StripeConnectService.showError(error);
+        }
+      }
+
       throw error;
     }
   },

@@ -94,15 +94,10 @@ const PusherService = {
    * Subscribe to ride updates
    */
   subscribeToRide(rideId, callbacks = {}) {
-    const channelName = `private-ride-${rideId}`;
+    const channelName = `ride-${rideId}`;
     const channel = this.subscribe(channelName);
 
     if (!channel) return null;
-
-    // Bind event handlers
-    if (callbacks.onNewMessage) {
-      channel.bind('new-message', callbacks.onNewMessage);
-    }
 
     if (callbacks.onRideStatusUpdate) {
       channel.bind('ride-status-update', callbacks.onRideStatusUpdate);
@@ -116,20 +111,120 @@ const PusherService = {
   },
 
   /**
-   * Subscribe to driver status updates
+   * Subscribe to parcel delivery updates
    */
-  subscribeToDriverStatus(callbacks = {}) {
-    const channelName = 'driver-status';
+  subscribeToParcelDelivery(bookingId, callbacks = {}) {
+    const channelName = `parcel-delivery-${bookingId}`;
     const channel = this.subscribe(channelName);
 
     if (!channel) return null;
 
-    if (callbacks.onDriverAvailable) {
-      channel.bind('driver-available', callbacks.onDriverAvailable);
+    if (callbacks.onDeliveryAccepted) {
+      channel.bind('delivery-accepted', callbacks.onDeliveryAccepted);
     }
 
-    if (callbacks.onDriverOffline) {
-      channel.bind('driver-offline', callbacks.onDriverOffline);
+    if (callbacks.onDeliveryStatusUpdate) {
+      channel.bind('delivery-status-update', callbacks.onDeliveryStatusUpdate);
+    }
+
+    if (callbacks.onDriverLocationUpdate) {
+      channel.bind('driver-location-update', callbacks.onDriverLocationUpdate);
+    }
+
+    return channel;
+  },
+
+  /**
+   * Subscribe to pet delivery updates
+   */
+  subscribeToPetDelivery(bookingId, callbacks = {}) {
+    const channelName = `pet-delivery-${bookingId}`;
+    const channel = this.subscribe(channelName);
+
+    if (!channel) return null;
+
+    if (callbacks.onDeliveryAccepted) {
+      channel.bind('delivery-accepted', callbacks.onDeliveryAccepted);
+    }
+
+    if (callbacks.onDeliveryStatusUpdate) {
+      channel.bind('delivery-status-update', callbacks.onDeliveryStatusUpdate);
+    }
+
+    if (callbacks.onDriverLocationUpdate) {
+      channel.bind('driver-location-update', callbacks.onDriverLocationUpdate);
+    }
+
+    return channel;
+  },
+
+  /**
+   * Subscribe to new ride bookings (for drivers)
+   */
+  subscribeToRideBookings(callback) {
+    const channelName = 'ride-bookings';
+    const channel = this.subscribe(channelName);
+
+    if (!channel) return null;
+
+    if (callback) {
+      channel.bind('new-ride-booking', callback);
+    }
+
+    return channel;
+  },
+
+  /**
+   * Subscribe to new parcel bookings (for drivers)
+   */
+  subscribeToParcelBookings(callback) {
+    const channelName = 'parcel-bookings';
+    const channel = this.subscribe(channelName);
+
+    if (!channel) return null;
+
+    if (callback) {
+      channel.bind('new-parcel-booking', callback);
+    }
+
+    return channel;
+  },
+
+  /**
+   * Subscribe to new pet bookings (for drivers)
+   */
+  subscribeToPetBookings(callback) {
+    const channelName = 'pet-bookings';
+    const channel = this.subscribe(channelName);
+
+    if (!channel) return null;
+
+    if (callback) {
+      channel.bind('new-pet-booking', callback);
+    }
+
+    return channel;
+  },
+
+  /**
+   * Subscribe to rider personal channel
+   */
+  subscribeToRiderChannel(riderId, callbacks = {}) {
+    const channelName = `rider-${riderId}`;
+    const channel = this.subscribe(channelName);
+
+    if (!channel) return null;
+
+    if (callbacks.onNewRideBooking) {
+      channel.bind('new-ride-booking', callbacks.onNewRideBooking);
+    }
+
+    if (callbacks.onNewParcelBooking) {
+      channel.bind('new-parcel-booking', callbacks.onNewParcelBooking);
+    }
+
+    if (callbacks.onNewPetBooking) {
+      channel.bind('new-pet-booking', callbacks.onNewPetBooking);
     }
 
     return channel;
@@ -139,7 +234,23 @@ const PusherService = {
    * Unsubscribe from ride updates
    */
   unsubscribeFromRide(rideId) {
-    const channelName = `private-ride-${rideId}`;
+    const channelName = `ride-${rideId}`;
+    this.unsubscribe(channelName);
+  },
+
+  /**
+   * Unsubscribe from parcel delivery
+   */
+  unsubscribeFromParcelDelivery(bookingId) {
+    const channelName = `parcel-delivery-${bookingId}`;
+    this.unsubscribe(channelName);
+  },
+
+  /**
+   * Unsubscribe from pet delivery
+   */
+  unsubscribeFromPetDelivery(bookingId) {
+    const channelName = `pet-delivery-${bookingId}`;
     this.unsubscribe(channelName);
   },
 

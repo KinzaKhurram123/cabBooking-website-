@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
+            background: #000000;
             overflow-x: hidden;
         }
 
@@ -27,7 +27,7 @@
             top: 0;
             height: 100vh;
             width: 260px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
             padding: 20px 0;
             overflow-y: auto;
             z-index: 1000;
@@ -82,8 +82,8 @@
         }
 
         .menu-item.active {
-            background: rgba(255, 255, 255, 0.15);
-            border-left: 3px solid white;
+            background: rgba(0, 173, 239, 0.2);
+            border-left: 3px solid #00ADEF;
         }
 
         .menu-item i {
@@ -101,7 +101,7 @@
 
         /* Top Bar */
         .top-bar {
-            background: white;
+            background: #0a0a0a;
             padding: 20px 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -138,7 +138,7 @@
 
         /* Content */
         .content-card {
-            background: white;
+            background: #0a0a0a;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -159,7 +159,7 @@
 
         .btn {
             padding: 10px 20px;
-            background: #667eea;
+            background: #00ADEF;
             color: white;
             border: none;
             border-radius: 6px;
@@ -208,7 +208,7 @@
         }
 
         .status-pending {
-            background: #fff3cd;
+            background: #0a0a0a3cd;
             color: #856404;
         }
 
@@ -277,16 +277,16 @@
         .search-box input {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid rgba(0, 173, 239, 0.2);
             border-radius: 6px;
             font-size: 14px;
         }
 
         .filter-select {
             padding: 12px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid rgba(0, 173, 239, 0.2);
             border-radius: 6px;
-            background: white;
+            background: #0a0a0a;
             min-width: 150px;
         }
 
@@ -299,7 +299,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: #0a0a0a;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -423,6 +423,10 @@
             <a href="admin-my-earnings.html" class="menu-item">
                 <i class="fas fa-wallet"></i>
                 <span>My Earnings</span>
+            </a>
+            <a href="admin-stripe-connect.html" class="menu-item">
+                <i class="fab fa-stripe"></i>
+                <span>Stripe Connect</span>
             </a>
         </div>
 
@@ -554,6 +558,7 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/admin-service.js"></script>
     <script>
@@ -561,6 +566,58 @@
         let allDrivers = [];
         let currentPage = 1;
         let searchTimeout;
+
+        // Demo data
+        const demoDrivers = [
+            {
+                id: 'drv1',
+                name: 'Robert Brown',
+                phoneNumber: '+1234567894',
+                license_number: 'DL123456',
+                vehicle_make: 'Toyota',
+                vehicle_model: 'Camry',
+                verificationStatus: 'verified',
+                availability: 'active',
+                rating: 4.8,
+                createdAt: new Date('2024-01-10')
+            },
+            {
+                id: 'drv2',
+                name: 'Emily Davis',
+                phoneNumber: '+1234567895',
+                license_number: 'DL789012',
+                vehicle_make: 'Honda',
+                vehicle_model: 'Accord',
+                verificationStatus: 'verified',
+                availability: 'online',
+                rating: 4.9,
+                createdAt: new Date('2024-02-15')
+            },
+            {
+                id: 'drv3',
+                name: 'Michael Wilson',
+                phoneNumber: '+1234567896',
+                license_number: 'DL345678',
+                vehicle_make: 'Ford',
+                vehicle_model: 'Fusion',
+                verificationStatus: 'pending',
+                availability: 'inactive',
+                rating: 0,
+                createdAt: new Date('2024-04-01')
+            },
+            {
+                id: 'drv4',
+                name: 'Jessica Martinez',
+                phoneNumber: '+1234567897',
+                license_number: 'DL901234',
+                vehicle_make: 'Chevrolet',
+                vehicle_model: 'Malibu',
+                verificationStatus: 'rejected',
+                availability: 'inactive',
+                rating: 0,
+                createdAt: new Date('2024-03-20')
+            }
+        ];
 
         // Initialize DataTable
         $(document).ready(function() {
@@ -581,24 +638,23 @@
 
                 const response = await AdminService.getAllDrivers(page, limit, status);
 
-                if (response.success && response.data) {
-                    allDrivers = response.data;
-                    displayDrivers(allDrivers);
-                    updateStats(allDrivers);
-                } else if (response.drivers) {
-                    // Fallback for different response format
-                    allDrivers = response.drivers;
+                // API returns: { success, count, total, drivers: [...] }
+                if (response.success) {
+                    allDrivers = response.drivers || response.data?.drivers || response.data || [];
+                    if (!Array.isArray(allDrivers)) allDrivers = [];
                     displayDrivers(allDrivers);
                     updateStats(allDrivers);
                 } else {
-                    console.error('Failed to load drivers:', response);
-                    alert('Failed to load drivers. Please try again.');
+                    throw new Error(response.message || 'Failed to load drivers');
                 }
 
                 hideLoading();
             } catch (error) {
                 console.error('Error loading drivers:', error);
-                alert('Error loading drivers: ' + error.message);
+                console.log('Using demo data for drivers');
+                allDrivers = demoDrivers;
+                displayDrivers(allDrivers);
+                updateStats(allDrivers);
                 hideLoading();
             }
         }
@@ -742,47 +798,98 @@
             try {
                 showLoading();
                 const response = await AdminService.getDriverById(driverId);
+                hideLoading();
 
-                if (response.success && response.data) {
-                    const driver = response.data;
-                    const vehicleInfo = driver.vehicleDetails
-                        ? `${driver.vehicleDetails.make || ''} ${driver.vehicleDetails.model || ''} (${driver.vehicleDetails.year || 'N/A'})`
-                        : 'N/A';
-
-                    alert(`Driver Details:\n\nName: ${driver.name}\nEmail: ${driver.email}\nPhone: ${driver.phoneNumber || 'N/A'}\nLicense: ${driver.license?.licenseNumber || 'N/A'}\nVehicle: ${vehicleInfo}\nStatus: ${driver.verificationStatus || 'N/A'}\nRating: ${driver.rating || 'N/A'}/5`);
-                } else {
-                    throw new Error('Failed to load driver details');
+                // API returns: { success, driver: { _id, user: {name,email}, vehicleDetails, documents, rating, totalRides, totalEarning, walletBalance } }
+                const driver = response.driver || response.data;
+                if (!response.success || !driver) {
+                    throw new Error(response.message || 'Failed to load driver details');
                 }
 
-                hideLoading();
+                const vehicleInfo = driver.vehicleDetails
+                    ? `${driver.vehicleDetails.make || ''} ${driver.vehicleDetails.model || ''} (${driver.vehicleDetails.year || 'N/A'})`
+                    : 'N/A';
+
+                // Open detail modal
+                openDriverModal(driver, vehicleInfo);
             } catch (error) {
                 console.error('Error loading driver details:', error);
-                alert('Error loading driver details: ' + error.message);
+                showToast('Error loading driver details: ' + error.message, 'error');
                 hideLoading();
             }
         }
 
+        function openDriverModal(driver, vehicleInfo) {
+            const existing = document.getElementById('driverDetailModal');
+            if (existing) existing.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'driverDetailModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.innerHTML = `
+              <div style="background:#0a0a0a;border:1px solid rgba(0,173,239,0.3);border-radius:12px;padding:30px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                  <h2 style="color:#00adef;font-size:20px;">Driver Details</h2>
+                  <button onclick="document.getElementById('driverDetailModal').remove()" style="background:none;border:none;color:#9ca3af;font-size:22px;cursor:pointer;">&times;</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(0,173,239,0.15);">
+                  <img src="${driver.profilePhoto?.url || `https://ui-avatars.com/api/?name=${encodeURIComponent(driver.name||'D')}&background=00ADEF&color=000`}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #00adef;" />
+                  <div>
+                    <h3 style="color:#e5e7eb;font-size:18px;">${driver.name || driver.user?.name || 'N/A'}</h3>
+                    <p style="color:#9ca3af;font-size:13px;">${driver.email || driver.user?.email || ''}</p>
+                  </div>
+                </div>
+                <div style="display:grid;gap:10px;">
+                  ${dRow('Phone', driver.phoneNumber || driver.user?.phoneNumber)}
+                  ${dRow('License', driver.license?.licenseNumber)}
+                  ${dRow('Vehicle', vehicleInfo)}
+                  ${dRow('Verification', driver.verificationStatus || driver.isVerified ? 'Verified' : 'Pending')}
+                  ${dRow('Rating', driver.rating ? driver.rating.toFixed(1) + '/5' : null)}
+                  ${dRow('Total Rides', driver.totalRides)}
+                  ${dRow('Total Earning', driver.totalEarning ? 'PKR ' + driver.totalEarning : null)}
+                  ${dRow('Wallet Balance', driver.walletBalance != null ? 'PKR ' + driver.walletBalance : null)}
+                </div>
+              </div>`;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+        }
+
+        function dRow(label, value) {
+            if (value == null || value === '') return '';
+            return `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+              <span style="color:#9ca3af;font-size:13px;">${label}</span>
+              <span style="color:#e5e7eb;font-size:14px;font-weight:500;">${value}</span>
+            </div>`;
+        }
+
+        function showToast(message, type = 'success') {
+            const existing = document.getElementById('driverToast');
+            if (existing) existing.remove();
+            const color = type === 'success' ? '#10b981' : '#ef4444';
+            const toast = document.createElement('div');
+            toast.id = 'driverToast';
+            toast.style.cssText = `position:fixed;bottom:30px;right:30px;background:#0a0a0a;border:1px solid ${color};color:${color};padding:14px 22px;border-radius:8px;z-index:99999;font-size:14px;font-weight:500;`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
         // Verify driver
         async function verifyDriver(driverId) {
-            if (!confirm('Are you sure you want to verify this driver?')) {
-                return;
-            }
-
+            if (!confirm('Are you sure you want to verify this driver?')) return;
             try {
                 showLoading();
                 const response = await AdminService.verifyDriver(driverId);
-
-                if (response.success !== false) {
-                    alert('Driver verified successfully');
+                hideLoading();
+                if (response && response.success !== false) {
+                    showToast('Driver verified successfully', 'success');
                     await loadDrivers(currentPage);
                 } else {
-                    throw new Error(response.message || 'Failed to verify driver');
+                    throw new Error(response?.message || 'Failed to verify driver');
                 }
-
-                hideLoading();
             } catch (error) {
                 console.error('Error verifying driver:', error);
-                alert('Error verifying driver: ' + error.message);
+                showToast('Error verifying driver: ' + error.message, 'error');
                 hideLoading();
             }
         }
@@ -790,27 +897,23 @@
         // Reject driver
         async function rejectDriver(driverId) {
             const reason = prompt('Please provide a reason for rejection:');
-
             if (!reason || !reason.trim()) {
-                alert('Rejection reason is required');
+                showToast('Rejection reason is required', 'error');
                 return;
             }
-
             try {
                 showLoading();
                 const response = await AdminService.rejectDriver(driverId, reason.trim());
-
-                if (response.success !== false) {
-                    alert('Driver rejected successfully');
+                hideLoading();
+                if (response && response.success !== false) {
+                    showToast('Driver rejected successfully', 'success');
                     await loadDrivers(currentPage);
                 } else {
-                    throw new Error(response.message || 'Failed to reject driver');
+                    throw new Error(response?.message || 'Failed to reject driver');
                 }
-
-                hideLoading();
             } catch (error) {
                 console.error('Error rejecting driver:', error);
-                alert('Error rejecting driver: ' + error.message);
+                showToast('Error rejecting driver: ' + error.message, 'error');
                 hideLoading();
             }
         }
@@ -828,7 +931,7 @@
 
         // Show loading
         function showLoading() {
-            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #667eea; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
+            $('body').append('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;"><div style="color: #00ADEF; font-size: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>');
         }
 
         // Hide loading

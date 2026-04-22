@@ -407,10 +407,17 @@ const Utils = {
    * Logout user
    */
   logout() {
+    const userRole = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
     localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_DATA);
     localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_ROLE);
-    window.location.href = 'login.html';
+
+    // Redirect to appropriate login page based on role
+    if (userRole === 'admin') {
+      window.location.href = 'admin-login.html';
+    } else {
+      window.location.href = 'login.html';
+    }
   },
 
   /**

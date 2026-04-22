@@ -396,7 +396,7 @@
     <div class="header">
       <div class="header-content">
         <h1><i class="fas fa-cog"></i> Account Settings</h1>
-        <a href="dashboard.html" class="back-btn">
+        <a href="dashboard-new.html" class="back-btn">
           <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
       </div>
@@ -410,9 +410,37 @@
             <i class="fas fa-user"></i>
             <span>General</span>
           </div>
-          <div class="sidebar-item" onclick="showSection('notifications')">
+          <div class="sidebar-item" onclick="window.location.href='user-profile.html'">
+            <i class="fas fa-user-edit"></i>
+            <span>Edit Profile</span>
+          </div>
+          <div class="sidebar-item" onclick="window.location.href='user-ride-history.html'">
+            <i class="fas fa-history"></i>
+            <span>Ride History</span>
+          </div>
+          <div class="sidebar-item" onclick="window.location.href='user-saved-locations.html'">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Saved Locations</span>
+          </div>
+          <div class="sidebar-item" onclick="window.location.href='user-change-password.html'">
+            <i class="fas fa-key"></i>
+            <span>Change Password</span>
+          </div>
+          <div class="sidebar-item" onclick="window.location.href='user-notifications.html'">
             <i class="fas fa-bell"></i>
             <span>Notifications</span>
+          </div>
+          <div class="sidebar-item" onclick="window.location.href='user-wallet.html'">
+            <i class="fas fa-wallet"></i>
+            <span>Wallet</span>
+          </div>
+          <div class="sidebar-item" onclick="window.location.href='user-support.html'">
+            <i class="fas fa-headset"></i>
+            <span>Support</span>
+          </div>
+          <div class="sidebar-item" onclick="window.location.href='user-referral.html'">
+            <i class="fas fa-gift"></i>
+            <span>Refer & Earn</span>
           </div>
           <div class="sidebar-item" onclick="showSection('privacy')">
             <i class="fas fa-shield-alt"></i>
@@ -750,6 +778,7 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/auth-service.js"></script>
 
@@ -800,28 +829,165 @@
         }
       }
 
-      function saveGeneralSettings() {
-        alert('General settings saved successfully!');
+      async function saveGeneralSettings() {
+        try {
+          const data = {
+            name: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            dateOfBirth: document.getElementById('dob').value,
+            gender: document.getElementById('gender').value,
+            address: document.getElementById('address').value
+          };
+
+          const response = await AuthService.updateProfile(data);
+
+          if (response.success !== false) {
+            alert('General settings saved successfully!');
+            // Update localStorage
+            const userData = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA) || '{}');
+            Object.assign(userData, data);
+            localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+          } else {
+            throw new Error(response.message || 'Failed to save settings');
+          }
+        } catch (error) {
+          console.error('Save general settings error:', error);
+          alert('Failed to save settings: ' + error.message);
+        }
       }
 
       function cancelChanges() {
         loadUserSettings();
       }
 
-      function saveNotificationSettings() {
-        alert('Notification preferences saved!');
+      async function saveNotificationSettings() {
+        try {
+          const emailNotifications = document.querySelector('#notificationsSection .toggle-switch:nth-of-type(1)').classList.contains('active');
+          const smsNotifications = document.querySelector('#notificationsSection .toggle-switch:nth-of-type(2)').classList.contains('active');
+          const pushNotifications = document.querySelector('#notificationsSection .toggle-switch:nth-of-type(3)').classList.contains('active');
+          const promoNotifications = document.querySelector('#notificationsSection .toggle-switch:nth-of-type(4)').classList.contains('active');
+
+          const data = {
+            notifications: {
+              email: emailNotifications,
+              sms: smsNotifications,
+              push: pushNotifications,
+              promotional: promoNotifications
+            }
+          };
+
+          const response = await AuthService.updateProfile(data);
+
+          if (response.success !== false) {
+            alert('Notification preferences saved!');
+          } else {
+            throw new Error(response.message || 'Failed to save notification settings');
+          }
+        } catch (error) {
+          console.error('Save notification settings error:', error);
+          alert('Failed to save notification settings: ' + error.message);
+        }
       }
 
-      function savePrivacySettings() {
-        alert('Privacy settings saved!');
+      async function savePrivacySettings() {
+        try {
+          const shareLocation = document.querySelector('#privacySection .toggle-switch:nth-of-type(1)').classList.contains('active');
+          const shareRideHistory = document.querySelector('#privacySection .toggle-switch:nth-of-type(2)').classList.contains('active');
+          const showOnlineStatus = document.querySelector('#privacySection .toggle-switch:nth-of-type(3)').classList.contains('active');
+
+          const data = {
+            privacy: {
+              shareLocation: shareLocation,
+              shareRideHistory: shareRideHistory,
+              showOnlineStatus: showOnlineStatus
+            }
+          };
+
+          const response = await AuthService.updateProfile(data);
+
+          if (response.success !== false) {
+            alert('Privacy settings saved!');
+          } else {
+            throw new Error(response.message || 'Failed to save privacy settings');
+          }
+        } catch (error) {
+          console.error('Save privacy settings error:', error);
+          alert('Failed to save privacy settings: ' + error.message);
+        }
       }
 
-      function changePassword() {
-        alert('Password change feature coming soon!');
+      async function changePassword() {
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          alert('Please fill in all password fields');
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          alert('New passwords do not match');
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          alert('New password must be at least 6 characters long');
+          return;
+        }
+
+        try {
+          const data = {
+            currentPassword: currentPassword,
+            newPassword: newPassword
+          };
+
+          const response = await AuthService.updateProfile(data);
+
+          if (response.success !== false) {
+            alert('Password changed successfully!');
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+          } else {
+            throw new Error(response.message || 'Failed to change password');
+          }
+        } catch (error) {
+          console.error('Change password error:', error);
+          alert('Failed to change password: ' + error.message);
+        }
       }
 
-      function savePreferences() {
-        alert('Preferences saved successfully!');
+      async function savePreferences() {
+        try {
+          const language = document.querySelector('#preferencesSection .select-field:nth-of-type(1)').value;
+          const currency = document.querySelector('#preferencesSection .select-field:nth-of-type(2)').value;
+          const theme = document.querySelector('#preferencesSection .select-field:nth-of-type(3)').value;
+          const autoAcceptRides = document.querySelector('#preferencesSection .toggle-switch:nth-of-type(1)').classList.contains('active');
+          const saveFavoriteLocations = document.querySelector('#preferencesSection .toggle-switch:nth-of-type(2)').classList.contains('active');
+
+          const data = {
+            preferences: {
+              language: language,
+              currency: currency,
+              theme: theme,
+              autoAcceptRides: autoAcceptRides,
+              saveFavoriteLocations: saveFavoriteLocations
+            }
+          };
+
+          const response = await AuthService.updateProfile(data);
+
+          if (response.success !== false) {
+            alert('Preferences saved successfully!');
+          } else {
+            throw new Error(response.message || 'Failed to save preferences');
+          }
+        } catch (error) {
+          console.error('Save preferences error:', error);
+          alert('Failed to save preferences: ' + error.message);
+        }
       }
 
       function deleteAccount() {

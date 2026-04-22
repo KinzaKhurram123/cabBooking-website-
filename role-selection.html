@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Started - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #0a0a0a;
+        color: #e5e7eb;
+        overflow-x: hidden;
+      }
+
+      /* Animated Gradient Background */
+      .animated-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8, #2e8b9e, #44bfd2, #6cd4e8);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        z-index: -2;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: -1;
+      }
+
+      .container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .logo {
+        margin-bottom: 40px;
+        animation: fadeInDown 0.8s ease;
+      }
+
+      .logo img {
+        height: 80px;
+        width: auto;
+      }
+
+      .selection-box {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 50px 40px;
+        max-width: 900px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 0.8s ease;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #d1d5db;
+        margin-bottom: 50px;
+        font-size: 1.1rem;
+      }
+
+      .roles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+      }
+
+      .role-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(68, 191, 210, 0.3);
+        border-radius: 15px;
+        padding: 35px 25px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .role-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(68, 191, 210, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+
+      .role-card:hover::before {
+        left: 100%;
+      }
+
+      .role-card:hover {
+        transform: translateY(-10px);
+        border-color: #44bfd2;
+        background: rgba(68, 191, 210, 0.1);
+        box-shadow: 0 15px 40px rgba(68, 191, 210, 0.3);
+      }
+
+      .role-icon {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        display: block;
+      }
+
+      .role-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+        color: #44bfd2;
+      }
+
+      .role-card p {
+        color: #d1d5db;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .role-btn {
+        display: inline-block;
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8);
+        color: #1a1a2e;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .role-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(68, 191, 210, 0.4);
+      }
+
+      .divider {
+        text-align: center;
+        margin: 30px 0;
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
+
+      .back-link {
+        text-align: center;
+        margin-top: 30px;
+      }
+
+      .back-link a {
+        color: #44bfd2;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .back-link a:hover {
+        color: #6cd4e8;
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .selection-box {
+          padding: 40px 25px;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+
+        .roles-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .role-icon {
+          font-size: 3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Animated Background -->
+    <div class="animated-gradient"></div>
+    <div class="overlay"></div>
+
+    <div class="container">
+      <div class="logo">
+        <img src="images/loogo.png" alt="RideLynk Logo" />
+      </div>
+
+      <div class="selection-box">
+        <h1>Welcome to RideLynk</h1>
+        <p class="subtitle">Choose how you'd like to get started</p>
+
+        <div class="roles-grid">
+          <!-- User Card -->
+          <div class="role-card">
+            <span class="role-icon">👤</span>
+            <h3>I'm a User</h3>
+            <p>Book rides, track your trips, and enjoy seamless transportation</p>
+            <a href="register.html" class="role-btn">Sign Up as User</a>
+          </div>
+
+          <!-- Driver Card -->
+          <div class="role-card">
+            <span class="role-icon">🚗</span>
+            <h3>I'm a Driver</h3>
+            <p>Join our driver community and start earning on your schedule</p>
+            <a href="driver-registration.html" class="role-btn">Join as Driver</a>
+          </div>
+
+          <!-- Admin Card -->
+          <div class="role-card">
+            <span class="role-icon">⚙️</span>
+            <h3>I'm an Admin</h3>
+            <p>Manage platform operations and oversee the system</p>
+            <a href="admin-login.html" class="role-btn">Admin Login</a>
+          </div>
+        </div>
+
+        <div class="divider">Already have an account?</div>
+
+        <div style="text-align: center;">
+          <a href="login.html" class="role-btn">Login as User</a>
+        </div>
+
+        <div class="back-link">
+          <a href="index.html">← Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

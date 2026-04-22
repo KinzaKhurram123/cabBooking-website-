@@ -18,6 +18,13 @@ const ApiService = {
 
     const url = `${CONFIG.API_BASE_URL}${endpoint}`;
 
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📡 API REQUEST');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('🎯 URL:', url);
+    console.log('📝 Method:', method);
+    console.log('🔐 Requires Auth:', requiresAuth);
+
     // Prepare headers
     const requestHeaders = {
       ...headers
@@ -33,8 +40,17 @@ const ApiService = {
       const token = Utils.getAuthToken();
       if (token) {
         requestHeaders['Authorization'] = `Bearer ${token}`;
+        console.log('🔑 Token Added:', token.substring(0, 30) + '...');
+      } else {
+        console.warn('⚠️ No token found in localStorage!');
+        console.log('📦 Storage Keys:', CONFIG.STORAGE_KEYS);
+        console.log('📦 Checking:', CONFIG.STORAGE_KEYS.AUTH_TOKEN);
       }
+    } else {
+      console.log('🔓 No auth required for this request');
     }
+
+    console.log('📋 Headers:', requestHeaders);
 
     // Prepare request config
     const config = {
@@ -45,22 +61,22 @@ const ApiService = {
     // Add body for POST, PUT, PATCH requests
     if (body) {
       config.body = isFormData ? body : JSON.stringify(body);
+      if (!isFormData) {
+        console.log('📤 Request Body:', body);
+      }
     }
 
-    console.log('ApiService - Making request to:', url);
-    console.log('ApiService - Method:', method);
-    console.log('ApiService - Headers:', requestHeaders);
-    if (body && !isFormData) {
-      console.log('ApiService - Request body:', JSON.parse(config.body));
-    }
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     try {
+      console.log('⏳ Sending request...');
       const response = await fetch(url, config);
+      console.log('✅ Response received');
 
       // Handle response
       return await this.handleResponse(response);
     } catch (error) {
-      console.error('API Request Error:', error);
+      console.error('❌ API Request Error:', error);
       throw this.handleError(error);
     }
   },
@@ -72,29 +88,47 @@ const ApiService = {
     const contentType = response.headers.get('content-type');
     const isJson = contentType && contentType.includes('application/json');
 
-    console.log('ApiService - Response status:', response.status);
-    console.log('ApiService - Response ok:', response.ok);
-    console.log('ApiService - Content type:', contentType);
-    console.log('ApiService - Response URL:', response.url);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📥 API RESPONSE');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('🌐 URL:', response.url);
+    console.log('📊 Status:', response.status, response.statusText);
+    console.log('✅ OK:', response.ok);
+    console.log('📄 Content-Type:', contentType);
 
     let data;
     if (isJson) {
       data = await response.json();
-      console.log('ApiService - Parsed JSON data:', data);
+      console.log('📦 Response Data:', data);
     } else {
       data = await response.text();
-      console.log('ApiService - Text data:', data);
+      console.log('📝 Response Text:', data.substring(0, 200));
     }
 
     if (!response.ok) {
-      console.log('ApiService - Response not OK, status:', response.status);
-      console.log('ApiService - Error data:', data);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.error('❌ REQUEST FAILED');
+      console.error('Status:', response.status);
+      console.error('Error Data:', data);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       // Handle specific error codes
       if (response.status === 401) {
         // Unauthorized - token expired or invalid
-        Utils.showToast('Session expired. Please login again.', 'error');
-        Utils.logout();
+        console.warn('⚠️ 401 Unauthorized - Token may be invalid or expired');
+        console.log('Current token:', localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN)?.substring(0, 20) + '...');
+        console.log('Request URL:', response.url);
+
+        // Only logout if this is not a dashboard initial load
+        // This prevents redirect loops when backend is unavailable
+        const isDashboardLoad = window.location.pathname.includes('dashboard');
+        if (!isDashboardLoad) {
+          Utils.showToast('Session expired. Please login again.', 'error');
+          Utils.logout();
+        } else {
+          console.warn('Dashboard load detected - not auto-logging out to prevent redirect loop');
+          Utils.showToast('Unable to load dashboard data. Backend may be unavailable.', 'warning');
+        }
         throw new Error('Unauthorized');
       }
 
@@ -131,7 +165,8 @@ const ApiService = {
       throw new Error(data.message || 'Request failed');
     }
 
-    console.log('ApiService - Returning successful response:', data);
+    console.log('✅ Request successful');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     return data;
   },
 

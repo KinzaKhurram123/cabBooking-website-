@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifications - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #0a0a0a;
+        color: #e5e7eb;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .animated-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #44bfd2, #6cd4e8, #2e8b9e, #44bfd2, #6cd4e8);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        z-index: -2;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: -1;
+      }
+
+      .header {
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-bottom: 1px solid rgba(68, 191, 210, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .header h1 {
+        color: #6cd4e8;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .unread-badge {
+        background: #ef4444;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .back-btn {
+        background: rgba(68, 191, 210, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: #6cd4e8;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+      }
+
+      .back-btn:hover {
+        background: rgba(68, 191, 210, 0.3);
+        box-shadow: 0 0 15px rgba(68, 191, 210, 0.3);
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      .actions-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .filter-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-tab {
+        background: rgba(68, 191, 210, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.3);
+        color: #6cd4e8;
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .filter-tab:hover,
+      .filter-tab.active {
+        background: rgba(68, 191, 210, 0.4);
+        border-color: #44bfd2;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .action-btn {
+        background: rgba(68, 191, 210, 0.2);
+        border: 1px solid rgba(68, 191, 210, 0.3);
+        color: #6cd4e8;
+        padding: 8px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .action-btn:hover {
+        background: rgba(68, 191, 210, 0.3);
+      }
+
+      .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .notification-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(68, 191, 210, 0.3);
+        border-radius: 15px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .notification-card.unread {
+        background: rgba(68, 191, 210, 0.15);
+        border-color: #44bfd2;
+      }
+
+      .notification-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(68, 191, 210, 0.3);
+      }
+
+      .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+
+      .notification-icon-wrapper {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        flex: 1;
+      }
+
+      .notification-icon {
+        font-size: 2rem;
+        min-width: 40px;
+      }
+
+      .notification-content {
+        flex: 1;
+      }
+
+      .notification-title {
+        color: #44bfd2;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .notification-message {
+        color: #d1d5db;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+
+      .notification-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 0.85rem;
+        color: #9ca3af;
+      }
+
+      .notification-time {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .notification-type {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .type-ride {
+        background: rgba(68, 191, 210, 0.2);
+        color: #44bfd2;
+      }
+
+      .type-promotion {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+      }
+
+      .type-system {
+        background: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+      }
+
+      .type-payment {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+      }
+
+      .unread-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 10px;
+        height: 10px;
+        background: #ef4444;
+        border-radius: 50%;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #d1d5db;
+      }
+
+      .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+      }
+
+      .empty-state h3 {
+        color: #44bfd2;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.3rem;
+        }
+
+        .actions-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .filter-tabs {
+          justify-content: center;
+        }
+
+        .action-buttons {
+          justify-content: center;
+        }
+
+        .notification-card {
+          padding: 15px;
+        }
+
+        .notification-icon {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="animated-gradient"></div>
+    <div class="overlay"></div>
+
+    <div class="header">
+      <div class="header-content">
+        <div class="header-left">
+          <h1>🔔 Notifications</h1>
+          <span class="unread-badge" id="unreadBadge" style="display: none;">0</span>
+        </div>
+        <a href="dashboard-new.html" class="back-btn">← Back</a>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="actions-bar">
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="ride">🚗 Rides</button>
+          <button class="filter-tab" data-filter="promotion">🎁 Promotions</button>
+          <button class="filter-tab" data-filter="payment">💳 Payments</button>
+          <button class="filter-tab" data-filter="system">⚙️ System</button>
+        </div>
+
+        <div class="action-buttons">
+          <button class="action-btn" onclick="markAllAsRead()">✓ Mark All Read</button>
+          <button class="action-btn" onclick="clearAll()">🗑️ Clear All</button>
+        </div>
+      </div>
+
+      <div class="notifications-list" id="notificationsList">
+        <!-- Notifications will be loaded here -->
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-state-icon">🔔</div>
+        <h3>No Notifications</h3>
+        <p>You're all caught up! Check back later for updates.</p>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script>
+      let notifications = [];
+      let currentFilter = 'all';
+
+      const notificationIcons = {
+        ride: '🚗',
+        promotion: '🎁',
+        payment: '💳',
+        system: '⚙️'
+      };
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (!localStorage.getItem('authToken')) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await loadNotifications();
+        setupFilterTabs();
+      });
+
+      async function loadNotifications() {
+        try {
+          const response = await ApiService.get('/user/notifications');
+
+          if (response?.data) {
+            notifications = response.data;
+          } else {
+            // Load sample notifications for demo
+            notifications = getSampleNotifications();
+          }
+
+          renderNotifications();
+          updateUnreadBadge();
+        } catch (error) {
+          console.error('Error loading notifications:', error);
+          notifications = getSampleNotifications();
+          renderNotifications();
+          updateUnreadBadge();
+        }
+      }
+
+      function getSampleNotifications() {
+        return [
+          {
+            id: '1',
+            type: 'ride',
+            title: 'Ride Completed',
+            message: 'Your ride to Downtown has been completed. Thank you for riding with us!',
+            timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+            read: false
+          },
+          {
+            id: '2',
+            type: 'promotion',
+            title: 'Special Offer!',
+            message: 'Get 20% off on your next 3 rides. Use code: RIDE20',
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+            read: false
+          },
+          {
+            id: '3',
+            type: 'payment',
+            title: 'Payment Successful',
+            message: 'Your payment of $15.50 has been processed successfully.',
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+            read: true
+          },
+          {
+            id: '4',
+            type: 'system',
+            title: 'Profile Updated',
+            message: 'Your profile information has been updated successfully.',
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+            read: true
+          }
+        ];
+      }
+
+      function renderNotifications() {
+        const list = document.getElementById('notificationsList');
+        const emptyState = document.getElementById('emptyState');
+
+        const filtered = currentFilter === 'all'
+          ? notifications
+          : notifications.filter(n => n.type === currentFilter);
+
+        if (filtered.length === 0) {
+          list.innerHTML = '';
+          emptyState.style.display = 'block';
+          return;
+        }
+
+        emptyState.style.display = 'none';
+
+        list.innerHTML = filtered.map(notification => `
+          <div class="notification-card ${!notification.read ? 'unread' : ''}" onclick="markAsRead('${notification.id}')">
+            ${!notification.read ? '<div class="unread-indicator"></div>' : ''}
+            <div class="notification-header">
+              <div class="notification-icon-wrapper">
+                <div class="notification-icon">${notificationIcons[notification.type] || '🔔'}</div>
+                <div class="notification-content">
+                  <div class="notification-title">${notification.title}</div>
+                  <div class="notification-message">${notification.message}</div>
+                  <div class="notification-meta">
+                    <div class="notification-time">
+                      🕐 ${formatTime(notification.timestamp)}
+                    </div>
+                    <span class="notification-type type-${notification.type}">${notification.type}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = now - date;
+
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return `${minutes}m ago`;
+        if (hours < 24) return `${hours}h ago`;
+        if (days < 7) return `${days}d ago`;
+
+        return date.toLocaleDateString();
+      }
+
+      function updateUnreadBadge() {
+        const unreadCount = notifications.filter(n => !n.read).length;
+        const badge = document.getElementById('unreadBadge');
+
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.style.display = 'block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+
+      function setupFilterTabs() {
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentFilter = tab.dataset.filter;
+            renderNotifications();
+          });
+        });
+      }
+
+      async function markAsRead(id) {
+        const notification = notifications.find(n => n.id === id);
+        if (!notification || notification.read) return;
+
+        try {
+          await ApiService.put(`/user/notifications/${id}/read`);
+          notification.read = true;
+          renderNotifications();
+          updateUnreadBadge();
+        } catch (error) {
+          console.error('Error marking notification as read:', error);
+          notification.read = true;
+          renderNotifications();
+          updateUnreadBadge();
+        }
+      }
+
+      async function markAllAsRead() {
+        try {
+          await ApiService.put('/user/notifications/mark-all-read');
+          notifications.forEach(n => n.read = true);
+          renderNotifications();
+          updateUnreadBadge();
+        } catch (error) {
+          console.error('Error marking all as read:', error);
+          notifications.forEach(n => n.read = true);
+          renderNotifications();
+          updateUnreadBadge();
+        }
+      }
+
+      async function clearAll() {
+        if (!confirm('Are you sure you want to clear all notifications?')) return;
+
+        try {
+          await ApiService.delete('/user/notifications');
+          notifications = [];
+          renderNotifications();
+          updateUnreadBadge();
+        } catch (error) {
+          console.error('Error clearing notifications:', error);
+          notifications = [];
+          renderNotifications();
+          updateUnreadBadge();
+        }
+      }
+    </script>
+  </body>
+</html>

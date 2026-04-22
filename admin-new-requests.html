@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
+            background: #000000;
             overflow-x: hidden;
         }
 
@@ -26,7 +26,7 @@
             top: 0;
             height: 100vh;
             width: 260px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
             padding: 20px 0;
             overflow-y: auto;
             z-index: 1000;
@@ -81,8 +81,8 @@
         }
 
         .menu-item.active {
-            background: rgba(255, 255, 255, 0.15);
-            border-left: 3px solid white;
+            background: rgba(0, 173, 239, 0.2);
+            border-left: 3px solid #00ADEF;
         }
 
         .menu-item i {
@@ -100,7 +100,7 @@
 
         /* Top Bar */
         .top-bar {
-            background: white;
+            background: #0a0a0a;
             padding: 20px 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -144,7 +144,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: #0a0a0a;
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -170,7 +170,7 @@
         }
 
         .request-card {
-            background: white;
+            background: #0a0a0a;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -198,7 +198,7 @@
         }
 
         .time-badge {
-            background: #fff3cd;
+            background: #0a0a0a3cd;
             color: #856404;
             padding: 5px 12px;
             border-radius: 12px;
@@ -268,7 +268,7 @@
         }
 
         .btn-assign {
-            background: #667eea;
+            background: #00ADEF;
             color: white;
         }
 
@@ -288,7 +288,7 @@
         .empty-state {
             text-align: center;
             padding: 80px 20px;
-            background: white;
+            background: #0a0a0a;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
@@ -420,6 +420,10 @@
                 <i class="fas fa-wallet"></i>
                 <span>My Earnings</span>
             </a>
+            <a href="admin-stripe-connect.html" class="menu-item">
+                <i class="fab fa-stripe"></i>
+                <span>Stripe Connect</span>
+            </a>
         </div>
 
         <div class="menu-section">
@@ -513,6 +517,7 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/admin-service.js"></script>
     <script>

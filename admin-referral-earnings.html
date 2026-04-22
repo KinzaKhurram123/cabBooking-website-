@@ -331,9 +331,9 @@
             border-color: #00ADEF;
         }
             padding: 12px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid rgba(0, 173, 239, 0.2);
             border-radius: 6px;
-            background: white;
+            background: #0a0a0a;
             min-width: 150px;
         }
 
@@ -346,7 +346,7 @@
 
         .date-input {
             padding: 12px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid rgba(0, 173, 239, 0.2);
             border-radius: 6px;
             font-size: 14px;
         }
@@ -461,6 +461,10 @@
             <a href="admin-my-earnings.html" class="menu-item">
                 <i class="fas fa-wallet"></i>
                 <span>My Earnings</span>
+            </a>
+            <a href="admin-stripe-connect.html" class="menu-item">
+                <i class="fab fa-stripe"></i>
+                <span>Stripe Connect</span>
             </a>
         </div>
 
@@ -590,6 +594,7 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/admin-service.js"></script>
     <script>

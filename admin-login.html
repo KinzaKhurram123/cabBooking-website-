@@ -406,6 +406,7 @@
 <script src="js/config.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/api-service.js"></script>
+<script src="js/admin-service.js"></script>
 <script src="js/auth-service.js"></script>
 
 <script>
@@ -534,89 +535,102 @@
       return false;
     }
 
-    // CORE LOGIN FUNCTION - FIXED: handles both backend API and optional demo mode (if backend not ready)
+    // CORE LOGIN FUNCTION - Uses AdminService for proper API handling
     async function handleAdminLogin(email, password, remember) {
-      // Determine API base URL (use config if exists)
-      const API_URL = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
-      const loginEndpoint = `${API_URL}/auth/login`;
+      console.log('🔐 Starting admin login...');
+      console.log('📧 Email:', email);
+      console.log('🌐 API Base URL:', CONFIG.API_BASE_URL);
+      console.log('🎯 Login Endpoint:', CONFIG.API_BASE_URL + '/admin/login');
 
-      // First try actual backend request
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+        // Use AdminService which properly handles the API call
+        console.log('📡 Calling AdminService.login()...');
+        const response = await AdminService.login({ email, password });
 
-        const response = await fetch(loginEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
+        console.log('📥 Login response received:', response);
+        console.log('📥 Response structure:', JSON.stringify(response, null, 2));
 
-        if (!response.ok) {
-          let backendError = `Login failed (${response.status})`;
-          try {
-            const errJson = await response.json();
-            backendError = errJson.message || errJson.error || backendError;
-          } catch (e) {}
-          throw new Error(backendError);
+        if (response.success && response.data) {
+          const token = response.data.token;
+          const userData = response.data.admin || response.data.user;
+          const role = userData?.role || response.data.role || 'admin';
+
+          console.log('✅ Login successful - Storing credentials...');
+          console.log('🔑 Token:', token ? token.substring(0, 30) + '...' : 'MISSING');
+          console.log('👤 Role from response:', role);
+          console.log('👤 Role type:', typeof role);
+          console.log('📋 User data:', userData);
+          console.log('📋 Full response.data:', response.data);
+
+          // Verify storage (AdminService already stored it)
+          const storedToken = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+          const storedRole = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+
+          console.log('✅ Verification - Token stored:', storedToken ? 'YES' : 'NO');
+          console.log('✅ Verification - Role stored:', storedRole);
+          console.log('✅ Verification - Role value:', storedRole);
+
+          // Check admin role - accept both "admin" and "superadmin"
+          const validAdminRoles = ['admin', 'superadmin', 'super_admin', 'super-admin'];
+          const isAdmin = validAdminRoles.includes(role?.toLowerCase()) ||
+                         validAdminRoles.includes(storedRole?.toLowerCase());
+
+          console.log('🔍 Role check:', {
+            receivedRole: role,
+            storedRole: storedRole,
+            isValidAdmin: isAdmin,
+            validRoles: validAdminRoles
+          });
+
+          if (!isAdmin) {
+            console.warn('⚠️ Role is not admin, clearing session');
+            console.warn('⚠️ Received role:', role);
+            console.warn('⚠️ Stored role:', storedRole);
+            console.warn('⚠️ Valid roles:', validAdminRoles);
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+            throw new Error(`Access denied: Role "${role || storedRole}" is not authorized. Please use admin credentials.`);
+          }
+
+          console.log('✅ Admin role confirmed');
+
+          // Save remember email preference
+          if (remember) saveRememberEmail(email);
+          else saveRememberEmail('');
+
+          return { success: true, role, token };
+        } else {
+          console.error('❌ Invalid response structure:', response);
+          throw new Error(response.message || 'Login failed');
         }
+      } catch (error) {
+        console.error('❌ Login error:', error);
 
-        const data = await response.json();
-        // Extract token & role
-        let token = data.token || data.data?.token;
-        let userData = data.user || data.data?.user;
-        let role = userData?.role || data.role || data.data?.role || 'user';
-
-        if (!token) throw new Error('Invalid credentials: No token received');
-
-        // Store token and role using consistent keys
-        localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, role);
-        if (userData) localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
-
-        // For backward compatibility
-        localStorage.setItem('token', token);
-        localStorage.setItem('userRole', role);
-
-        // Check admin role
-        if (role !== 'admin') {
-          // Not admin: clear partial session and throw
-          localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-          localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_ROLE);
-          throw new Error('Access denied: This account is not an administrator. Please use admin credentials.');
-        }
-
-        // Save remember email preference
-        if (remember) saveRememberEmail(email);
-        else saveRememberEmail('');
-
-        return { success: true, role };
-      } catch (fetchError) {
-        // IF backend is not available (network error / CORS / 404) AND credentials match test admin,
-        // provide local demo mode for development/testing.
-        console.warn('Backend login error:', fetchError.message);
-
-        // DEMO MODE: If backend unreachable but user uses the test admin credentials, allow demo access.
-        if (email === 'superadmin@gmail.com' && password === '12345678') {
-          console.log('DEMO MODE: Backend unavailable but using valid test admin credentials. Granting demo access.');
+        // If backend is unavailable and using test credentials, provide demo mode
+        if ((error.message?.includes('Failed to fetch') || error.message?.includes('Network error')) &&
+            email === 'superadmin@gmail.com' && password === '12345678') {
+          console.log('🎭 DEMO MODE: Backend unavailable but using valid test admin credentials. Granting demo access.');
           const demoToken = 'demo_admin_token_' + Date.now();
+
+          console.log('🎭 DEMO MODE: Storing demo credentials...');
           localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, demoToken);
           localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, 'admin');
           localStorage.setItem('token', demoToken);
           localStorage.setItem('userRole', 'admin');
+
           const demoUser = { id: 1, email: 'superadmin@gmail.com', name: 'Super Admin', role: 'admin' };
           localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(demoUser));
+
+          // Verify storage
+          console.log('🎭 DEMO MODE - Verification:');
+          console.log('  Token stored:', localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN) ? 'YES' : 'NO');
+          console.log('  Role stored:', localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE));
+
           if (remember) saveRememberEmail(email);
-          return { success: true, role: 'admin', demo: true };
-        } else {
-          // If real backend fails and not test credentials, show appropriate error
-          if (fetchError.message.includes('Failed to fetch') || fetchError.name === 'AbortError') {
-            throw new Error('Cannot connect to server. Please check your internet or backend API. For demo, use test credentials.');
-          } else {
-            throw fetchError;
-          }
+          return { success: true, role: 'admin', demo: true, token: demoToken };
         }
+
+        throw error;
       }
     }
 
@@ -640,14 +654,41 @@
 
       try {
         const result = await handleAdminLogin(email, password, remember);
-        if (result && result.success && result.role === 'admin') {
-          showSuccess('Login successful! Redirecting to Admin Dashboard...');
-          // brief delay to show success message
+        console.log('🎉 Login handler result:', result);
+
+        // Accept multiple admin role variations
+        const validAdminRoles = ['admin', 'superadmin', 'super_admin', 'super-admin'];
+        const isValidAdmin = result && result.success &&
+                            validAdminRoles.includes(result.role?.toLowerCase());
+
+        console.log('🔍 Final validation:', {
+          hasResult: !!result,
+          isSuccess: result?.success,
+          role: result?.role,
+          isValidAdmin: isValidAdmin
+        });
+
+        if (isValidAdmin) {
+          const demoText = result.demo ? ' (Demo Mode)' : '';
+          showSuccess(`Login successful${demoText}! Redirecting to Admin Dashboard...`);
+
+          console.log('🚀 Redirecting to dashboard in 800ms...');
+          console.log('🚀 Final verification before redirect:');
+          console.log('  Token:', localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN) ? 'EXISTS' : 'MISSING');
+          console.log('  Role:', localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE));
+
+          // Slightly longer delay to ensure localStorage is fully written
           setTimeout(() => {
-            window.location.href = 'admin-dashboard.html';
-          }, 600);
+            console.log('🚀 Executing redirect now...');
+            // Use replace to prevent back button from returning to login
+            window.location.replace('admin-dashboard.html');
+          }, 800);
         } else {
-          throw new Error('Invalid role or authentication failed');
+          console.error('❌ Validation failed:', {
+            result: result,
+            expectedRoles: validAdminRoles
+          });
+          throw new Error(`Invalid role or authentication failed. Received role: ${result?.role}`);
         }
       } catch (err) {
         console.error('Admin login error:', err);

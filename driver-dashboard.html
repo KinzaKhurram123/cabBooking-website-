@@ -245,6 +245,90 @@
         margin-bottom: 15px;
       }
 
+      /* Connect Status Banner */
+      .connect-banner {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border: 2px solid rgba(68, 191, 210, 0.3);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .connect-banner.warning {
+        border-color: rgba(245, 158, 11, 0.5);
+        background: linear-gradient(135deg, #2a2010 0%, #3a3020 100%);
+      }
+
+      .connect-banner.success {
+        border-color: rgba(16, 185, 129, 0.5);
+        background: linear-gradient(135deg, #102a20 0%, #203a30 100%);
+      }
+
+      .connect-banner-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        flex-shrink: 0;
+      }
+
+      .connect-banner.warning .connect-banner-icon {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+      }
+
+      .connect-banner.success .connect-banner-icon {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+      }
+
+      .connect-banner-content {
+        flex: 1;
+      }
+
+      .connect-banner-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .connect-banner.warning .connect-banner-title {
+        color: #f59e0b;
+      }
+
+      .connect-banner.success .connect-banner-title {
+        color: #10b981;
+      }
+
+      .connect-banner-message {
+        color: #9ca3af;
+        font-size: 0.95rem;
+      }
+
+      .connect-banner-btn {
+        background: linear-gradient(135deg, #6cd4e8 0%, #44bfd2 100%);
+        color: #0a0a0a;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
+
+      .connect-banner-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(68, 191, 210, 0.4);
+      }
+
       .verification-banner {
         background: #fff3cd;
         border: 2px solid #ffc107;
@@ -296,6 +380,9 @@
     </div>
 
     <div class="container">
+      <!-- Stripe Connect Status Banner -->
+      <div id="connectBanner" style="display: none;"></div>
+
       <!-- Verification Status Banner -->
       <div id="verificationBanner" style="display: none;"></div>
 
@@ -366,6 +453,7 @@
     <script src="js/driver-service.js"></script>
     <script src="js/ride-service.js"></script>
     <script src="js/pusher-service.js"></script>
+    <script src="js/stripe-connect-service.js"></script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 
     <script>
@@ -373,6 +461,7 @@
       let isOnline = false;
       let pendingRides = [];
       let currentRide = null;
+      let connectStatus = null;
 
       window.addEventListener('DOMContentLoaded', async () => {
         if (!AuthService.isAuthenticated()) {
@@ -412,10 +501,95 @@
         }
 
         await loadDriverData();
+        await loadConnectStatus();
         setupStatusToggle();
         initializePusher();
         startPolling();
       });
+
+      async function loadConnectStatus() {
+        try {
+          const response = await StripeConnectService.getAccountStatus();
+          connectStatus = response;
+          displayConnectBanner();
+        } catch (error) {
+          console.error('Error loading Connect status:', error);
+          // Don't show banner if there's an error
+        }
+      }
+
+      function displayConnectBanner() {
+        const banner = document.getElementById('connectBanner');
+
+        if (!connectStatus) {
+          banner.style.display = 'none';
+          return;
+        }
+
+        const messageData = StripeConnectService.getStatusMessage(connectStatus.accountStatus);
+
+        // Only show banner if action is needed (not started or pending)
+        if (connectStatus.status === 'enabled') {
+          banner.style.display = 'none';
+          return;
+        }
+
+        const bannerClass = connectStatus.status === 'not_started' ? 'warning' : 'warning';
+        const iconClass = connectStatus.status === 'not_started' ? 'fa-exclamation-triangle' : 'fa-clock';
+
+        banner.className = `connect-banner ${bannerClass}`;
+        banner.style.display = 'flex';
+        banner.innerHTML = `
+          <div class="connect-banner-icon">
+            <i class="fas ${iconClass}"></i>
+          </div>
+          <div class="connect-banner-content">
+            <div class="connect-banner-title">${messageData.title}</div>
+            <div class="connect-banner-message">${messageData.message}</div>
+          </div>
+          <button class="connect-banner-btn" onclick="handleConnectBannerAction()">
+            <i class="fas fa-${getConnectActionIcon(messageData.actionType)}"></i> ${messageData.action}
+          </button>
+        `;
+      }
+
+      async function handleConnectBannerAction() {
+        const messageData = StripeConnectService.getStatusMessage(connectStatus?.accountStatus);
+        const actionType = messageData.actionType;
+
+        try {
+          switch (actionType) {
+            case 'setup':
+            case 'complete':
+              await StripeConnectService.startOnboarding();
+              break;
+
+            case 'refresh':
+              await loadConnectStatus();
+              break;
+
+            case 'view':
+              window.location.href = 'driver-earnings.html';
+              break;
+
+            default:
+              console.error('Unknown action type:', actionType);
+          }
+        } catch (error) {
+          console.error('Error handling Connect action:', error);
+          StripeConnectService.showError(error);
+        }
+      }
+
+      function getConnectActionIcon(actionType) {
+        const icons = {
+          setup: 'plus-circle',
+          complete: 'check-circle',
+          refresh: 'sync',
+          view: 'eye'
+        };
+        return icons[actionType] || 'circle';
+      }
 
       async function loadDriverData() {
         Utils.showLoader('Loading dashboard...');

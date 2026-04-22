@@ -107,5 +107,51 @@ const ChatService = {
       console.error('Debug messages error:', error);
       throw error;
     }
+  },
+
+  /**
+   * Send message for parcel or pet delivery
+   * POST /chats/delivery/send
+   */
+  async sendDeliveryMessage(bookingId, bookingType, message) {
+    try {
+      const response = await ApiService.post('/chats/delivery/send', {
+        bookingId,
+        bookingType,
+        message
+      });
+      return response;
+    } catch (error) {
+      console.error('Send delivery message error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get messages for parcel or pet delivery
+   * GET /chats/delivery/:bookingId?bookingType=parcel|pet
+   */
+  async getDeliveryMessages(bookingId, bookingType) {
+    try {
+      const response = await ApiService.get(`/chats/delivery/${bookingId}?bookingType=${bookingType}`);
+      return response;
+    } catch (error) {
+      console.error('Get delivery messages error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Mark delivery messages as read
+   * PUT /chats/delivery/read/:bookingId?bookingType=parcel|pet
+   */
+  async markDeliveryMessagesRead(bookingId, bookingType) {
+    try {
+      const response = await ApiService.put(`/chats/delivery/read/${bookingId}?bookingType=${bookingType}`);
+      return response;
+    } catch (error) {
+      console.error('Mark delivery messages read error:', error);
+      throw error;
+    }
   }
 };

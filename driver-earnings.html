@@ -445,6 +445,158 @@
         border: 1px solid #f59e0b;
       }
 
+      .status-enabled {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid #10b981;
+      }
+
+      .status-disabled {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+      }
+
+      .status-not-started {
+        background: rgba(156, 163, 175, 0.2);
+        color: #9ca3af;
+        border: 1px solid #9ca3af;
+      }
+
+      /* Connect Account Card */
+      .connect-card {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 2px solid rgba(68, 191, 210, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .connect-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(68, 191, 210, 0.1) 0%, transparent 70%);
+      }
+
+      .connect-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .connect-title {
+        color: #6cd4e8;
+        font-size: 1.3rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .connect-content {
+        display: flex;
+        gap: 30px;
+        align-items: center;
+      }
+
+      .connect-icon-large {
+        width: 80px;
+        height: 80px;
+        background: rgba(68, 191, 210, 0.2);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: #6cd4e8;
+      }
+
+      .connect-info {
+        flex: 1;
+      }
+
+      .connect-status-text {
+        font-size: 1.1rem;
+        color: #e5e7eb;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .connect-message {
+        color: #9ca3af;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 15px;
+      }
+
+      .connect-action-btn {
+        background: linear-gradient(135deg, #6cd4e8 0%, #44bfd2 100%);
+        color: #0a0a0a;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .connect-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(68, 191, 210, 0.4);
+      }
+
+      .connect-action-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .connect-requirements {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+      }
+
+      .requirements-title {
+        color: #f59e0b;
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .requirements-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .requirements-list li {
+        color: #e5e7eb;
+        padding: 5px 0;
+        padding-left: 20px;
+        position: relative;
+      }
+
+      .requirements-list li::before {
+        content: '•';
+        position: absolute;
+        left: 0;
+        color: #f59e0b;
+      }
+
       /* Loading */
       .loading {
         text-align: center;
@@ -506,6 +658,31 @@
       </div>
 
       <div id="contentArea" style="display: none;">
+        <!-- Stripe Connect Account Status -->
+        <div class="connect-card" id="connectCard">
+          <div class="connect-header">
+            <div class="connect-title">
+              <i class="fab fa-stripe"></i>
+              Payment Account
+            </div>
+            <div id="connectStatusBadge"></div>
+          </div>
+
+          <div class="connect-content">
+            <div class="connect-icon-large">
+              <i class="fas fa-university"></i>
+            </div>
+            <div class="connect-info">
+              <div class="connect-status-text" id="connectStatusTitle">Loading...</div>
+              <div class="connect-message" id="connectStatusMessage"></div>
+              <button class="connect-action-btn" id="connectActionBtn" onclick="handleConnectAction()">
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+              </button>
+              <div id="connectRequirements" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Earnings Summary -->
         <div class="earnings-card">
           <div class="earnings-header">
@@ -689,12 +866,16 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/auth-service.js"></script>
+    <script src="js/withdrawal-service.js"></script>
+    <script src="js/stripe-connect-service.js"></script>
 
     <script>
       let currentPeriod = 'week';
       let earningsData = null;
+      let connectStatus = null;
 
       window.addEventListener('DOMContentLoaded', async () => {
         const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
@@ -705,9 +886,146 @@
           return;
         }
 
-        await loadEarningsData();
+        await Promise.all([
+          loadConnectStatus(),
+          loadEarningsData()
+        ]);
         initCharts();
       });
+
+      async function loadConnectStatus() {
+        try {
+          const response = await StripeConnectService.getAccountStatus();
+          connectStatus = response;
+          displayConnectStatus();
+        } catch (error) {
+          console.error('Error loading Connect status:', error);
+          displayConnectError();
+        }
+      }
+
+      function displayConnectStatus() {
+        const statusBadge = document.getElementById('connectStatusBadge');
+        const statusTitle = document.getElementById('connectStatusTitle');
+        const statusMessage = document.getElementById('connectStatusMessage');
+        const actionBtn = document.getElementById('connectActionBtn');
+        const requirementsDiv = document.getElementById('connectRequirements');
+
+        // Get status badge
+        statusBadge.innerHTML = StripeConnectService.getStatusBadge(connectStatus.status);
+
+        // Get status message
+        const messageData = StripeConnectService.getStatusMessage(connectStatus.accountStatus);
+        statusTitle.textContent = messageData.title;
+        statusMessage.textContent = messageData.message;
+
+        // Update action button
+        actionBtn.innerHTML = `<i class="fas fa-${getActionIcon(messageData.actionType)}"></i> ${messageData.action}`;
+        actionBtn.setAttribute('data-action', messageData.actionType);
+        actionBtn.disabled = false;
+
+        // Show requirements if any
+        if (connectStatus.accountStatus?.requirementsCurrentlyDue?.length > 0) {
+          const requirements = connectStatus.accountStatus.requirementsCurrentlyDue;
+          requirementsDiv.style.display = 'block';
+          requirementsDiv.innerHTML = `
+            <div class="requirements-title">
+              <i class="fas fa-exclamation-triangle"></i>
+              Required Information
+            </div>
+            <ul class="requirements-list">
+              ${requirements.map(req => `<li>${formatRequirement(req)}</li>`).join('')}
+            </ul>
+          `;
+        } else {
+          requirementsDiv.style.display = 'none';
+        }
+      }
+
+      function displayConnectError() {
+        const statusBadge = document.getElementById('connectStatusBadge');
+        const statusTitle = document.getElementById('connectStatusTitle');
+        const statusMessage = document.getElementById('connectStatusMessage');
+        const actionBtn = document.getElementById('connectActionBtn');
+
+        statusBadge.innerHTML = '<span class="status-badge status-disabled"><i class="fas fa-exclamation-circle"></i> Error</span>';
+        statusTitle.textContent = 'Unable to Load Status';
+        statusMessage.textContent = 'There was an error loading your payment account status. Please try again later.';
+        actionBtn.innerHTML = '<i class="fas fa-redo"></i> Retry';
+        actionBtn.setAttribute('data-action', 'retry');
+        actionBtn.disabled = false;
+      }
+
+      async function handleConnectAction() {
+        const actionBtn = document.getElementById('connectActionBtn');
+        const actionType = actionBtn.getAttribute('data-action');
+
+        actionBtn.disabled = true;
+        actionBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+        try {
+          switch (actionType) {
+            case 'setup':
+            case 'complete':
+              await StripeConnectService.startOnboarding();
+              break;
+
+            case 'refresh':
+            case 'retry':
+              await loadConnectStatus();
+              break;
+
+            case 'view':
+              // Show account details modal or redirect
+              alert('Account details view coming soon!');
+              actionBtn.disabled = false;
+              actionBtn.innerHTML = '<i class="fas fa-eye"></i> View Account Details';
+              break;
+
+            default:
+              throw new Error('Unknown action type');
+          }
+        } catch (error) {
+          console.error('Error handling Connect action:', error);
+          StripeConnectService.showError(error);
+          actionBtn.disabled = false;
+          const messageData = StripeConnectService.getStatusMessage(connectStatus?.accountStatus);
+          actionBtn.innerHTML = `<i class="fas fa-${getActionIcon(actionType)}"></i> ${messageData.action}`;
+        }
+      }
+
+      function getActionIcon(actionType) {
+        const icons = {
+          setup: 'plus-circle',
+          complete: 'check-circle',
+          refresh: 'sync',
+          retry: 'redo',
+          view: 'eye'
+        };
+        return icons[actionType] || 'circle';
+      }
+
+      function formatRequirement(requirement) {
+        const labels = {
+          'individual.first_name': 'First Name',
+          'individual.last_name': 'Last Name',
+          'individual.dob.day': 'Date of Birth',
+          'individual.dob.month': 'Date of Birth',
+          'individual.dob.year': 'Date of Birth',
+          'individual.address.line1': 'Address',
+          'individual.address.city': 'City',
+          'individual.address.state': 'State',
+          'individual.address.postal_code': 'Postal Code',
+          'individual.ssn_last_4': 'SSN Last 4 Digits',
+          'individual.id_number': 'ID Number',
+          'individual.verification.document': 'ID Document',
+          'business_type': 'Business Type',
+          'tos_acceptance.date': 'Terms of Service Acceptance',
+          'external_account': 'Bank Account'
+        };
+
+        return labels[requirement] || requirement.replace(/_/g, ' ').replace(/\./g, ' - ');
+      }
 
       async function loadEarningsData() {
         try {

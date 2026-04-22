@@ -481,7 +481,7 @@
     <div class="header">
       <div class="header-content">
         <h1><i class="fas fa-wallet"></i> My Wallet</h1>
-        <a href="dashboard.html" class="back-btn">
+        <a href="dashboard-new.html" class="back-btn">
           <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
       </div>
@@ -577,8 +577,10 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/auth-service.js"></script>
+    <script src="js/referral-service.js"></script>
 
     <script>
       let walletData = null;
@@ -596,10 +598,20 @@
 
       async function loadWalletData() {
         try {
-          const response = await ApiService.get('/user/wallet');
+          // Get wallet data from ReferralService
+          const walletResponse = await ReferralService.getWallet();
+          const referralResponse = await ReferralService.getMyReferral();
 
-          if (response.success !== false && response.wallet) {
-            walletData = response.wallet;
+          if (walletResponse.success !== false && walletResponse.wallet) {
+            walletData = {
+              balance: walletResponse.wallet.balance || 0,
+              totalSpent: walletResponse.wallet.totalSpent || 0,
+              totalAdded: walletResponse.wallet.totalAdded || 0,
+              totalSaved: walletResponse.wallet.totalSaved || 0,
+              referralCode: referralResponse.referralCode || '',
+              referralEarnings: referralResponse.totalEarnings || 0,
+              transactions: walletResponse.wallet.transactions || []
+            };
             displayWalletData(walletData);
           } else {
             // Mock data if API fails

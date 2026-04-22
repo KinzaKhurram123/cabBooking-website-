@@ -449,17 +449,10 @@
           // Use AdminService to get all rides with pagination
           const response = await AdminService.getAllRides(1, 1000, currentFilter !== 'all' ? currentFilter : '');
 
-          if (response.success && response.data) {
-            allRides = response.data;
-            filteredRides = allRides;
-            updateStats(allRides);
-            displayRides();
-
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('contentArea').style.display = 'block';
-          } else if (response.rides) {
-            // Fallback for different response format
-            allRides = response.rides;
+          // API returns: { success, count, total, rides: [...] } or { success, data: { rides: [...] } }
+          if (response.success) {
+            allRides = response.rides || response.data?.rides || response.data || [];
+            if (!Array.isArray(allRides)) allRides = [];
             filteredRides = allRides;
             updateStats(allRides);
             displayRides();
@@ -467,7 +460,7 @@
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('contentArea').style.display = 'block';
           } else {
-            throw new Error('Failed to load rides');
+            throw new Error(response.message || 'Failed to load rides');
           }
         } catch (error) {
           console.error('Error loading rides:', error);
@@ -650,8 +643,9 @@
           Utils.showLoader('Loading ride details...');
           const response = await AdminService.getRideById(rideId);
 
-          if (response.success && response.data) {
-            const ride = response.data;
+          // API returns: { success, ride: {...} } or { success, data: {...} }
+          if (response.success) {
+            const ride = response.ride || response.data;
             const details = `
 Ride Details:
 

@@ -413,7 +413,7 @@
     <div class="header">
       <div class="header-content">
         <h1><i class="fas fa-user-circle"></i> My Profile</h1>
-        <a href="dashboard.html" class="back-btn">
+        <a href="dashboard-new.html" class="back-btn">
           <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
       </div>
@@ -584,6 +584,7 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/auth-service.js"></script>
 
@@ -610,8 +611,8 @@
             displayUserProfile(userData);
           }
 
-          // Try to fetch fresh data from API
-          const response = await ApiService.get('/user/profile');
+          // Try to fetch fresh data from API using AuthService
+          const response = await AuthService.getProfile();
           if (response.success !== false && response.user) {
             userData = response.user;
             localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(userData));

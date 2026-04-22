@@ -7,20 +7,40 @@ const AdminService = {
   async login(credentials) {
     try {
       console.log("AdminService - Calling admin login API...");
+      console.log("AdminService - Credentials:", { email: credentials.email });
+
       const response = await ApiService.post("/admin/login", credentials, {
         requiresAuth: false,
       });
 
+      console.log("AdminService - Login response:", response);
+      console.log("AdminService - Response structure:", JSON.stringify(response, null, 2));
+
       if (response.success && response.data && response.data.token) {
-        localStorage.setItem(
-          CONFIG.STORAGE_KEYS.AUTH_TOKEN,
-          response.data.token,
-        );
-        localStorage.setItem(
-          CONFIG.STORAGE_KEYS.USER_DATA,
-          JSON.stringify(response.data.admin),
-        );
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, "admin");
+        const token = response.data.token;
+        const adminData = response.data.admin || response.data.user;
+        const role = adminData?.role || response.data.role || 'admin';
+
+        console.log("AdminService - Extracted data:", {
+          token: token.substring(0, 30) + '...',
+          role: role,
+          adminData: adminData
+        });
+
+        // Store token
+        localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
+
+        // Store user data
+        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(adminData));
+
+        // Store role - accept multiple admin role variations
+        const validAdminRoles = ['admin', 'superadmin', 'super_admin', 'super-admin'];
+        const normalizedRole = validAdminRoles.includes(role?.toLowerCase()) ? 'admin' : role;
+
+        console.log("AdminService - Storing role:", normalizedRole, "(original:", role + ")");
+        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, normalizedRole);
+
+        console.log("AdminService - Storage complete");
       }
 
       return response;
@@ -501,6 +521,76 @@ const AdminService = {
   // ==================== CAB MANAGEMENT APIs ====================
 
   /**
+   * Get All Categories
+   * GET /api/admin/categories
+   */
+  async getAllCategories() {
+    try {
+      const response = await ApiService.get("/admin/categories");
+      return response;
+    } catch (error) {
+      console.error("Get all categories error:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get Category By ID
+   * GET /api/admin/categories/:id
+   */
+  async getCategoryById(categoryId) {
+    try {
+      const response = await ApiService.get(`/admin/categories/${categoryId}`);
+      return response;
+    } catch (error) {
+      console.error("Get category by ID error:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Create Category
+   * POST /api/admin/categories
+   */
+  async createCategory(categoryData) {
+    try {
+      const response = await ApiService.post("/admin/categories", categoryData);
+      return response;
+    } catch (error) {
+      console.error("Create category error:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Update Category
+   * PUT /api/admin/categories/:id
+   */
+  async updateCategory(categoryId, categoryData) {
+    try {
+      const response = await ApiService.put(`/admin/categories/${categoryId}`, categoryData);
+      return response;
+    } catch (error) {
+      console.error("Update category error:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Delete Category
+   * DELETE /api/admin/categories/:id
+   */
+  async deleteCategory(categoryId) {
+    try {
+      const response = await ApiService.delete(`/admin/categories/${categoryId}`);
+      return response;
+    } catch (error) {
+      console.error("Delete category error:", error);
+      throw error;
+    }
+  },
+
+  /**
    * Get All Cabs
    * GET /api/admin/cabs
    */
@@ -510,6 +600,20 @@ const AdminService = {
       return response;
     } catch (error) {
       console.error("Get all cabs error:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get Cab By ID
+   * GET /api/admin/cabs/:id
+   */
+  async getCabById(cabId) {
+    try {
+      const response = await ApiService.get(`/admin/cabs/${cabId}`);
+      return response;
+    } catch (error) {
+      console.error("Get cab by ID error:", error);
       throw error;
     }
   },

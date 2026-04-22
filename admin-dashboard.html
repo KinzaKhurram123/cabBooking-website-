@@ -467,7 +467,9 @@
       }
 
       @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       /* Error Message */
@@ -658,6 +660,10 @@
           <i class="fas fa-wallet"></i>
           <span>My Earnings</span>
         </a>
+        <a href="admin-stripe-connect.html" class="menu-item">
+          <i class="fab fa-stripe"></i>
+          <span>Stripe Connect</span>
+        </a>
       </div>
 
       <div class="menu-section">
@@ -736,7 +742,9 @@
           <div class="notification-dropdown" id="notificationDropdown">
             <div class="notification-header">
               <h3>Notifications</h3>
-              <span class="mark-read" onclick="markAllAsRead()">Mark all as read</span>
+              <span class="mark-read" onclick="markAllAsRead()"
+                >Mark all as read</span
+              >
             </div>
             <div class="notification-list" id="notificationList">
               <div class="notification-item">
@@ -866,6 +874,7 @@
 
     <!-- Scripts -->
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/api-service.js"></script>
     <script src="js/admin-service.js"></script>
     <script>
@@ -893,26 +902,27 @@
           const response = await AdminService.getPendingVerifications();
 
           const notificationList = document.getElementById("notificationList");
-          const notificationCount = document.getElementById("notificationCount");
+          const notificationCount =
+            document.getElementById("notificationCount");
 
           if (response.success && response.data && response.data.length > 0) {
             notificationCount.textContent = response.data.length;
-            notificationList.innerHTML = '';
+            notificationList.innerHTML = "";
 
-            response.data.slice(0, 5).forEach(item => {
-              const notificationItem = document.createElement('div');
-              notificationItem.className = 'notification-item unread';
+            response.data.slice(0, 5).forEach((item) => {
+              const notificationItem = document.createElement("div");
+              notificationItem.className = "notification-item unread";
               notificationItem.innerHTML = `
                 <h4>New Driver Verification</h4>
-                <p>${item.name || 'Driver'} is pending verification</p>
+                <p>${item.name || "Driver"} is pending verification</p>
               `;
               notificationItem.onclick = () => {
-                window.location.href = 'admin-driver-verifications.html';
+                window.location.href = "admin-driver-verifications.html";
               };
               notificationList.appendChild(notificationItem);
             });
           } else {
-            notificationCount.textContent = '0';
+            notificationCount.textContent = "0";
             notificationList.innerHTML = `
               <div class="notification-item">
                 <h4>No new notifications</h4>
@@ -927,11 +937,12 @@
 
       // Mark all notifications as read
       function markAllAsRead() {
-        const notificationItems = document.querySelectorAll('.notification-item');
-        notificationItems.forEach(item => {
-          item.classList.remove('unread');
+        const notificationItems =
+          document.querySelectorAll(".notification-item");
+        notificationItems.forEach((item) => {
+          item.classList.remove("unread");
         });
-        document.getElementById("notificationCount").textContent = '0';
+        document.getElementById("notificationCount").textContent = "0";
       }
 
       // Show loading overlay
@@ -963,13 +974,16 @@
       }
 
       // Close notification dropdown when clicking outside
-      document.addEventListener('click', function(event) {
+      document.addEventListener("click", function (event) {
         const dropdown = document.getElementById("notificationDropdown");
-        const notificationIcon = document.querySelector('.notification-icon');
+        const notificationIcon = document.querySelector(".notification-icon");
 
-        if (dropdown && notificationIcon &&
-            !dropdown.contains(event.target) &&
-            !notificationIcon.contains(event.target)) {
+        if (
+          dropdown &&
+          notificationIcon &&
+          !dropdown.contains(event.target) &&
+          !notificationIcon.contains(event.target)
+        ) {
           dropdown.classList.remove("active");
         }
       });
@@ -993,38 +1007,35 @@
       // Load dashboard data
       async function loadDashboard() {
         try {
+          console.log("📊 Loading dashboard stats...");
           const response = await AdminService.getDashboardStats();
 
-          if (response.success && response.data) {
-            const stats = response.data;
+          if (response.success) {
+            // API returns: { success, data: { users: {total,riders,drivers}, bookings: {total,completed,...}, revenue, pendingVerifications } }
+            const stats = response.data || response;
+            console.log("📊 Dashboard stats loaded:", stats);
 
-            // Update stat values
-            document.getElementById("totalUsers").textContent =
-              stats.totalUsers || 0;
-            document.getElementById("totalDrivers").textContent =
-              stats.totalDrivers || 0;
-            document.getElementById("completedRides").textContent =
-              stats.completedBookings || stats.completedRides || 0;
-            document.getElementById("totalRevenue").textContent =
-              "$" + (stats.totalRevenue || 0).toLocaleString();
+            // Handle nested users/bookings objects from API doc
+            const totalUsers = stats.users?.total || stats.totalUsers || 0;
+            const totalDrivers = stats.users?.drivers || stats.totalDrivers || 0;
+            const completedRides = stats.bookings?.completed || stats.completedBookings || stats.completedRides || 0;
+            const totalRevenue = stats.revenue || stats.totalRevenue || 0;
 
-            // Update percentage changes if available
-            if (stats.percentageChange) {
-              updatePercentageChange('users', stats.percentageChange.users);
-              updatePercentageChange('drivers', stats.percentageChange.drivers);
-              updatePercentageChange('rides', stats.percentageChange.rides);
-              updatePercentageChange('revenue', stats.percentageChange.revenue);
-            }
+            document.getElementById("totalUsers").textContent = totalUsers;
+            document.getElementById("totalDrivers").textContent = totalDrivers;
+            document.getElementById("completedRides").textContent = completedRides;
+            document.getElementById("totalRevenue").textContent = "$" + Number(totalRevenue).toLocaleString();
 
             // Update notification badge with pending verifications
-            if (stats.pendingVerifications) {
-              document.getElementById("notificationCount").textContent = stats.pendingVerifications;
+            const pendingVerif = stats.pendingVerifications || 0;
+            if (pendingVerif) {
+              document.getElementById("notificationCount").textContent = pendingVerif;
             }
+          } else {
+            console.warn("⚠️ Dashboard stats response not successful:", response);
           }
         } catch (error) {
-          console.error("Error loading dashboard:", error);
-          showError("Failed to load dashboard statistics");
-          // Show fallback data
+          console.error("❌ Error loading dashboard:", error);
           document.getElementById("totalUsers").textContent = "0";
           document.getElementById("totalDrivers").textContent = "0";
           document.getElementById("completedRides").textContent = "0";
@@ -1034,42 +1045,84 @@
 
       // Update percentage change display
       function updatePercentageChange(type, value) {
-        const statCards = document.querySelectorAll('.stat-card');
+        const statCards = document.querySelectorAll(".stat-card");
         let index = 0;
 
-        switch(type) {
-          case 'users': index = 0; break;
-          case 'drivers': index = 1; break;
-          case 'rides': index = 2; break;
-          case 'revenue': index = 3; break;
+        switch (type) {
+          case "users":
+            index = 0;
+            break;
+          case "drivers":
+            index = 1;
+            break;
+          case "rides":
+            index = 2;
+            break;
+          case "revenue":
+            index = 3;
+            break;
         }
 
-        const changeElement = statCards[index]?.querySelector('.stat-change');
+        const changeElement = statCards[index]?.querySelector(".stat-change");
         if (changeElement && value) {
-          const isPositive = value.includes('+');
-          changeElement.className = `stat-change ${isPositive ? 'positive' : 'negative'}`;
-          changeElement.innerHTML = `<i class="fas fa-arrow-${isPositive ? 'up' : 'down'}"></i> ${value} from last month`;
+          const isPositive = value.includes("+");
+          changeElement.className = `stat-change ${isPositive ? "positive" : "negative"}`;
+          changeElement.innerHTML = `<i class="fas fa-arrow-${isPositive ? "up" : "down"}"></i> ${value} from last month`;
         }
       }
 
       // Initialize charts
       async function initCharts() {
         try {
+          console.log("📈 Initializing charts...");
           // Fetch chart data from API
-          const [chartDataResponse, rideStatusResponse] = await Promise.all([
-            AdminService.getDashboardChartData(),
-            AdminService.getRideStatusStats()
-          ]);
+          const [chartDataResponse, rideStatusResponse] =
+            await Promise.allSettled([
+              AdminService.getDashboardChartData(),
+              AdminService.getRideStatusStats(),
+            ]);
+
+          console.log("📈 Chart data responses:", {
+            chartData: chartDataResponse.status,
+            rideStatus: rideStatusResponse.status,
+          });
 
           // Rides Overview Chart
-          const ridesCtx = document.getElementById("ridesChart").getContext("2d");
-          let chartLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-          let chartData = [120, 190, 300, 500, 420, 630, 750, 890, 920, 1050, 1200, 1350];
+          const ridesCtx = document
+            .getElementById("ridesChart")
+            .getContext("2d");
+          let chartLabels = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
+          let chartData = [
+            120, 190, 300, 500, 420, 630, 750, 890, 920, 1050, 1200, 1350,
+          ];
 
           // Use API data if available
-          if (chartDataResponse.success && chartDataResponse.data && chartDataResponse.data.length > 0) {
-            chartLabels = chartDataResponse.data.map(item => item.month);
-            chartData = chartDataResponse.data.map(item => item.rides);
+          // API returns: { success, data: { labels: [...], rides: [...], revenue: [...], users: [...] } }
+          if (
+            chartDataResponse.status === "fulfilled" &&
+            chartDataResponse.value.success
+          ) {
+            const chartApiData = chartDataResponse.value.data || chartDataResponse.value;
+            if (chartApiData.labels && chartApiData.labels.length > 0) {
+              chartLabels = chartApiData.labels;
+              chartData = chartApiData.rides || chartData;
+              console.log("📈 Using API data for rides chart");
+            }
+          } else {
+            console.log("📈 Using default data for rides chart");
           }
 
           new Chart(ridesCtx, {
@@ -1122,26 +1175,34 @@
           });
 
           // Status Chart
-          const statusCtx = document.getElementById("statusChart").getContext("2d");
-          let statusLabels = ["Completed", "In Progress", "Cancelled", "Pending"];
+          const statusCtx = document
+            .getElementById("statusChart")
+            .getContext("2d");
+          let statusLabels = [
+            "Completed",
+            "In Progress",
+            "Cancelled",
+            "Pending",
+          ];
           let statusData = [65, 20, 10, 5];
           let statusColors = ["#00ADEF", "#00d4aa", "#ef4444", "#f59e0b"];
 
           // Use API data if available
-          if (rideStatusResponse.success && rideStatusResponse.data) {
-            const rideStatus = rideStatusResponse.data;
-            if (rideStatus.labels && rideStatus.labels.length > 0) {
-              statusLabels = rideStatus.labels;
-              statusData = [
-                rideStatus.completed || 0,
-                rideStatus.inProgress || 0,
-                rideStatus.cancelled || 0,
-                rideStatus.pending || 0
-              ];
-              if (rideStatus.colors) {
-                statusColors = rideStatus.colors;
-              }
-            }
+          // API returns: { success, data: { pending, accepted, inProgress, completed, cancelled } }
+          if (
+            rideStatusResponse.status === "fulfilled" &&
+            rideStatusResponse.value.success
+          ) {
+            const rideStatus = rideStatusResponse.value.data || rideStatusResponse.value;
+            statusData = [
+              rideStatus.completed || 0,
+              rideStatus.inProgress || 0,
+              rideStatus.cancelled || 0,
+              rideStatus.pending || 0,
+            ];
+            console.log("📈 Using API data for status chart");
+          } else {
+            console.log("📈 Using default data for status chart");
           }
 
           new Chart(statusCtx, {
@@ -1174,9 +1235,11 @@
               },
             },
           });
+          console.log("📈 Charts initialized successfully");
         } catch (error) {
-          console.error("Error loading chart data:", error);
+          console.error("❌ Error loading chart data:", error);
           // Initialize with default data if API fails
+          console.log("📈 Falling back to default charts");
           initDefaultCharts();
         }
       }
@@ -1187,38 +1250,66 @@
         new Chart(ridesCtx, {
           type: "line",
           data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            datasets: [{
-              label: "Completed Rides",
-              data: [120, 190, 300, 500, 420, 630, 750, 890, 920, 1050, 1200, 1350],
-              borderColor: "#00ADEF",
-              backgroundColor: "rgba(0, 173, 239, 0.1)",
-              tension: 0.4,
-              fill: true,
-            }],
+            labels: [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ],
+            datasets: [
+              {
+                label: "Completed Rides",
+                data: [
+                  120, 190, 300, 500, 420, 630, 750, 890, 920, 1050, 1200, 1350,
+                ],
+                borderColor: "#00ADEF",
+                backgroundColor: "rgba(0, 173, 239, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: true,
             plugins: { legend: { display: false } },
             scales: {
-              y: { beginAtZero: true, grid: { color: "rgba(0, 173, 239, 0.1)" }, ticks: { color: "#9ca3af" } },
-              x: { grid: { color: "rgba(0, 173, 239, 0.1)" }, ticks: { color: "#9ca3af" } },
+              y: {
+                beginAtZero: true,
+                grid: { color: "rgba(0, 173, 239, 0.1)" },
+                ticks: { color: "#9ca3af" },
+              },
+              x: {
+                grid: { color: "rgba(0, 173, 239, 0.1)" },
+                ticks: { color: "#9ca3af" },
+              },
             },
           },
         });
 
-        const statusCtx = document.getElementById("statusChart").getContext("2d");
+        const statusCtx = document
+          .getElementById("statusChart")
+          .getContext("2d");
         new Chart(statusCtx, {
           type: "doughnut",
           data: {
             labels: ["Completed", "In Progress", "Cancelled", "Pending"],
-            datasets: [{
-              data: [65, 20, 10, 5],
-              backgroundColor: ["#00ADEF", "#00d4aa", "#ef4444", "#f59e0b"],
-              borderColor: "#0a0a0a",
-              borderWidth: 2,
-            }],
+            datasets: [
+              {
+                data: [65, 20, 10, 5],
+                backgroundColor: ["#00ADEF", "#00d4aa", "#ef4444", "#f59e0b"],
+                borderColor: "#0a0a0a",
+                borderWidth: 2,
+              },
+            ],
           },
           options: {
             responsive: true,
@@ -1236,42 +1327,49 @@
       // Load recent activities
       async function loadRecentActivities() {
         try {
+          console.log("📋 Loading recent activities...");
           const response = await AdminService.getRecentActivities();
 
-          if (response.success && response.data && response.data.length > 0) {
+          // API returns: { success, activities: [ { type, message, timestamp } ] }
+          const activities = response.activities || response.data || [];
+
+          if (response.success && activities.length > 0) {
             const activityList = document.getElementById("activityList");
-            activityList.innerHTML = '';
+            activityList.innerHTML = "";
 
-            response.data.forEach(activity => {
-              const activityItem = document.createElement('div');
-              activityItem.className = 'activity-item';
+            activities.forEach((activity) => {
+              const activityItem = document.createElement("div");
+              activityItem.className = "activity-item";
 
-              const iconColor = activity.color || 'blue';
-              const icon = activity.icon || 'fa-info-circle';
-              const time = formatActivityTime(activity.time);
+              const iconColor = activity.color || "blue";
+              const icon = activity.icon || "fa-info-circle";
+              const time = formatActivityTime(activity.timestamp || activity.time);
 
               activityItem.innerHTML = `
                 <div class="activity-icon ${iconColor}">
                   <i class="fas ${icon}"></i>
                 </div>
                 <div class="activity-info">
-                  <h4>${activity.type || 'Activity'}</h4>
-                  <p>${activity.message || 'No description'}</p>
+                  <h4>${activity.type || "Activity"}</h4>
+                  <p>${activity.message || "No description"}</p>
                 </div>
                 <div class="activity-time">${time}</div>
               `;
 
               activityList.appendChild(activityItem);
             });
+            console.log("📋 Recent activities loaded:", activities.length, "items");
+          } else {
+            console.log("📋 No recent activities available");
           }
         } catch (error) {
-          console.error("Error loading recent activities:", error);
+          console.error("❌ Error loading recent activities:", error);
         }
       }
 
       // Format activity time
       function formatActivityTime(timestamp) {
-        if (!timestamp) return 'Just now';
+        if (!timestamp) return "Just now";
 
         const now = new Date();
         const activityTime = new Date(timestamp);
@@ -1280,29 +1378,48 @@
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
-        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        if (diffMins < 1) return "Just now";
+        if (diffMins < 60)
+          return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
+        if (diffHours < 24)
+          return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+        return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
       }
 
       // Load admin profile
       async function loadAdminProfile() {
         try {
+          console.log("👤 Loading admin profile...");
           const userData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_DATA);
           if (userData) {
             const admin = JSON.parse(userData);
-            document.getElementById("adminName").textContent = admin.name || 'Admin User';
+            document.getElementById("adminName").textContent =
+              admin.name || "Admin User";
+            console.log("👤 Profile loaded from localStorage:", admin.name);
           }
 
           // Try to fetch fresh profile data
-          const response = await AdminService.getProfile();
-          if (response.success && response.data) {
-            document.getElementById("adminName").textContent = response.data.name || 'Admin User';
-            localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(response.data));
+          try {
+            const response = await AdminService.getProfile();
+            if (response.success && response.data) {
+              document.getElementById("adminName").textContent =
+                response.data.name || "Admin User";
+              localStorage.setItem(
+                CONFIG.STORAGE_KEYS.USER_DATA,
+                JSON.stringify(response.data),
+              );
+              console.log("👤 Profile updated from API:", response.data.name);
+            }
+          } catch (apiError) {
+            console.warn(
+              "⚠️ Could not fetch fresh profile from API:",
+              apiError.message,
+            );
+            // Continue with cached data
           }
         } catch (error) {
-          console.error("Error loading admin profile:", error);
+          console.error("❌ Error loading admin profile:", error);
+          // Don't throw - profile is not critical
         }
       }
 
@@ -1314,24 +1431,69 @@
         const token = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
         const userRole = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
 
-        if (!token || userRole !== 'admin') {
+        console.log("🔍 Auth Check - Token exists:", !!token);
+        console.log("🔍 Auth Check - User role:", userRole);
+        console.log(
+          "🔍 Auth Check - Token preview:",
+          token ? token.substring(0, 30) + "..." : "null",
+        );
+
+        // Accept multiple admin role variations
+        const validAdminRoles = [
+          "admin",
+          "superadmin",
+          "super_admin",
+          "super-admin",
+        ];
+        const isAdmin = validAdminRoles.includes(userRole?.toLowerCase());
+
+        console.log("🔍 Auth Check - Is valid admin role:", isAdmin);
+        console.log("🔍 Auth Check - Valid roles:", validAdminRoles);
+
+        if (!token || !isAdmin) {
           console.log("⚠️ No admin authentication found, redirecting to login");
+          console.log("⚠️ Token:", token ? "exists" : "missing");
+          console.log("⚠️ Role:", userRole);
+          console.log("⚠️ Is admin:", isAdmin);
           window.location.href = "admin-login.html";
           return;
         }
 
+        console.log("✅ Authentication verified, loading dashboard...");
+
         try {
           showLoading();
 
-          // Load all dashboard data in parallel
-          await Promise.all([
+          // Load all dashboard data in parallel with error handling
+          const results = await Promise.allSettled([
             loadDashboard(),
             loadAdminProfile(),
-            loadRecentActivities()
+            loadRecentActivities(),
           ]);
 
-          // Initialize charts after data is loaded
-          await initCharts();
+          // Log results
+          results.forEach((result, index) => {
+            const names = [
+              "Dashboard Stats",
+              "Admin Profile",
+              "Recent Activities",
+            ];
+            if (result.status === "fulfilled") {
+              console.log(`✅ ${names[index]} loaded successfully`);
+            } else {
+              console.warn(`⚠️ ${names[index]} failed:`, result.reason);
+            }
+          });
+
+          // Initialize charts after data is loaded (with fallback)
+          try {
+            await initCharts();
+            console.log("✅ Charts initialized successfully");
+          } catch (chartError) {
+            console.error("⚠️ Chart initialization failed:", chartError);
+            // Initialize with default data as fallback
+            initDefaultCharts();
+          }
 
           console.log("✅ Dashboard loaded successfully");
         } catch (error) {
@@ -1342,15 +1504,18 @@
         }
 
         // Auto-refresh dashboard every 5 minutes
-        setInterval(async () => {
-          try {
-            await loadDashboard();
-            await loadRecentActivities();
-            console.log("Dashboard data refreshed");
-          } catch (error) {
-            console.error("Error refreshing dashboard:", error);
-          }
-        }, 5 * 60 * 1000); // 5 minutes
+        setInterval(
+          async () => {
+            try {
+              await loadDashboard();
+              await loadRecentActivities();
+              console.log("Dashboard data refreshed");
+            } catch (error) {
+              console.error("Error refreshing dashboard:", error);
+            }
+          },
+          5 * 60 * 1000,
+        ); // 5 minutes
       });
     </script>
   </body>
