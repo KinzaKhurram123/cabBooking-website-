@@ -370,8 +370,15 @@
         }
       }
     </style>
+      <link rel="stylesheet" href="css/admin-responsive.css" />
   </head>
   <body>
+    <!-- Hamburger Button (mobile) -->
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </button>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
@@ -675,20 +682,25 @@
           showLoading();
 
           const response = await AdminService.getAllUsers(page, limit, search);
+          console.log('Full API Response:', response);
 
           // API returns: { success, count, total, users: [...] }
           // OR wrapped: { success, data: { users: [...], total, page, pages } }
-          if (response.success) {
-            // Handle both flat and nested response shapes
-            const users = response.users || response.data?.users || response.data || [];
-            allUsers = Array.isArray(users) ? users : [];
-            totalPages = response.pages || response.data?.pages || 1;
-            currentPage = response.page || response.data?.page || page;
+          // OR direct: { users: [...], total, page, pages }
 
-            displayUsers(allUsers);
-          } else {
+          // Check if response has success field and it's false
+          if (response.success === false) {
             throw new Error(response.message || 'Failed to load users');
           }
+
+          // Handle both flat and nested response shapes
+          const users = response.users || response.data?.users || response.data || [];
+          allUsers = Array.isArray(users) ? users : [];
+          totalPages = response.pages || response.data?.pages || 1;
+          currentPage = response.page || response.data?.page || page;
+
+          console.log('Extracted users:', allUsers.length);
+          displayUsers(allUsers);
 
           hideLoading();
         } catch (error) {
@@ -976,6 +988,35 @@
             console.error("Error parsing user data:", e);
           }
         }
+      });
+    </script>
+  
+    <script>
+      // Sidebar toggle for mobile
+      function toggleSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        var btn = document.getElementById('hamburgerBtn');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+        btn.innerHTML = sidebar.classList.contains('open')
+          ? '<i class="fas fa-times"></i>'
+          : '<i class="fas fa-bars"></i>';
+      }
+      function closeSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        var btn = document.getElementById('hamburgerBtn');
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        btn.innerHTML = '<i class="fas fa-bars"></i>';
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.sidebar .menu-item').forEach(function(item) {
+          item.addEventListener('click', function() {
+            if (window.innerWidth <= 768) closeSidebar();
+          });
+        });
       });
     </script>
   </body>

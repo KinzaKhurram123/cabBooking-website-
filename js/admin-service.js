@@ -284,14 +284,14 @@ const AdminService = {
 
   /**
    * Get All Drivers
-   * GET /api/admin/drivers?page=1&limit=10&status=approved
+   * GET /api/drivers?page=1&limit=10&status=approved
    */
   async getAllDrivers(page = 1, limit = 10, status = "") {
     try {
       const params = new URLSearchParams({ page, limit });
       if (status) params.append("status", status);
       const response = await ApiService.get(
-        `/admin/drivers?${params.toString()}`,
+        `/drivers?${params.toString()}`,
       );
       return response;
     } catch (error) {
@@ -302,11 +302,11 @@ const AdminService = {
 
   /**
    * Get Pending Drivers
-   * GET /api/admin/drivers/pending
+   * GET /api/drivers/pending
    */
   async getPendingDrivers() {
     try {
-      const response = await ApiService.get("/admin/drivers/pending");
+      const response = await ApiService.get("/drivers/pending");
       return response;
     } catch (error) {
       console.error("Get pending drivers error:", error);
@@ -316,11 +316,11 @@ const AdminService = {
 
   /**
    * Get Driver By ID
-   * GET /api/admin/drivers/:id
+   * GET /api/drivers/:id
    */
   async getDriverById(driverId) {
     try {
-      const response = await ApiService.get(`/admin/drivers/${driverId}`);
+      const response = await ApiService.get(`/drivers/${driverId}`);
       return response;
     } catch (error) {
       console.error("Get driver by ID error:", error);

@@ -3706,7 +3706,8 @@
         });
 
         card.addEventListener("mouseleave", () => {
-          card.style.transform = "perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)";
+          card.style.transform =
+            "perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)";
         });
       });
 
@@ -3721,15 +3722,18 @@
       });
 
       // Enhanced button hover with glow effect
-      document.querySelectorAll(".btn-primary, .btn-secondary").forEach((btn) => {
-        btn.addEventListener("mouseenter", function() {
-          this.style.boxShadow = "0 0 30px rgba(68, 191, 210, 0.6), 0 0 60px rgba(68, 191, 210, 0.4)";
-        });
+      document
+        .querySelectorAll(".btn-primary, .btn-secondary")
+        .forEach((btn) => {
+          btn.addEventListener("mouseenter", function () {
+            this.style.boxShadow =
+              "0 0 30px rgba(68, 191, 210, 0.6), 0 0 60px rgba(68, 191, 210, 0.4)";
+          });
 
-        btn.addEventListener("mouseleave", function() {
-          this.style.boxShadow = "";
+          btn.addEventListener("mouseleave", function () {
+            this.style.boxShadow = "";
+          });
         });
-      });
 
       // Scroll progress indicator
       const createScrollProgress = () => {
@@ -3746,7 +3750,9 @@
         document.body.appendChild(progressBar);
 
         window.addEventListener("scroll", () => {
-          const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          const windowHeight =
+            document.documentElement.scrollHeight -
+            document.documentElement.clientHeight;
           const scrolled = (window.pageYOffset / windowHeight) * 100;
           progressBar.style.width = scrolled + "%";
         });
@@ -3755,16 +3761,19 @@
       createScrollProgress();
 
       // Animate elements on scroll with delay
-      const animateOnScroll = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => {
-              entry.target.style.opacity = "1";
-              entry.target.style.transform = "translateY(0)";
-            }, index * 50);
-          }
-        });
-      }, { threshold: 0.1 });
+      const animateOnScroll = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+              setTimeout(() => {
+                entry.target.style.opacity = "1";
+                entry.target.style.transform = "translateY(0)";
+              }, index * 50);
+            }
+          });
+        },
+        { threshold: 0.1 },
+      );
 
       document.querySelectorAll(".stat-item, .faq-item").forEach((el) => {
         el.style.opacity = "0";
@@ -3775,18 +3784,22 @@
 
       // Floating animation for CTA buttons
       const floatAnimation = () => {
-        document.querySelectorAll(".cta-section .btn-primary").forEach((btn) => {
-          let direction = 1;
-          setInterval(() => {
-            const currentTransform = btn.style.transform || "translateY(0px)";
-            const currentY = parseFloat(currentTransform.match(/-?\d+/)?.[0] || 0);
-            const newY = currentY + (direction * 2);
+        document
+          .querySelectorAll(".cta-section .btn-primary")
+          .forEach((btn) => {
+            let direction = 1;
+            setInterval(() => {
+              const currentTransform = btn.style.transform || "translateY(0px)";
+              const currentY = parseFloat(
+                currentTransform.match(/-?\d+/)?.[0] || 0,
+              );
+              const newY = currentY + direction * 2;
 
-            if (Math.abs(newY) > 10) direction *= -1;
+              if (Math.abs(newY) > 10) direction *= -1;
 
-            btn.style.transform = `translateY(${newY}px)`;
-          }, 50);
-        });
+              btn.style.transform = `translateY(${newY}px)`;
+            }, 50);
+          });
       };
 
       setTimeout(floatAnimation, 1000);
@@ -3797,22 +3810,25 @@
         title.textContent = "";
         title.style.opacity = "1";
 
-        const revealObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              let index = 0;
-              const interval = setInterval(() => {
-                if (index < text.length) {
-                  title.textContent += text[index];
-                  index++;
-                } else {
-                  clearInterval(interval);
-                }
-              }, 50);
-              revealObserver.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.5 });
+        const revealObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                let index = 0;
+                const interval = setInterval(() => {
+                  if (index < text.length) {
+                    title.textContent += text[index];
+                    index++;
+                  } else {
+                    clearInterval(interval);
+                  }
+                }, 50);
+                revealObserver.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.5 },
+        );
 
         revealObserver.observe(title);
       });

@@ -17,6 +17,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000000;
+            color: #e5e7eb;
             overflow-x: hidden;
         }
 
@@ -28,6 +29,7 @@
             height: 100vh;
             width: 260px;
             background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+            border-right: 1px solid rgba(0, 173, 239, 0.2);
             padding: 20px 0;
             overflow-y: auto;
             z-index: 1000;
@@ -77,7 +79,7 @@
         }
 
         .menu-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 173, 239, 0.15);
             padding-left: 25px;
         }
 
@@ -104,7 +106,8 @@
             background: #0a0a0a;
             padding: 20px 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 173, 239, 0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -112,7 +115,7 @@
         }
 
         .top-bar h1 {
-            color: #2c3e50;
+            color: #00adef;
             font-size: 28px;
         }
 
@@ -141,7 +144,8 @@
             background: #0a0a0a;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 173, 239, 0.2);
             margin-bottom: 30px;
         }
 
@@ -153,14 +157,14 @@
         }
 
         .content-header h2 {
-            color: #2c3e50;
+            color: #00adef;
             font-size: 22px;
         }
 
         .btn {
             padding: 10px 20px;
             background: #00ADEF;
-            color: white;
+            color: #000000;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -169,7 +173,8 @@
         }
 
         .btn:hover {
-            background: #5a6fd8;
+            background: #00e5ff;
+            box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
         }
 
         /* Table */
@@ -183,23 +188,25 @@
         }
 
         table.dataTable thead th {
-            background: #f8f9fa;
-            color: #2c3e50;
+            background: rgba(0, 173, 239, 0.1);
+            color: #00adef;
             font-weight: 600;
             padding: 15px;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid rgba(0, 173, 239, 0.2);
         }
 
         table.dataTable tbody td {
             padding: 15px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+            color: #9ca3af;
         }
 
         .permission-badge {
             display: inline-block;
             padding: 4px 8px;
-            background: #e3f2fd;
-            color: #1976d2;
+            background: rgba(0, 173, 239, 0.2);
+            color: #00adef;
+            border: 1px solid #00adef;
             border-radius: 4px;
             font-size: 12px;
             margin: 2px;
@@ -220,18 +227,30 @@
         }
 
         .action-edit {
-            background: #3498db;
-            color: white;
+            background: #00adef;
+            color: #000000;
+        }
+
+        .action-edit:hover {
+            background: #00e5ff;
         }
 
         .action-delete {
-            background: #e74c3c;
+            background: rgba(239, 68, 68, 0.8);
             color: white;
         }
 
+        .action-delete:hover {
+            background: #ef4444;
+        }
+
         .action-permissions {
-            background: #9b59b6;
+            background: rgba(155, 89, 182, 0.8);
             color: white;
+        }
+
+        .action-permissions:hover {
+            background: #9b59b6;
         }
 
         /* Search */
@@ -242,9 +261,17 @@
         .search-box input {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid rgba(0, 173, 239, 0.2);
+            border: 2px solid rgba(0, 173, 239, 0.3);
             border-radius: 6px;
             font-size: 14px;
+            background: #000000;
+            color: #e5e7eb;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #00adef;
+            box-shadow: 0 0 10px rgba(0, 173, 239, 0.2);
         }
 
         /* Role Card */
@@ -252,9 +279,9 @@
             background: #0a0a0a;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             margin-bottom: 15px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #00adef;
         }
 
         .role-card-header {
@@ -265,12 +292,12 @@
         }
 
         .role-card-header h3 {
-            color: #2c3e50;
+            color: #00adef;
             font-size: 18px;
         }
 
         .role-description {
-            color: #7f8c8d;
+            color: #9ca3af;
             font-size: 14px;
             margin-bottom: 15px;
         }
@@ -293,8 +320,15 @@
             }
         }
     </style>
-</head>
+    <link rel="stylesheet" href="css/admin-responsive.css" />
+  </head>
 <body>
+    <!-- Hamburger Button (mobile) -->
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </button>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
@@ -887,5 +921,34 @@
             }
         });
     </script>
-</body>
+
+    <script>
+      // Sidebar toggle for mobile
+      function toggleSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        var btn = document.getElementById('hamburgerBtn');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+        btn.innerHTML = sidebar.classList.contains('open')
+          ? '<i class="fas fa-times"></i>'
+          : '<i class="fas fa-bars"></i>';
+      }
+      function closeSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        var btn = document.getElementById('hamburgerBtn');
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        btn.innerHTML = '<i class="fas fa-bars"></i>';
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.sidebar .menu-item').forEach(function(item) {
+          item.addEventListener('click', function() {
+            if (window.innerWidth <= 768) closeSidebar();
+          });
+        });
+      });
+    </script>
+  </body>
 </html>

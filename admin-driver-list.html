@@ -17,6 +17,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000000;
+            color: #e5e7eb;
             overflow-x: hidden;
         }
 
@@ -28,6 +29,7 @@
             height: 100vh;
             width: 260px;
             background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+            border-right: 1px solid rgba(0, 173, 239, 0.2);
             padding: 20px 0;
             overflow-y: auto;
             z-index: 1000;
@@ -77,7 +79,7 @@
         }
 
         .menu-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 173, 239, 0.15);
             padding-left: 25px;
         }
 
@@ -104,7 +106,8 @@
             background: #0a0a0a;
             padding: 20px 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 173, 239, 0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -112,7 +115,7 @@
         }
 
         .top-bar h1 {
-            color: #2c3e50;
+            color: #00adef;
             font-size: 28px;
         }
 
@@ -141,7 +144,8 @@
             background: #0a0a0a;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 173, 239, 0.2);
             margin-bottom: 30px;
         }
 
@@ -153,14 +157,14 @@
         }
 
         .content-header h2 {
-            color: #2c3e50;
+            color: #00adef;
             font-size: 22px;
         }
 
         .btn {
             padding: 10px 20px;
             background: #00ADEF;
-            color: white;
+            color: #000000;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -169,7 +173,8 @@
         }
 
         .btn:hover {
-            background: #5a6fd8;
+            background: #00e5ff;
+            box-shadow: 0 0 15px rgba(0, 173, 239, 0.5);
         }
 
         /* Table */
@@ -183,16 +188,17 @@
         }
 
         table.dataTable thead th {
-            background: #f8f9fa;
-            color: #2c3e50;
+            background: rgba(0, 173, 239, 0.1);
+            color: #00adef;
             font-weight: 600;
             padding: 15px;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid rgba(0, 173, 239, 0.2);
         }
 
         table.dataTable tbody td {
             padding: 15px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid rgba(0, 173, 239, 0.1);
+            color: #9ca3af;
         }
 
         .status-badge {
@@ -203,28 +209,33 @@
         }
 
         .status-verified {
-            background: #d4edda;
-            color: #155724;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
         }
 
         .status-pending {
-            background: #0a0a0a3cd;
-            color: #856404;
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
         }
 
         .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
         }
 
         .status-active {
-            background: #d1ecf1;
-            color: #0c5460;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
         }
 
         .status-inactive {
-            background: #d6d8d9;
-            color: #383d41;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
         }
 
         .action-buttons {
@@ -242,23 +253,39 @@
         }
 
         .action-verify {
-            background: #2ecc71;
+            background: rgba(16, 185, 129, 0.8);
             color: white;
+        }
+
+        .action-verify:hover {
+            background: #10b981;
         }
 
         .action-reject {
-            background: #e74c3c;
+            background: rgba(239, 68, 68, 0.8);
             color: white;
+        }
+
+        .action-reject:hover {
+            background: #ef4444;
         }
 
         .action-view {
-            background: #3498db;
+            background: rgba(16, 185, 129, 0.8);
             color: white;
         }
 
+        .action-view:hover {
+            background: #10b981;
+        }
+
         .action-edit {
-            background: #f39c12;
-            color: white;
+            background: #00adef;
+            color: #000000;
+        }
+
+        .action-edit:hover {
+            background: #00e5ff;
         }
 
         /* Search and Filter */
@@ -277,17 +304,31 @@
         .search-box input {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid rgba(0, 173, 239, 0.2);
+            border: 2px solid rgba(0, 173, 239, 0.3);
             border-radius: 6px;
             font-size: 14px;
+            background: #000000;
+            color: #e5e7eb;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #00adef;
+            box-shadow: 0 0 10px rgba(0, 173, 239, 0.2);
         }
 
         .filter-select {
             padding: 12px 15px;
-            border: 1px solid rgba(0, 173, 239, 0.2);
+            border: 2px solid rgba(0, 173, 239, 0.3);
             border-radius: 6px;
-            background: #0a0a0a;
+            background: #000000;
+            color: #e5e7eb;
             min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #00adef;
         }
 
         /* Driver Stats */
@@ -302,18 +343,19 @@
             background: #0a0a0a;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 173, 239, 0.2);
             text-align: center;
         }
 
         .stat-card h3 {
-            color: #7f8c8d;
+            color: #9ca3af;
             font-size: 14px;
             margin-bottom: 10px;
         }
 
         .stat-card .stat-value {
-            color: #2c3e50;
+            color: #00adef;
             font-size: 32px;
             font-weight: 700;
         }
@@ -341,8 +383,15 @@
             }
         }
     </style>
-</head>
+    <link rel="stylesheet" href="css/admin-responsive.css" />
+  </head>
 <body>
+    <!-- Hamburger Button (mobile) -->
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </button>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
@@ -475,10 +524,10 @@
             <h1>Driver Management</h1>
             <div class="top-bar-right">
                 <div class="admin-profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff" alt="Admin">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=00ADEF&color=000" alt="Admin">
                     <div class="admin-profile-info">
-                        <h4 id="adminName">Admin User</h4>
-                        <p>Administrator</p>
+                        <h4 id="adminName" style="color: #e5e7eb">Admin User</h4>
+                        <p style="color: #9ca3af">Administrator</p>
                     </div>
                 </div>
             </div>
@@ -538,9 +587,9 @@
                     <tr>
                         <th>ID</th>
                         <th>Driver Name</th>
-                        <th>License No.</th>
-                        <th>Vehicle</th>
                         <th>Phone</th>
+                        <th>Vehicle</th>
+                        <th>City</th>
                         <th>Status</th>
                         <th>Availability</th>
                         <th>Rating</th>
@@ -637,16 +686,33 @@
                 showLoading();
 
                 const response = await AdminService.getAllDrivers(page, limit, status);
+                console.log('Full API Response:', response);
+                console.log('Response data:', response.data);
+                console.log('Response success:', response.success);
 
-                // API returns: { success, count, total, drivers: [...] }
-                if (response.success) {
-                    allDrivers = response.drivers || response.data?.drivers || response.data || [];
-                    if (!Array.isArray(allDrivers)) allDrivers = [];
-                    displayDrivers(allDrivers);
-                    updateStats(allDrivers);
-                } else {
+                // Check if response is successful
+                if (response.success === false) {
                     throw new Error(response.message || 'Failed to load drivers');
                 }
+
+                // Extract drivers from response.data (which is the array)
+                let drivers = [];
+                if (Array.isArray(response.data)) {
+                    drivers = response.data;
+                } else if (response.drivers && Array.isArray(response.drivers)) {
+                    drivers = response.drivers;
+                } else if (response.data && Array.isArray(response.data)) {
+                    drivers = response.data;
+                }
+
+                allDrivers = drivers;
+                currentPage = response.page || page;
+
+                console.log('Extracted drivers:', allDrivers.length);
+                console.log('Drivers:', allDrivers);
+                
+                displayDrivers(allDrivers);
+                updateStats(allDrivers);
 
                 hideLoading();
             } catch (error) {
@@ -665,30 +731,32 @@
 
             drivers.forEach(driver => {
                 const driverId = driver._id || driver.id;
-                const verificationStatus = driver.verificationStatus || driver.verification_status || 'pending';
-                const availability = driver.availability || driver.status || 'inactive';
+                
+                // Extract driver details from nested structure
+                const driverDetails = driver.driverDetails || {};
+                const verificationStatus = driver.verificationStatus || 'pending';
+                const availability = driver.status || 'pending_verification';
 
                 let statusClass = 'status-pending';
-                if (verificationStatus === 'verified' || verificationStatus === 'approved') statusClass = 'status-verified';
+                if (verificationStatus === 'approved' || verificationStatus === 'verified') statusClass = 'status-verified';
                 if (verificationStatus === 'rejected') statusClass = 'status-rejected';
 
                 let availabilityClass = 'status-inactive';
-                if (availability === 'active') availabilityClass = 'status-active';
-                if (availability === 'on-ride' || availability === 'online') availabilityClass = 'status-active';
+                if (availability === 'available' || availability === 'active' || availability === 'online') availabilityClass = 'status-active';
 
-                const vehicleInfo = driver.vehicleDetails
-                    ? `${driver.vehicleDetails.make || ''} ${driver.vehicleDetails.model || ''}`.trim() || 'N/A'
-                    : `${driver.vehicle_make || ''} ${driver.vehicle_model || ''}`.trim() || 'N/A';
+                // Get vehicle info from driverDetails
+                const vehicleInfo = driverDetails.vehicle
+                    ? `${driverDetails.vehicle.make || ''} ${driverDetails.vehicle.model || ''}`.trim() || 'N/A'
+                    : 'N/A';
 
-                const licenseNumber = driver.license?.licenseNumber || driver.license_number || 'N/A';
-                const rating = driver.rating || driver.averageRating || 0;
+                const rating = driver.rating || 0;
 
                 driversTable.row.add([
                     driverId.substring(0, 8) + '...',
                     driver.name || 'N/A',
-                    licenseNumber,
-                    vehicleInfo,
                     driver.phoneNumber || driver.phone || 'N/A',
+                    vehicleInfo,
+                    driver.city || 'N/A',
                     `<span class="status-badge ${statusClass}">${verificationStatus}</span>`,
                     `<span class="status-badge ${availabilityClass}">${availability}</span>`,
                     rating ? `${rating.toFixed(1)}/5` : 'N/A',
@@ -697,14 +765,6 @@
                         <button class="action-btn action-view" onclick="viewDriver('${driverId}')" title="View Details">
                             <i class="fas fa-eye"></i>
                         </button>
-                        ${verificationStatus === 'pending' || verificationStatus === 'in_review' ? `
-                        <button class="action-btn action-verify" onclick="verifyDriver('${driverId}')" title="Verify Driver">
-                            <i class="fas fa-check"></i>
-                        </button>
-                        <button class="action-btn action-reject" onclick="rejectDriver('${driverId}')" title="Reject Driver">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        ` : ''}
                         <button class="action-btn action-edit" onclick="editDriver('${driverId}')" title="Edit Driver">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -720,20 +780,16 @@
         function updateStats(drivers) {
             const total = drivers.length;
             const verified = drivers.filter(d =>
-                d.verificationStatus === 'verified' ||
                 d.verificationStatus === 'approved' ||
-                d.verification_status === 'verified' ||
-                d.verification_status === 'approved'
+                d.verificationStatus === 'verified'
             ).length;
             const pending = drivers.filter(d =>
                 d.verificationStatus === 'pending' ||
-                d.verificationStatus === 'in_review' ||
-                d.verification_status === 'pending' ||
-                d.verification_status === 'in_review'
+                d.verificationStatus === 'pending_verification' ||
+                d.verificationStatus === 'in_review'
             ).length;
             const active = drivers.filter(d =>
-                d.availability === 'active' ||
-                d.availability === 'online' ||
+                d.status === 'available' ||
                 d.status === 'active' ||
                 d.status === 'online'
             ).length;
@@ -757,12 +813,17 @@
 
                 const filtered = allDrivers.filter(driver => {
                     const name = (driver.name || '').toLowerCase();
-                    const license = (driver.license?.licenseNumber || driver.license_number || '').toLowerCase();
-                    const vehicle = `${driver.vehicleDetails?.make || driver.vehicle_make || ''} ${driver.vehicleDetails?.model || driver.vehicle_model || ''}`.toLowerCase();
+                    const phone = (driver.phoneNumber || driver.phone || '').toLowerCase();
+                    const driverDetails = driver.driverDetails || {};
+                    const vehicle = driverDetails.vehicle
+                        ? `${driverDetails.vehicle.make || ''} ${driverDetails.vehicle.model || ''}`.toLowerCase()
+                        : '';
+                    const city = (driver.city || '').toLowerCase();
 
                     return name.includes(searchValue) ||
-                           license.includes(searchValue) ||
-                           vehicle.includes(searchValue);
+                           phone.includes(searchValue) ||
+                           vehicle.includes(searchValue) ||
+                           city.includes(searchValue);
                 });
 
                 displayDrivers(filtered);
@@ -778,14 +839,14 @@
 
             if (status) {
                 filtered = filtered.filter(driver => {
-                    const driverStatus = driver.verificationStatus || driver.verification_status || '';
+                    const driverStatus = driver.verificationStatus || '';
                     return driverStatus === status;
                 });
             }
 
             if (availability) {
                 filtered = filtered.filter(driver => {
-                    const driverAvailability = driver.availability || driver.status || '';
+                    const driverAvailability = driver.status || '';
                     return driverAvailability === availability;
                 });
             }
@@ -800,14 +861,14 @@
                 const response = await AdminService.getDriverById(driverId);
                 hideLoading();
 
-                // API returns: { success, driver: { _id, user: {name,email}, vehicleDetails, documents, rating, totalRides, totalEarning, walletBalance } }
-                const driver = response.driver || response.data;
-                if (!response.success || !driver) {
-                    throw new Error(response.message || 'Failed to load driver details');
+                // API returns: { success, data: {...} }
+                const driver = response?.data || response?.driver;
+                if (!response?.success || !driver) {
+                    throw new Error(response?.message || 'Failed to load driver details');
                 }
 
-                const vehicleInfo = driver.vehicleDetails
-                    ? `${driver.vehicleDetails.make || ''} ${driver.vehicleDetails.model || ''} (${driver.vehicleDetails.year || 'N/A'})`
+                const vehicleInfo = driver.vehicle
+                    ? `${driver.vehicle.make || ''} ${driver.vehicle.model || ''} (${driver.vehicle.year || 'N/A'})`
                     : 'N/A';
 
                 // Open detail modal
@@ -828,35 +889,39 @@
             modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
             modal.innerHTML = `
               <div style="background:#0a0a0a;border:1px solid rgba(0,173,239,0.3);border-radius:12px;padding:30px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
                   <h2 style="color:#00adef;font-size:20px;">Driver Details</h2>
                   <button onclick="document.getElementById('driverDetailModal').remove()" style="background:none;border:none;color:#9ca3af;font-size:22px;cursor:pointer;">&times;</button>
                 </div>
-                <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(0,173,239,0.15);">
-                  <img src="${driver.profilePhoto?.url || `https://ui-avatars.com/api/?name=${encodeURIComponent(driver.name||'D')}&background=00ADEF&color=000`}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #00adef;" />
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(0,173,239,0.15);">
+                  <img src="${driver.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(driver.name||'D')}&background=00ADEF&color=000`}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #00adef;" />
                   <div>
-                    <h3 style="color:#e5e7eb;font-size:18px;">${driver.name || driver.user?.name || 'N/A'}</h3>
-                    <p style="color:#9ca3af;font-size:13px;">${driver.email || driver.user?.email || ''}</p>
+                    <h3 style="color:#e5e7eb;font-size:18px;margin-bottom:4px;">${driver.name || 'N/A'}</h3>
+                    <p style="color:#9ca3af;font-size:13px;">${driver.email || ''}</p>
                   </div>
                 </div>
                 <div style="display:grid;gap:10px;">
-                  ${dRow('Phone', driver.phoneNumber || driver.user?.phoneNumber)}
-                  ${dRow('License', driver.license?.licenseNumber)}
+                  ${dRow('Phone', driver.phone)}
+                  ${dRow('City', driver.city)}
+                  ${dRow('Country', driver.country)}
                   ${dRow('Vehicle', vehicleInfo)}
-                  ${dRow('Verification', driver.verificationStatus || driver.isVerified ? 'Verified' : 'Pending')}
-                  ${dRow('Rating', driver.rating ? driver.rating.toFixed(1) + '/5' : null)}
+                  ${dRow('License Plate', driver.vehicle?.licensePlate)}
+                  ${dRow('Verification Status', driver.verificationStatus)}
+                  ${dRow('Status', driver.status)}
+                  ${dRow('Rating', driver.rating ? driver.rating.toFixed(1) + '/5' : 'N/A')}
                   ${dRow('Total Rides', driver.totalRides)}
-                  ${dRow('Total Earning', driver.totalEarning ? 'PKR ' + driver.totalEarning : null)}
-                  ${dRow('Wallet Balance', driver.walletBalance != null ? 'PKR ' + driver.walletBalance : null)}
+                  ${dRow('Total Earning', driver.totalEarning ? 'PKR ' + driver.totalEarning : 'N/A')}
+                  ${dRow('Wallet Balance', driver.walletBalance != null ? 'PKR ' + driver.walletBalance : 'N/A')}
+                  ${dRow('Joined', driver.joinedAt ? new Date(driver.joinedAt).toLocaleDateString() : 'N/A')}
                 </div>
               </div>`;
             document.body.appendChild(modal);
-            modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+            modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
         }
 
         function dRow(label, value) {
-            if (value == null || value === '') return '';
-            return `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+            if (value == null || value === "") return "";
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
               <span style="color:#9ca3af;font-size:13px;">${label}</span>
               <span style="color:#e5e7eb;font-size:14px;font-weight:500;">${value}</span>
             </div>`;
@@ -972,5 +1037,34 @@
             }
         });
     </script>
-</body>
+
+    <script>
+      // Sidebar toggle for mobile
+      function toggleSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        var btn = document.getElementById('hamburgerBtn');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+        btn.innerHTML = sidebar.classList.contains('open')
+          ? '<i class="fas fa-times"></i>'
+          : '<i class="fas fa-bars"></i>';
+      }
+      function closeSidebar() {
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        var btn = document.getElementById('hamburgerBtn');
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        btn.innerHTML = '<i class="fas fa-bars"></i>';
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.sidebar .menu-item').forEach(function(item) {
+          item.addEventListener('click', function() {
+            if (window.innerWidth <= 768) closeSidebar();
+          });
+        });
+      });
+    </script>
+  </body>
 </html>

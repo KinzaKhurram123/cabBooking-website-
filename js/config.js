@@ -5,7 +5,8 @@
 
 const CONFIG = {
   // API Configuration
-  API_BASE_URL: "https://backend.ridelynk.com/api",
+  // API_BASE_URL: "https://backend.ridelynk.com/api",
+  API_BASE_URL: "https://krystal-imaginable-hurtlingly.ngrok-free.dev/api",
 
   // Google Maps Configuration
   GOOGLE_MAPS_API_KEY: "AIzaSyAqNK7IfM16zi79N0u7qX4Ncm5QgGvBqmg",
@@ -47,10 +48,17 @@ const CONFIG = {
 };
 
 // Environment detection
+// if (
+//   window.location.hostname !== "localhost" &&
+//   window.location.hostname !== "127.0.0.1"
+// ) {
+//   // Production environment - update with your production API URL
+//   CONFIG.API_BASE_URL = "https://backend.ridelynk.com/api";
+// }
+
 if (
   window.location.hostname !== "localhost" &&
   window.location.hostname !== "127.0.0.1"
 ) {
-  // Production environment - update with your production API URL
-  CONFIG.API_BASE_URL = "https://backend.ridelynk.com/api";
+  CONFIG.API_BASE_URL = "https://backend.ridelynk.com/api"; // ← Production URL overwrite ho raha hai!
 }

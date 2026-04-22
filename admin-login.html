@@ -1,722 +1,882 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Admin Login - RideLynk</title>
-  <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .login-container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
-      max-width: 450px;
-      width: 100%;
-      animation: fadeInUp 0.5s ease;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>Admin Login - RideLynk</title>
+    <link rel="icon" href="images/icc.png" type="image/gif" sizes="16x16" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
       }
-    }
 
-    .login-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 40px;
-      text-align: center;
-      color: white;
-    }
-
-    .logo {
-      font-size: 3rem;
-      margin-bottom: 10px;
-    }
-
-    .login-title {
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin-bottom: 5px;
-    }
-
-    .login-subtitle {
-      font-size: 0.95rem;
-      opacity: 0.9;
-    }
-
-    .login-form {
-      padding: 40px;
-    }
-
-    .form-group {
-      margin-bottom: 25px;
-    }
-
-    .form-label {
-      display: block;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 8px;
-      font-size: 0.95rem;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.3s ease;
-    }
-
-    .form-input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    }
-
-    .password-wrapper {
-      position: relative;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: #999;
-      transition: color 0.2s;
-    }
-
-    .toggle-password:hover {
-      color: #667eea;
-    }
-
-    .remember-forgot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
-    .remember-me {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .remember-me input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: #667eea;
-    }
-
-    .remember-me label {
-      cursor: pointer;
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .forgot-link {
-      color: #667eea;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .forgot-link:hover {
-      text-decoration: underline;
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .login-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-
-    .login-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .divider {
-      text-align: center;
-      margin: 25px 0;
-      position: relative;
-    }
-
-    .divider::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: #e0e0e0;
-    }
-
-    .divider-text {
-      background: white;
-      padding: 0 15px;
-      color: #999;
-      font-size: 0.9rem;
-      position: relative;
-    }
-
-    .back-link {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .back-link a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .back-link a:hover {
-      text-decoration: underline;
-    }
-
-    .error-message {
-      background: #fee;
-      color: #c33;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      display: none;
-      border-left: 4px solid #c33;
-    }
-
-    .success-message {
-      background: #e6ffed;
-      color: #2c7a3e;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      display: none;
-      border-left: 4px solid #2c7a3e;
-    }
-
-    /* Loading spinner inside button */
-    .spinner {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 0.6s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
+      .login-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        max-width: 450px;
+        width: 100%;
+        animation: fadeInUp 0.5s ease;
       }
-    }
 
-    @media (max-width: 480px) {
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       .login-header {
-        padding: 30px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px;
+        text-align: center;
+        color: white;
       }
-      .login-form {
-        padding: 30px 20px;
+
+      .logo {
+        font-size: 3rem;
+        margin-bottom: 10px;
       }
+
       .login-title {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 5px;
       }
-    }
-  </style>
-</head>
-<body>
-<div class="login-container">
-  <div class="login-header">
-    <div class="logo">🔐</div>
-    <h1 class="login-title">Admin Portal</h1>
-    <p class="login-subtitle">RideLynk Management System</p>
-  </div>
 
-  <div class="login-form">
-    <div class="error-message" id="errorMessage"></div>
-    <div class="success-message" id="successMessage"></div>
+      .login-subtitle {
+        font-size: 0.95rem;
+        opacity: 0.9;
+      }
 
-    <form id="loginForm" novalidate>
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input type="email" class="form-input" id="email" placeholder="superadmin@gmail.com" autocomplete="email" required />
+      .login-form {
+        padding: 40px;
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-family: "Inter", sans-serif;
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      }
+
+      .password-wrapper {
+        position: relative;
+      }
+
+      .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #999;
+        transition: color 0.2s;
+      }
+
+      .toggle-password:hover {
+        color: #667eea;
+      }
+
+      .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .remember-me input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #667eea;
+      }
+
+      .remember-me label {
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .forgot-link {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .forgot-link:hover {
+        text-decoration: underline;
+      }
+
+      .login-btn {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .login-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .login-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .divider {
+        text-align: center;
+        margin: 25px 0;
+        position: relative;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e0e0e0;
+      }
+
+      .divider-text {
+        background: white;
+        padding: 0 15px;
+        color: #999;
+        font-size: 0.9rem;
+        position: relative;
+      }
+
+      .back-link {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .back-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .back-link a:hover {
+        text-decoration: underline;
+      }
+
+      .error-message {
+        background: #fee;
+        color: #c33;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        display: none;
+        border-left: 4px solid #c33;
+      }
+
+      .success-message {
+        background: #e6ffed;
+        color: #2c7a3e;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        display: none;
+        border-left: 4px solid #2c7a3e;
+      }
+
+      /* Loading spinner inside button */
+      .spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 0.6s linear infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .login-header {
+          padding: 30px 20px;
+        }
+        .login-form {
+          padding: 30px 20px;
+        }
+        .login-title {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-header">
+        <div class="logo">🔐</div>
+        <h1 class="login-title">Admin Portal</h1>
+        <p class="login-subtitle">RideLynk Management System</p>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <div class="password-wrapper">
-          <input type="password" class="form-input" id="password" placeholder="Enter your password" autocomplete="current-password" required />
-          <button type="button" class="toggle-password" id="togglePassword" aria-label="Show/hide password">👁️</button>
-        </div>
-      </div>
+      <div class="login-form">
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
 
-      <!-- Test Credentials Helper -->
-      <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 12px; border-radius: 8px; margin-bottom: 20px">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px">
-          <div style="font-size: 0.85rem; color: #0369a1">
-            <strong>🔑 Test Credentials:</strong><br />
-            <span style="font-size: 0.8rem">superadmin@gmail.com / 12345678</span>
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input
+              type="email"
+              class="form-input"
+              id="email"
+              placeholder="superadmin@gmail.com"
+              autocomplete="email"
+              required
+            />
           </div>
-          <button type="button" id="fillTestBtn" style="background: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.2s">
-            Use Test Login
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                class="form-input"
+                id="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                id="togglePassword"
+                aria-label="Show/hide password"
+              >
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <!-- Test Credentials Helper -->
+          <div
+            style="
+              background: #f0f9ff;
+              border: 1px solid #bae6fd;
+              padding: 12px;
+              border-radius: 8px;
+              margin-bottom: 20px;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+              "
+            >
+              <div style="font-size: 0.85rem; color: #0369a1">
+                <strong>🔑 Test Credentials:</strong><br />
+                <span style="font-size: 0.8rem"
+                  >superadmin@gmail.com / 12345678</span
+                >
+              </div>
+              <button
+                type="button"
+                id="fillTestBtn"
+                style="
+                  background: #0ea5e9;
+                  color: white;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 6px;
+                  cursor: pointer;
+                  font-size: 0.85rem;
+                  font-weight: 600;
+                  transition: 0.2s;
+                "
+              >
+                Use Test Login
+              </button>
+            </div>
+          </div>
+
+          <div class="remember-forgot">
+            <div class="remember-me">
+              <input type="checkbox" id="rememberMe" />
+              <label for="rememberMe">Remember me</label>
+            </div>
+            <a href="forgot-password.html" class="forgot-link"
+              >Forgot Password?</a
+            >
+          </div>
+
+          <button type="submit" class="login-btn" id="loginBtn">
+            Sign In to Admin Panel
           </button>
+        </form>
+
+        <div class="divider">
+          <span class="divider-text">OR</span>
+        </div>
+
+        <div class="back-link">
+          <a href="login.html">← Back to User Login</a>
         </div>
       </div>
-
-      <div class="remember-forgot">
-        <div class="remember-me">
-          <input type="checkbox" id="rememberMe" />
-          <label for="rememberMe">Remember me</label>
-        </div>
-        <a href="forgot-password.html" class="forgot-link">Forgot Password?</a>
-      </div>
-
-      <button type="submit" class="login-btn" id="loginBtn">Sign In to Admin Panel</button>
-    </form>
-
-    <div class="divider">
-      <span class="divider-text">OR</span>
     </div>
 
-    <div class="back-link">
-      <a href="login.html">← Back to User Login</a>
-    </div>
-  </div>
-</div>
+    <!-- IMPORTANT: Load scripts in correct order. If config.js or api-service.js are missing, we provide fallback stubs -->
+    <script>
+      // ============================================================
+      // FALLBACK / STUB definitions in case external JS files are missing
+      // This ensures admin-login works even if config/utils/api are not loaded.
+      // ============================================================
+      window.CONFIG = window.CONFIG || {
+        API_BASE_URL: window.location.origin + "/api", // fallback base url
+        STORAGE_KEYS: {
+          AUTH_TOKEN: "ridelynk_auth_token",
+          USER_ROLE: "ridelynk_user_role",
+          USER_DATA: "ridelynk_user_data",
+          REMEMBER_ME: "ridelynk_remember_me",
+        },
+      };
 
-<!-- IMPORTANT: Load scripts in correct order. If config.js or api-service.js are missing, we provide fallback stubs -->
-<script>
-  // ============================================================
-  // FALLBACK / STUB definitions in case external JS files are missing
-  // This ensures admin-login works even if config/utils/api are not loaded.
-  // ============================================================
-  window.CONFIG = window.CONFIG || {
-    API_BASE_URL: window.location.origin + '/api',   // fallback base url
-    STORAGE_KEYS: {
-      AUTH_TOKEN: 'ridelynk_auth_token',
-      USER_ROLE: 'ridelynk_user_role',
-      USER_DATA: 'ridelynk_user_data',
-      REMEMBER_ME: 'ridelynk_remember_me'
-    }
-  };
-
-  // AuthService stub if not defined
-  window.AuthService = window.AuthService || {
-    async login(credentials) {
-      console.log('[AuthService Stub] Login called with:', credentials);
-      // Try to call actual backend endpoint relative to current origin
-      const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
-      });
-
-      if (!response.ok) {
-        let errorMsg = 'Login failed';
-        try {
-          const errData = await response.json();
-          errorMsg = errData.message || errData.error || `Server error (${response.status})`;
-        } catch (e) {
-          errorMsg = `Request failed with status ${response.status}`;
-        }
-        throw new Error(errorMsg);
-      }
-
-      const data = await response.json();
-      // Normalize response: token can be in data.token or data.data.token
-      let token = data.token;
-      let userData = data.user || data.data?.user;
-      let role = userData?.role || data.role || data.data?.role;
-
-      if (!token && data.data && data.data.token) {
-        token = data.data.token;
-        userData = data.data.user || userData;
-        role = userData?.role || data.data.role;
-      }
-
-      if (!token) throw new Error('Invalid server response: missing token');
-
-      // Store auth data
-      localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
-      localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, role || 'user');
-      if (userData) {
-        localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
-      }
-      return { token, user: userData, role };
-    }
-  };
-
-  // Also provide safe utils if missing (not critical)
-  window.Utils = window.Utils || {
-    showNotification: (msg, type) => console.log(`[${type}] ${msg}`)
-  };
-</script>
-
-<!-- Attempt to load actual project scripts (non-blocking, but we rely on fallback) -->
-<script src="js/config.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/api-service.js"></script>
-<script src="js/admin-service.js"></script>
-<script src="js/auth-service.js"></script>
-
-<script>
-  // --------------------------------------------------------------
-  // MAIN ADMIN LOGIN HANDLER (Robust version)
-  // --------------------------------------------------------------
-  (function() {
-    // DOM elements
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const loginBtn = document.getElementById('loginBtn');
-    const loginForm = document.getElementById('loginForm');
-    const errorDiv = document.getElementById('errorMessage');
-    const successDiv = document.getElementById('successMessage');
-    const rememberCheckbox = document.getElementById('rememberMe');
-    const togglePasswordBtn = document.getElementById('togglePassword');
-    const fillTestBtn = document.getElementById('fillTestBtn');
-
-    // Helper: show error
-    function showError(msg) {
-      if (errorDiv) {
-        errorDiv.textContent = msg;
-        errorDiv.style.display = 'block';
-      }
-      if (successDiv) successDiv.style.display = 'none';
-    }
-
-    function hideError() {
-      if (errorDiv) errorDiv.style.display = 'none';
-    }
-
-    function showSuccess(msg) {
-      if (successDiv) {
-        successDiv.textContent = msg;
-        successDiv.style.display = 'block';
-      }
-      if (errorDiv) errorDiv.style.display = 'none';
-    }
-
-    // Helper to set loading state
-    function setLoading(isLoading, originalText = 'Sign In to Admin Panel') {
-      if (!loginBtn) return;
-      if (isLoading) {
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<span class="spinner"></span> Authenticating...';
-      } else {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = originalText;
-      }
-    }
-
-    // Fill test credentials
-    if (fillTestBtn) {
-      fillTestBtn.addEventListener('click', () => {
-        if (emailInput) emailInput.value = 'superadmin@gmail.com';
-        if (passwordInput) passwordInput.value = '12345678';
-        const btn = fillTestBtn;
-        const originalText = btn.textContent;
-        btn.textContent = '✓ Filled!';
-        btn.style.background = '#10b981';
-        setTimeout(() => {
-          btn.textContent = originalText;
-          btn.style.background = '#0ea5e9';
-        }, 1500);
-        hideError();
-        // optional success hint
-        showSuccess('Test credentials inserted. Click "Sign In".');
-        setTimeout(() => {
-          if (successDiv) successDiv.style.display = 'none';
-        }, 2000);
-      });
-    }
-
-    // Toggle password visibility
-    if (togglePasswordBtn && passwordInput) {
-      togglePasswordBtn.addEventListener('click', () => {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        togglePasswordBtn.textContent = type === 'password' ? '👁️' : '🙈';
-      });
-    }
-
-    // Restore remembered email if needed
-    function restoreRememberedEmail() {
-      try {
-        const rememberedEmail = localStorage.getItem('admin_remembered_email');
-        if (rememberedEmail && emailInput) {
-          emailInput.value = rememberedEmail;
-          if (rememberCheckbox) rememberCheckbox.checked = true;
-        }
-      } catch (e) {}
-    }
-
-    // Save remember email
-    function saveRememberEmail(email) {
-      if (rememberCheckbox && rememberCheckbox.checked && email) {
-        localStorage.setItem('admin_remembered_email', email);
-      } else {
-        localStorage.removeItem('admin_remembered_email');
-      }
-    }
-
-    // Check if already logged in as admin and redirect
-    async function checkExistingAdminSession() {
-      try {
-        const authToken = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-        const userRole = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
-        if (authToken && userRole === 'admin') {
-          console.log('Existing admin session detected, redirecting to dashboard...');
-          window.location.replace('admin-dashboard.html');
-          return true;
-        }
-        // Also check for legacy token patterns
-        const legacyToken = localStorage.getItem('token');
-        const legacyRole = localStorage.getItem('userRole');
-        if (legacyToken && legacyRole === 'admin' && !authToken) {
-          // migrate
-          localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, legacyToken);
-          localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, 'admin');
-          window.location.replace('admin-dashboard.html');
-          return true;
-        }
-      } catch (err) {
-        console.warn('Session check error:', err);
-      }
-      return false;
-    }
-
-    // CORE LOGIN FUNCTION - Uses AdminService for proper API handling
-    async function handleAdminLogin(email, password, remember) {
-      console.log('🔐 Starting admin login...');
-      console.log('📧 Email:', email);
-      console.log('🌐 API Base URL:', CONFIG.API_BASE_URL);
-      console.log('🎯 Login Endpoint:', CONFIG.API_BASE_URL + '/admin/login');
-
-      try {
-        // Use AdminService which properly handles the API call
-        console.log('📡 Calling AdminService.login()...');
-        const response = await AdminService.login({ email, password });
-
-        console.log('📥 Login response received:', response);
-        console.log('📥 Response structure:', JSON.stringify(response, null, 2));
-
-        if (response.success && response.data) {
-          const token = response.data.token;
-          const userData = response.data.admin || response.data.user;
-          const role = userData?.role || response.data.role || 'admin';
-
-          console.log('✅ Login successful - Storing credentials...');
-          console.log('🔑 Token:', token ? token.substring(0, 30) + '...' : 'MISSING');
-          console.log('👤 Role from response:', role);
-          console.log('👤 Role type:', typeof role);
-          console.log('📋 User data:', userData);
-          console.log('📋 Full response.data:', response.data);
-
-          // Verify storage (AdminService already stored it)
-          const storedToken = localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-          const storedRole = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
-
-          console.log('✅ Verification - Token stored:', storedToken ? 'YES' : 'NO');
-          console.log('✅ Verification - Role stored:', storedRole);
-          console.log('✅ Verification - Role value:', storedRole);
-
-          // Check admin role - accept both "admin" and "superadmin"
-          const validAdminRoles = ['admin', 'superadmin', 'super_admin', 'super-admin'];
-          const isAdmin = validAdminRoles.includes(role?.toLowerCase()) ||
-                         validAdminRoles.includes(storedRole?.toLowerCase());
-
-          console.log('🔍 Role check:', {
-            receivedRole: role,
-            storedRole: storedRole,
-            isValidAdmin: isAdmin,
-            validRoles: validAdminRoles
+      // AuthService stub if not defined
+      window.AuthService = window.AuthService || {
+        async login(credentials) {
+          console.log("[AuthService Stub] Login called with:", credentials);
+          // Try to call actual backend endpoint relative to current origin
+          const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(credentials),
           });
 
-          if (!isAdmin) {
-            console.warn('⚠️ Role is not admin, clearing session');
-            console.warn('⚠️ Received role:', role);
-            console.warn('⚠️ Stored role:', storedRole);
-            console.warn('⚠️ Valid roles:', validAdminRoles);
-            localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-            localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_ROLE);
-            throw new Error(`Access denied: Role "${role || storedRole}" is not authorized. Please use admin credentials.`);
+          if (!response.ok) {
+            let errorMsg = "Login failed";
+            try {
+              const errData = await response.json();
+              errorMsg =
+                errData.message ||
+                errData.error ||
+                `Server error (${response.status})`;
+            } catch (e) {
+              errorMsg = `Request failed with status ${response.status}`;
+            }
+            throw new Error(errorMsg);
           }
 
-          console.log('✅ Admin role confirmed');
+          const data = await response.json();
+          // Normalize response: token can be in data.token or data.data.token
+          let token = data.token;
+          let userData = data.user || data.data?.user;
+          let role = userData?.role || data.role || data.data?.role;
 
-          // Save remember email preference
-          if (remember) saveRememberEmail(email);
-          else saveRememberEmail('');
+          if (!token && data.data && data.data.token) {
+            token = data.data.token;
+            userData = data.data.user || userData;
+            role = userData?.role || data.data.role;
+          }
 
-          return { success: true, role, token };
-        } else {
-          console.error('❌ Invalid response structure:', response);
-          throw new Error(response.message || 'Login failed');
+          if (!token) throw new Error("Invalid server response: missing token");
+
+          // Store auth data
+          localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
+          localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, role || "user");
+          if (userData) {
+            localStorage.setItem(
+              CONFIG.STORAGE_KEYS.USER_DATA,
+              JSON.stringify(userData),
+            );
+          }
+          return { token, user: userData, role };
+        },
+      };
+
+      // Also provide safe utils if missing (not critical)
+      window.Utils = window.Utils || {
+        showNotification: (msg, type) => console.log(`[${type}] ${msg}`),
+      };
+    </script>
+
+    <!-- Attempt to load actual project scripts (non-blocking, but we rely on fallback) -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/admin-service.js"></script>
+    <script src="js/auth-service.js"></script>
+
+    <script>
+      // --------------------------------------------------------------
+      // MAIN ADMIN LOGIN HANDLER (Robust version)
+      // --------------------------------------------------------------
+      (function () {
+        // DOM elements
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const loginBtn = document.getElementById("loginBtn");
+        const loginForm = document.getElementById("loginForm");
+        const errorDiv = document.getElementById("errorMessage");
+        const successDiv = document.getElementById("successMessage");
+        const rememberCheckbox = document.getElementById("rememberMe");
+        const togglePasswordBtn = document.getElementById("togglePassword");
+        const fillTestBtn = document.getElementById("fillTestBtn");
+
+        // Helper: show error
+        function showError(msg) {
+          if (errorDiv) {
+            errorDiv.textContent = msg;
+            errorDiv.style.display = "block";
+          }
+          if (successDiv) successDiv.style.display = "none";
         }
-      } catch (error) {
-        console.error('❌ Login error:', error);
 
-        // If backend is unavailable and using test credentials, provide demo mode
-        if ((error.message?.includes('Failed to fetch') || error.message?.includes('Network error')) &&
-            email === 'superadmin@gmail.com' && password === '12345678') {
-          console.log('🎭 DEMO MODE: Backend unavailable but using valid test admin credentials. Granting demo access.');
-          const demoToken = 'demo_admin_token_' + Date.now();
-
-          console.log('🎭 DEMO MODE: Storing demo credentials...');
-          localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, demoToken);
-          localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, 'admin');
-          localStorage.setItem('token', demoToken);
-          localStorage.setItem('userRole', 'admin');
-
-          const demoUser = { id: 1, email: 'superadmin@gmail.com', name: 'Super Admin', role: 'admin' };
-          localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(demoUser));
-
-          // Verify storage
-          console.log('🎭 DEMO MODE - Verification:');
-          console.log('  Token stored:', localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN) ? 'YES' : 'NO');
-          console.log('  Role stored:', localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE));
-
-          if (remember) saveRememberEmail(email);
-          return { success: true, role: 'admin', demo: true, token: demoToken };
+        function hideError() {
+          if (errorDiv) errorDiv.style.display = "none";
         }
 
-        throw error;
-      }
-    }
+        function showSuccess(msg) {
+          if (successDiv) {
+            successDiv.textContent = msg;
+            successDiv.style.display = "block";
+          }
+          if (errorDiv) errorDiv.style.display = "none";
+        }
 
-    // Submit handler
-    loginForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      hideError();
-      if (successDiv) successDiv.style.display = 'none';
+        // Helper to set loading state
+        function setLoading(
+          isLoading,
+          originalText = "Sign In to Admin Panel",
+        ) {
+          if (!loginBtn) return;
+          if (isLoading) {
+            loginBtn.disabled = true;
+            loginBtn.innerHTML =
+              '<span class="spinner"></span> Authenticating...';
+          } else {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = originalText;
+          }
+        }
 
-      const email = emailInput ? emailInput.value.trim() : '';
-      const password = passwordInput ? passwordInput.value : '';
-      const remember = rememberCheckbox ? rememberCheckbox.checked : false;
+        // Fill test credentials
+        if (fillTestBtn) {
+          fillTestBtn.addEventListener("click", () => {
+            if (emailInput) emailInput.value = "superadmin@gmail.com";
+            if (passwordInput) passwordInput.value = "12345678";
+            const btn = fillTestBtn;
+            const originalText = btn.textContent;
+            btn.textContent = "✓ Filled!";
+            btn.style.background = "#10b981";
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.style.background = "#0ea5e9";
+            }, 1500);
+            hideError();
+            // optional success hint
+            showSuccess('Test credentials inserted. Click "Sign In".');
+            setTimeout(() => {
+              if (successDiv) successDiv.style.display = "none";
+            }, 2000);
+          });
+        }
 
-      if (!email || !password) {
-        showError('Please enter both email address and password.');
-        return;
-      }
+        // Toggle password visibility
+        if (togglePasswordBtn && passwordInput) {
+          togglePasswordBtn.addEventListener("click", () => {
+            const type =
+              passwordInput.getAttribute("type") === "password"
+                ? "text"
+                : "password";
+            passwordInput.setAttribute("type", type);
+            togglePasswordBtn.textContent = type === "password" ? "👁️" : "🙈";
+          });
+        }
 
-      const originalBtnText = loginBtn.innerHTML;
-      setLoading(true, originalBtnText);
+        // Restore remembered email if needed
+        function restoreRememberedEmail() {
+          try {
+            const rememberedEmail = localStorage.getItem(
+              "admin_remembered_email",
+            );
+            if (rememberedEmail && emailInput) {
+              emailInput.value = rememberedEmail;
+              if (rememberCheckbox) rememberCheckbox.checked = true;
+            }
+          } catch (e) {}
+        }
 
-      try {
-        const result = await handleAdminLogin(email, password, remember);
-        console.log('🎉 Login handler result:', result);
+        // Save remember email
+        function saveRememberEmail(email) {
+          if (rememberCheckbox && rememberCheckbox.checked && email) {
+            localStorage.setItem("admin_remembered_email", email);
+          } else {
+            localStorage.removeItem("admin_remembered_email");
+          }
+        }
 
-        // Accept multiple admin role variations
-        const validAdminRoles = ['admin', 'superadmin', 'super_admin', 'super-admin'];
-        const isValidAdmin = result && result.success &&
-                            validAdminRoles.includes(result.role?.toLowerCase());
+        // Check if already logged in as admin and redirect
+        async function checkExistingAdminSession() {
+          try {
+            const authToken = localStorage.getItem(
+              CONFIG.STORAGE_KEYS.AUTH_TOKEN,
+            );
+            const userRole = localStorage.getItem(
+              CONFIG.STORAGE_KEYS.USER_ROLE,
+            );
+            if (authToken && userRole === "admin") {
+              console.log(
+                "Existing admin session detected, redirecting to dashboard...",
+              );
+              window.location.replace("admin-dashboard.html");
+              return true;
+            }
+            // Also check for legacy token patterns
+            const legacyToken = localStorage.getItem("token");
+            const legacyRole = localStorage.getItem("userRole");
+            if (legacyToken && legacyRole === "admin" && !authToken) {
+              // migrate
+              localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, legacyToken);
+              localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, "admin");
+              window.location.replace("admin-dashboard.html");
+              return true;
+            }
+          } catch (err) {
+            console.warn("Session check error:", err);
+          }
+          return false;
+        }
 
-        console.log('🔍 Final validation:', {
-          hasResult: !!result,
-          isSuccess: result?.success,
-          role: result?.role,
-          isValidAdmin: isValidAdmin
+        // CORE LOGIN FUNCTION - Uses AdminService for proper API handling
+        async function handleAdminLogin(email, password, remember) {
+          console.log("🔐 Starting admin login...");
+          console.log("📧 Email:", email);
+          console.log("🌐 API Base URL:", CONFIG.API_BASE_URL);
+          console.log(
+            "🎯 Login Endpoint:",
+            CONFIG.API_BASE_URL + "/admin/login",
+          );
+
+          try {
+            // Use AdminService which properly handles the API call
+            console.log("📡 Calling AdminService.login()...");
+            const response = await AdminService.login({ email, password });
+
+            console.log("📥 Login response received:", response);
+            console.log(
+              "📥 Response structure:",
+              JSON.stringify(response, null, 2),
+            );
+
+            if (response.success && response.data) {
+              const token = response.data.token;
+              const userData = response.data.admin || response.data.user;
+              const role = userData?.role || response.data.role || "admin";
+
+              console.log("✅ Login successful - Storing credentials...");
+              console.log(
+                "🔑 Token:",
+                token ? token.substring(0, 30) + "..." : "MISSING",
+              );
+              console.log("👤 Role from response:", role);
+              console.log("👤 Role type:", typeof role);
+              console.log("📋 User data:", userData);
+              console.log("📋 Full response.data:", response.data);
+
+              // Verify storage (AdminService already stored it)
+              const storedToken = localStorage.getItem(
+                CONFIG.STORAGE_KEYS.AUTH_TOKEN,
+              );
+              const storedRole = localStorage.getItem(
+                CONFIG.STORAGE_KEYS.USER_ROLE,
+              );
+
+              console.log(
+                "✅ Verification - Token stored:",
+                storedToken ? "YES" : "NO",
+              );
+              console.log("✅ Verification - Role stored:", storedRole);
+              console.log("✅ Verification - Role value:", storedRole);
+
+              // Check admin role - accept both "admin" and "superadmin"
+              const validAdminRoles = [
+                "admin",
+                "superadmin",
+                "super_admin",
+                "super-admin",
+              ];
+              const isAdmin =
+                validAdminRoles.includes(role?.toLowerCase()) ||
+                validAdminRoles.includes(storedRole?.toLowerCase());
+
+              console.log("🔍 Role check:", {
+                receivedRole: role,
+                storedRole: storedRole,
+                isValidAdmin: isAdmin,
+                validRoles: validAdminRoles,
+              });
+
+              if (!isAdmin) {
+                console.warn("⚠️ Role is not admin, clearing session");
+                console.warn("⚠️ Received role:", role);
+                console.warn("⚠️ Stored role:", storedRole);
+                console.warn("⚠️ Valid roles:", validAdminRoles);
+                localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+                localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+                throw new Error(
+                  `Access denied: Role "${role || storedRole}" is not authorized. Please use admin credentials.`,
+                );
+              }
+
+              console.log("✅ Admin role confirmed");
+
+              // Save remember email preference
+              if (remember) saveRememberEmail(email);
+              else saveRememberEmail("");
+
+              return { success: true, role, token };
+            } else {
+              console.error("❌ Invalid response structure:", response);
+              throw new Error(response.message || "Login failed");
+            }
+          } catch (error) {
+            console.error("❌ Login error:", error);
+
+            // If backend is unavailable and using test credentials, provide demo mode
+            if (
+              (error.message?.includes("Failed to fetch") ||
+                error.message?.includes("Network error")) &&
+              email === "superadmin@gmail.com" &&
+              password === "12345678"
+            ) {
+              console.log(
+                "🎭 DEMO MODE: Backend unavailable but using valid test admin credentials. Granting demo access.",
+              );
+              const demoToken = "demo_admin_token_" + Date.now();
+
+              console.log("🎭 DEMO MODE: Storing demo credentials...");
+              localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, demoToken);
+              localStorage.setItem(CONFIG.STORAGE_KEYS.USER_ROLE, "admin");
+              localStorage.setItem("token", demoToken);
+              localStorage.setItem("userRole", "admin");
+
+              const demoUser = {
+                id: 1,
+                email: "superadmin@gmail.com",
+                name: "Super Admin",
+                role: "admin",
+              };
+              localStorage.setItem(
+                CONFIG.STORAGE_KEYS.USER_DATA,
+                JSON.stringify(demoUser),
+              );
+
+              // Verify storage
+              console.log("🎭 DEMO MODE - Verification:");
+              console.log(
+                "  Token stored:",
+                localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN)
+                  ? "YES"
+                  : "NO",
+              );
+              console.log(
+                "  Role stored:",
+                localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE),
+              );
+
+              if (remember) saveRememberEmail(email);
+              return {
+                success: true,
+                role: "admin",
+                demo: true,
+                token: demoToken,
+              };
+            }
+
+            throw error;
+          }
+        }
+
+        // Submit handler
+        loginForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          hideError();
+          if (successDiv) successDiv.style.display = "none";
+
+          const email = emailInput ? emailInput.value.trim() : "";
+          const password = passwordInput ? passwordInput.value : "";
+          const remember = rememberCheckbox ? rememberCheckbox.checked : false;
+
+          if (!email || !password) {
+            showError("Please enter both email address and password.");
+            return;
+          }
+
+          const originalBtnText = loginBtn.innerHTML;
+          setLoading(true, originalBtnText);
+
+          try {
+            const result = await handleAdminLogin(email, password, remember);
+            console.log("🎉 Login handler result:", result);
+
+            // Accept multiple admin role variations
+            const validAdminRoles = [
+              "admin",
+              "superadmin",
+              "super_admin",
+              "super-admin",
+            ];
+            const isValidAdmin =
+              result &&
+              result.success &&
+              validAdminRoles.includes(result.role?.toLowerCase());
+
+            console.log("🔍 Final validation:", {
+              hasResult: !!result,
+              isSuccess: result?.success,
+              role: result?.role,
+              isValidAdmin: isValidAdmin,
+            });
+
+            if (isValidAdmin) {
+              const demoText = result.demo ? " (Demo Mode)" : "";
+              showSuccess(
+                `Login successful${demoText}! Redirecting to Admin Dashboard...`,
+              );
+
+              console.log("🚀 Redirecting to dashboard in 800ms...");
+              console.log("🚀 Final verification before redirect:");
+              console.log(
+                "  Token:",
+                localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN)
+                  ? "EXISTS"
+                  : "MISSING",
+              );
+              console.log(
+                "  Role:",
+                localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE),
+              );
+
+              // Slightly longer delay to ensure localStorage is fully written
+              setTimeout(() => {
+                console.log("🚀 Executing redirect now...");
+                // Use replace to prevent back button from returning to login
+                window.location.replace("admin-dashboard.html");
+              }, 800);
+            } else {
+              console.error("❌ Validation failed:", {
+                result: result,
+                expectedRoles: validAdminRoles,
+              });
+              throw new Error(
+                `Invalid role or authentication failed. Received role: ${result?.role}`,
+              );
+            }
+          } catch (err) {
+            console.error("Admin login error:", err);
+            let errorText =
+              err.message ||
+              "Login failed. Please check your credentials and try again.";
+            // Provide more friendly guidance
+            if (errorText.includes("Access denied")) {
+              errorText =
+                "Access denied: You are not authorized as admin. Please use superadmin@gmail.com with password 12345678 or valid admin account.";
+            } else if (errorText.includes("Cannot connect to server")) {
+              errorText =
+                'Cannot reach server. For testing, click "Use Test Login" and try again.';
+            }
+            showError(errorText);
+            setLoading(false, originalBtnText);
+          }
         });
 
-        if (isValidAdmin) {
-          const demoText = result.demo ? ' (Demo Mode)' : '';
-          showSuccess(`Login successful${demoText}! Redirecting to Admin Dashboard...`);
-
-          console.log('🚀 Redirecting to dashboard in 800ms...');
-          console.log('🚀 Final verification before redirect:');
-          console.log('  Token:', localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN) ? 'EXISTS' : 'MISSING');
-          console.log('  Role:', localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE));
-
-          // Slightly longer delay to ensure localStorage is fully written
-          setTimeout(() => {
-            console.log('🚀 Executing redirect now...');
-            // Use replace to prevent back button from returning to login
-            window.location.replace('admin-dashboard.html');
-          }, 800);
-        } else {
-          console.error('❌ Validation failed:', {
-            result: result,
-            expectedRoles: validAdminRoles
-          });
-          throw new Error(`Invalid role or authentication failed. Received role: ${result?.role}`);
-        }
-      } catch (err) {
-        console.error('Admin login error:', err);
-        let errorText = err.message || 'Login failed. Please check your credentials and try again.';
-        // Provide more friendly guidance
-        if (errorText.includes('Access denied')) {
-          errorText = 'Access denied: You are not authorized as admin. Please use superadmin@gmail.com with password 12345678 or valid admin account.';
-        } else if (errorText.includes('Cannot connect to server')) {
-          errorText = 'Cannot reach server. For testing, click "Use Test Login" and try again.';
-        }
-        showError(errorText);
-        setLoading(false, originalBtnText);
-      }
-    });
-
-    // On page load: check existing session, restore remember email
-    (async function init() {
-      await checkExistingAdminSession();
-      restoreRememberedEmail();
-      // Remove any lingering demo flags for security
-      const currentRole = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_ROLE);
-      if (currentRole && currentRole !== 'admin') {
-        // If somehow user role is not admin but token exists, clear it to avoid confusion
-        localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-        localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_ROLE);
-      }
-    })();
-  })();
-</script>
-</body>
+        // On page load: check existing session, restore remember email
+        (async function init() {
+          await checkExistingAdminSession();
+          restoreRememberedEmail();
+          // Remove any lingering demo flags for security
+          const currentRole = localStorage.getItem(
+            CONFIG.STORAGE_KEYS.USER_ROLE,
+          );
+          if (currentRole && currentRole !== "admin") {
+            // If somehow user role is not admin but token exists, clear it to avoid confusion
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_ROLE);
+          }
+        })();
+      })();
+    </script>
+  </body>
 </html>
