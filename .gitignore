@@ -9,7 +9,7 @@
 config.local.js
 secrets.json
 credentials.json
-
+config.js
 # API Keys and tokens
 *.key
 *.pem
